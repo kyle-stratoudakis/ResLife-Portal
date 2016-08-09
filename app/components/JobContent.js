@@ -23,7 +23,7 @@ let JobContent = React.createClass({
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
-		this.props.fetchWorkorders(endpoint + "&jwt=" + this.props.token.jwt + "&job=" + jobId);
+		this.props.fetchWorkorders(location + '/' + endpoint + "&jwt=" + this.props.token.jwt + "&job=" + jobId);
 	},
 
 	renderTab (endpoint, i) {

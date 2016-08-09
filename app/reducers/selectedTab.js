@@ -4,8 +4,8 @@ function selectedTab(state=0, action) {
 		return action.value;
 	case '@@router/LOCATION_CHANGE':
 		// console.log(action);
-		// return 0
-		return state;
+		return 0
+		// return state;
 	default :
 		return state;
 	}

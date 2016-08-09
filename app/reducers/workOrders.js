@@ -5,6 +5,8 @@ function workOrders(state=[], action) {
 		return [
 			...action.workOrders
 		]
+	case 'LOGGING_OUT':
+		return []
 	default :
 		return state;
 	}

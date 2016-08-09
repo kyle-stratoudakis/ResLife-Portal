@@ -27,6 +27,7 @@ const CardGrid = React.createClass({
 			height = 3;
 		}
 
+		let endpoint = job.link +'/'+ this.props.jobs[i].endpoints[0].route +"&jwt="+ this.props.token.jwt +"&job="+ job._id;
 		return (
 			<div className={"col-sm-" + col} key={i}>
 				<br /> <br />
@@ -35,7 +36,7 @@ const CardGrid = React.createClass({
 					subTitle={job.subtitle}
 					link={job.link}
 					performRouteAndUpdate={this.props.performRouteAndUpdate}
-					endpoint={this.props.jobs[i].endpoints[0].route + "&jwt=" + this.props.token.jwt + "&job=" + job._id}
+					endpoint={endpoint}
 					color={job.color}
 					titleColor={job.title_color}
 					height={height}

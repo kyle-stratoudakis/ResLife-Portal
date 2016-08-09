@@ -37,7 +37,7 @@ const ContentRow = React.createClass({
 				jobId: this.props.jobId,
 				id
 			};
-			let update = this.props.parentEndpoint + "&jwt=" + this.props.jwt + "&job=" + this.props.jobId;
+			let update = this.props.location +'/'+ this.props.parentEndpoint +"&jwt="+ this.props.jwt +"&job="+ this.props.jobId;
 
 			return (
 				<FlatButton

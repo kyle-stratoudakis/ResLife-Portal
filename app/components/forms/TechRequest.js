@@ -12,6 +12,7 @@ import FormsyText from './Formsy/FormsyText';
 import FormsyDate from './Formsy/FormsyDate';
 import FormsyTime from './Formsy/FormsyTime';
 import { FormsySelect } from 'formsy-material-ui/lib';
+import { FormWrapper } from '../FormWrapper/';
 
 class TechRequest extends Component{
 	constructor(props) {
@@ -129,7 +130,7 @@ class TechRequest extends Component{
 						name='description'
 						required
 						fullWidth={true}
-						hintText='Pleas provide as much detail as possible'
+						hintText='Please provide as much detail as possible'
 						floatingLabelText='Description'
 						multiLine={true}
 						rows={2}
@@ -152,4 +153,4 @@ class TechRequest extends Component{
 	}
 }
 
-export default TechRequest;
+export default FormWrapper(TechRequest);

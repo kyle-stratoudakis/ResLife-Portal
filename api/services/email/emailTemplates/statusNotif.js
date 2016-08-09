@@ -1,4 +1,4 @@
-var config = require('../../../../config');
+var config = require('../../../../../config');
 const statusNotif = function(status, wo) {
 	var host = config.mailLinkBack + ':' + config.frontendPORT;
 	var message;

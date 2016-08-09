@@ -1,4 +1,4 @@
-var config = require('../../../../config');
+var config = require('../../../../../config');
 const confirmNew = function(wo) {
 	var host = config.mailLinkBack + ':' + config.frontendPORT;
 	return (

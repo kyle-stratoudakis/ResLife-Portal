@@ -2,12 +2,19 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute } from 'react-router';
+import { UserAuthWrapper } from 'redux-auth-wrapper'
+import { routerActions } from 'react-router-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import store, { history } from './Store';
 
 injectTapEventPlugin();
 
-import { UserAuthWrapper } from 'redux-auth-wrapper'
-import { routerActions } from 'react-router-redux'
+import App from './components/App';
+import Login from './components/Login';
+import Program from './components/forms/Program';
+import CardGrid from './components/CardGrid';
+import JobContent from './components/JobContent';
+import TechRequest from './components/forms/TechRequest';
 
 const Auth = UserAuthWrapper({
 	authSelector: state => state.token,
@@ -15,16 +22,6 @@ const Auth = UserAuthWrapper({
 	wrapperDisplayName: 'Auth',
 	failureRedirectPath: '/Login'
 })
-
-import App from './components/App';
-import CardGrid from './components/CardGrid';
-import JobContent from './components/JobContent';
-import Login from './components/Login';
-import Program from './components/forms/Program';
-import TechRequest from './components/forms/TechRequest';
-import { FormWrapper } from './components/FormWrapper/';
-
-import store, { history } from './Store';
 
 const router = (
 	<Provider store={store}>
@@ -34,13 +31,19 @@ const router = (
 				<Route path="/Home" component={Auth(CardGrid)} />
 				<Route path="job/:_job">
 					<IndexRoute component={Auth(JobContent)} />
+					{/* Porgams Routes */}
 					<Route path="New/Program" component={Auth(Program)} />
 					<Route path="View/Programs/:_id" component={Auth(Program)} />
 					<Route path="Edit/Programs/:_id" component={Auth(Program)} />
-					<Route path="Recap/:_id" component={Program} />
-					<Route path="New/TechRequest" component={FormWrapper(TechRequest)} />
-					<Route path="View/TechSupport/:_id" component={FormWrapper(TechRequest)} />
-					<Route path="Edit/TechSupport/:_id" component={FormWrapper(TechRequest)} />
+					<Route path="Recap/:_id" component={Auth(Program)} />
+					{/* TechRequest Routes */}
+					<Route path="New/TechRequest" component={Auth(TechRequest)} />
+					<Route path="View/TechSupport/:_id" component={Auth(TechRequest)} />
+					<Route path="Edit/TechSupport/:_id" component={Auth(TechRequest)} />
+					{/* HallCouncil Routes */}
+					<Route path="New/HallCouncil" component={Auth(Program)} />
+					<Route path="View/HallCouncil/:_id" component={Auth(Program)} />
+					<Route path="Edit/HallCouncil/:_id" component={Auth(Program)} />
 				</Route>
 			</Route>
 		</Router>

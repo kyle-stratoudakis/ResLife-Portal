@@ -1,7 +1,7 @@
 var nodemailer = require('nodemailer');
 var smtp = require('nodemailer-smtp-transport');
 var stub = require('nodemailer-stub-transport');
-var config = require('../../../config');
+var config = require('../../../../config');
 
 const sendMail = function(mailOptions) {
 	var smtpConfig = {

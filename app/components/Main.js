@@ -19,6 +19,7 @@ import { NavigationMoreVert } from 'material-ui/svg-icons';
 
 const Main = React.createClass({
 	renderJob (job, i) {
+		let endpoint = job.link +'/'+ this.props.jobs[i].endpoints[0].route +"&jwt="+ this.props.token.jwt +"&job="+ job._id;
 		return (
 			<div className="container-fluid" key={i}>
 				<br />
@@ -26,7 +27,7 @@ const Main = React.createClass({
 					title={job.title}
 					link={job.link}
 					performRouteAndUpdate={this.props.performRouteAndUpdate}
-					endpoint={this.props.jobs[i].endpoints[0].route + "&jwt=" + this.props.token.jwt + "&job=" + job._id}
+					endpoint={endpoint}
 					color={job.color}
 					titleColor={job.title_color}
 					height={2}

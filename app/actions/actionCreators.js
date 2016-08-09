@@ -104,7 +104,7 @@ export function logOut() {
 export function fetchJobs(jwt) {
 	return function (dispatch) {
 		dispatch(getJobs())
-		console.log('getJobs', backend + "/api/getJobs?jwt=" + jwt)
+		// console.log('getJobs', backend + "/api/getJobs?jwt=" + jwt)
 		return fetch(backend + "/api/getJobs?jwt=" + jwt)
 		.then(response => response.json())
 		.then(json => dispatch(receiveJobs(json)))

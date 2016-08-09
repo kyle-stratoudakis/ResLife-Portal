@@ -1,4 +1,4 @@
-var accessConfig = require('../../config');
+var accessConfig = require('../../../config');
 var jwt = require('jwt-simple');
 var jobModel = require('../model/job');
 
