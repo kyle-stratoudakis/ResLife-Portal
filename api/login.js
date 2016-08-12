@@ -1,7 +1,8 @@
 const route = require('express').Router();
 const bodyParser = require('body-parser');
-const activeDirectory = require('activeDirectory');
+const activedirectory = require('activedirectory');
 const jwt = require('jwt-simple');
+const mongoose = require('mongoose');
 const accessConfig = require('../../config');
 const userModel= require('./model/user');
 const jsonParser = bodyParser.json()
@@ -17,7 +18,7 @@ route.post('/', jsonParser, function(req, res) {
 		baseDN: accessConfig.baseDN,
 		url: accessConfig.url
 	}
-	var ad = new activeDirectory(adConfig)
+	var ad = new activedirectory(adConfig)
 
 	ad.authenticate(username+"@southernct.edu", password, function(err, auth) {
 		if (err && err.name === 'InvalidCredentialsError') {

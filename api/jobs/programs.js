@@ -170,10 +170,12 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 				program.approvedDate = new Date();
 				req.email = 'approved';
 			}
-			program.save();
-			req.workorder = program;
-			res.json({status: 'approve'});
-			next();
+			program.save()
+			.then(function(saved) {
+				req.workorder = saved;
+				res.json({status: 'approve'});
+				next();
+			})
 		}
 	});
 })
@@ -209,7 +211,26 @@ route.put('/put/return', jsonParser, m_role, function(req, res){
 			res.json({status: 'return'});
 		}
 	});
-})
+});
+
+route.put('/put/evaluation', jsonParser, m_role, function(req, res){
+	var decodedUser = req.decodedUser;
+	var id = req.body.id
+	var role = decodedUser.role;
+
+	programModel.findOne({ _id: id }, function(err, program) {
+		if(err) {
+			console.log(err);
+		}
+		else {
+			program.evaluation = data.evaluation;
+			program.attendance = data.attendance;
+			program.evaluated = decodedUser._id;
+			program.save();
+			res.json({status: 'evaluation'});
+		}
+	});
+});
 
 route.get('/get/details', function(req, res) {
 	if(req.query.jwt) {
@@ -240,6 +261,8 @@ route.get('/get/details', function(req, res) {
 				console.log(err);
 			}
 			else {
+				if(program === null) program = {};
+				console.log(program);
 				res.json(program);
 			}
 		});

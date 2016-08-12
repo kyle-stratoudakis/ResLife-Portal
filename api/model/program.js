@@ -43,7 +43,9 @@ var programSchema = new mongoose.Schema({
 	inFavor: String,
 	opposed: String,
 	abstained: String,
-	councilApproval: String
+	councilApproval: String,
+	evaluation: String,
+	attendance: String
 });
 
 module.exports = db.model('program', programSchema);

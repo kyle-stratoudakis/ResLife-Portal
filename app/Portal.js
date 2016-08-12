@@ -17,7 +17,7 @@ import JobContent from './components/JobContent';
 import TechRequest from './components/forms/TechRequest';
 
 const Auth = UserAuthWrapper({
-	authSelector: state => state.token,
+	authSelector: state => state.token.user,
 	redirectAction: routerActions.replace,
 	wrapperDisplayName: 'Auth',
 	failureRedirectPath: '/Login'

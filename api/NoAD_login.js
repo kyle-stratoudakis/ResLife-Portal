@@ -1,6 +1,7 @@
 const route = require('express').Router();
 const bodyParser = require('body-parser');
 const jwt = require('jwt-simple');
+const mongoose = require('mongoose');
 const accessConfig = require('../../config');
 const userModel= require('./model/user');
 const jsonParser = bodyParser.json()

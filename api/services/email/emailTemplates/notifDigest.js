@@ -69,7 +69,7 @@ const notifDigest = function(user, notifs) {
 								</tr>
 								<tr>
 								  <td>
-									Below is a table of pending programs awaitng your approval in the portal. Keep in mind a program may have been processed since this email was generated.
+									Below is a table of pending programs awaiting your approval in the portal. Keep in mind a program may have been processed since this email was generated.
 								  </td>
 								</tr>
 								<tr>
@@ -110,7 +110,7 @@ const notifDigest = function(user, notifs) {
 
 function generateTable(notifs) {
 	var w;
-	var host = config.mailLinkBack + ':' + config.frontendPORT;
+	var host = config.HOST;
 	var table = '';
 	notifs.map(function(notif) {
 		w = notif.workorder;
@@ -126,7 +126,7 @@ function generateTable(notifs) {
 					>
 					  <tr>
 						<td>
-						  <a href="http://`+host+`/job/Programs/View/Programs/`+w._id+`">View</a>
+						  <a href="https://`+host+`/job/Programs/View/Programs/`+w._id+`">View</a>
 						</td>
 					  </tr>
 					</table>

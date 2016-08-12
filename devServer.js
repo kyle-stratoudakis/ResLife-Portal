@@ -3,23 +3,16 @@ const express = require('express');
 const webpack = require('webpack');
 const config = require('./webpack.config.dev');
 const routes = require('./api/routes');
-const aggregate = require('./api/services/email/aggregate');
+const m_allowCORS = require('./api/middleware/allowCORS');
 const accessConfig = require('../config');
 const login = require('./api/login');
 const NoAD_login = require('./api/NoAD_login');
 const app = express();
 const compiler = webpack(config);
 
-var IP = accessConfig.frontendIP || 'localhost';
-var PORT = accessConfig.frontendPORT || '9080';
-
-const allowCORS_Middleware = function(req, res, next) {
-		// res.header('Access-Control-Allow-Origin', 'example.com');
-		res.header('Access-Control-Allow-Origin', '*');
-		res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-		res.header('Access-Control-Allow-Headers', 'Content-Type');
-		next();
-}
+const IP = accessConfig.IP || 'localhost';
+const PORT = accessConfig.PORT || '9080';
+const host = accessConfig.HOST || 'localhost:9080';
 
 app.use(require('webpack-dev-middleware')(compiler, {
 	noInfo: true,
@@ -27,6 +20,11 @@ app.use(require('webpack-dev-middleware')(compiler, {
 }));
 app.use(require('webpack-hot-middleware')(compiler));
 
+app.use(m_allowCORS);
+app.use('/login', NoAD_login)
+app.use('/api', routes)
+
+// Start server listening on configured IP:PORT
 app.listen(PORT, IP, function(err) {
   if (err) {
     console.log(err);
@@ -35,28 +33,17 @@ app.listen(PORT, IP, function(err) {
   console.log('Listening at ' + IP + ':' + PORT);
 });
 
-app.use(allowCORS_Middleware);
-app.use('/login', NoAD_login)
-app.use('/api', routes)
-
-
-app.get('/aggregateNotifs', function(req, res) {
-	if(req.query) {
-		var currentHour = parseInt(req.query.hour, 10);
-		aggregate(currentHour);
-		res.sendStatus(200);
-	}
+// Redirect away from blank root route
+app.get('/', function(req, res) {
+	res.redirect('https://'+host+'/Home');
 });
 
-// app.get('/api/pdf', function(req, res) {
-// 	if(req.query) {
-// 		if(req.query.form = 'p-card') {
-// 			res.sendFile(path.join(__dirname, './services/email/forms/pcard_form.pdf'));
-// 		}
-// 	}
-// });
+// Serves image for tab and shortcut icon
+app.get('/favicon', function(req, res) {
+	res.sendFile(path.join(__dirname, './app/data/residence-life-logo@96x96.png'));
+});
 
-// Universal route serves React App
+// Wildcard route serves React App
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

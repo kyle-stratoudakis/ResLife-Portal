@@ -36,7 +36,7 @@ const TrackProgram = React.createClass({
 						<br />
 						{workorder.checked.name}
 						<br />
-						{workorder.checkedDate ? this.getDate(workorder.submittedDate) : ''}
+						{workorder.checkedDate ? this.getDate(workorder.checkedDate) : ''}
 					</div>
 				)
 			}
@@ -52,7 +52,7 @@ const TrackProgram = React.createClass({
 						<br />
 						{workorder.reviewed.name}
 						<br />
-						{workorder.reviewedDate ? this.getDate(workorder.submittedDate) : ''}
+						{workorder.reviewedDate ? this.getDate(workorder.reviewedDate) : ''}
 					</div>
 				)
 			}
@@ -68,7 +68,7 @@ const TrackProgram = React.createClass({
 						<br />
 						{workorder.approved.name}
 						<br />
-						{workorder.approvedDate ? this.getDate(workorder.submittedDate) : ''}
+						{workorder.approvedDate ? this.getDate(workorder.approvedDate) : ''}
 					</div>
 				)
 			}
@@ -96,12 +96,12 @@ const TrackProgram = React.createClass({
 						</StepLabel>
 					</Step>
 					<Step>
-						<StepLabel icon={(workorder.reviewed ? <ActionAssignmentTurnedIn color={lightGreen500} /> : <ActionAssignmentInd color={grey500} />)}>
+						<StepLabel icon={(workorder.reviewed ? approved : pending)}>
 							{this.renderStatus('reviewed')}
 						</StepLabel>
 					</Step>
 					<Step>
-						<StepLabel icon={(workorder.approved ? <ActionAssignmentTurnedIn color={lightGreen500} /> : <ActionAssignmentInd color={grey500} />)}>
+						<StepLabel icon={(workorder.approved ? approved : pending)}>
 							{this.renderStatus('approved')}
 						</StepLabel>
 					</Step>

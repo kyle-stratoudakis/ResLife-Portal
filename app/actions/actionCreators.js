@@ -1,39 +1,8 @@
 import { push } from 'react-router-redux';
 import CryptoJS from 'crypto-js';
-import { backendIP, backendPORT } from '../../../config';
+import { HOST } from '../../../config';
 
-const backend = 'http://'+backendIP+':'+backendPORT;
-
-export function loggingIn() {
-	return {
-		type: 'LOGGING_IN'
-	}
-}
-export function loggingOut() {
-	return {
-		type: 'LOGGING_OUT'
-	}
-}
-export function getJobs() {
-	return {
-		type: 'GET_JOBS'
-	}
-}
-export function getWorkorders() {
-	return {
-		type: 'GET_WORKORDERS'
-	}
-}
-export function getDetails(id) {
-	return {
-		type: 'GET_DETAILS'
-	}
-}
-export function toggleNav() {
-	return {
-		type: 'TOGGLE_NAV'
-	}
-}
+const host = 'http://' + HOST;
 
 export function performRoute(route) {
 	return function(dispatch) {
@@ -54,7 +23,7 @@ export function login(data, redirect) {
 		var json = JSON.stringify({
 			...data
 		});
-		return fetch(backend + "/login", {
+		return fetch(host + "/login", {
 			method: 'post',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -104,8 +73,8 @@ export function logOut() {
 export function fetchJobs(jwt) {
 	return function (dispatch) {
 		dispatch(getJobs())
-		// console.log('getJobs', backend + "/api/getJobs?jwt=" + jwt)
-		return fetch(backend + "/api/getJobs?jwt=" + jwt)
+		// console.log('getJobs', host + "/api/getJobs?jwt=" + jwt)
+		return fetch(host + "/api/getJobs?jwt=" + jwt)
 		.then(response => response.json())
 		.then(json => dispatch(receiveJobs(json)))
 	}
@@ -121,8 +90,8 @@ export function receiveJobs(jobs) {
 export function fetchWorkorders(query) {
 	return function (dispatch) {
 		dispatch(getWorkorders())
-		// console.log(backend + "/api/" + query)
-		return fetch(backend + "/api/" + query)
+		// console.log(host + "/api/" + query)
+		return fetch(host + "/api/" + query)
 		.then(response => response.json())
 		.then(json => dispatch(receiveWorkorders(json)))
 		.catch((err, json) => console.log(err, json))
@@ -140,7 +109,8 @@ export function receiveWorkorders(workOrders) {
 export function fetchDetails(location, query) {
 	return function (dispatch) {
 		dispatch(getDetails())
-		return fetch(backend + "/api/" + location + "/get/details" + query)
+		console.log(host + "/api/" + location + "/get/details" + query)
+		return fetch(host + "/api/" + location + "/get/details" + query)
 		.then(response => response.json())
 		.then(json => dispatch(receiveDetails(json)))
 		.catch(err => console.log(err))
@@ -163,7 +133,7 @@ export function submitForm(jwt, location, jobId, data) {
 				jobId,
 				data
 			});
-		return fetch(backend + "/api/" + location + "/post/create", {
+		return fetch(host + "/api/" + location + "/post/create", {
 			method: 'post',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -184,7 +154,7 @@ export function updateForm(jwt, location, formId, jobId, data) {
 				jobId,
 				data
 			});
-		return fetch(backend + "/api/" + location + "/put/update", {
+		return fetch(host + "/api/" + location + "/put/update", {
 			method: 'put',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -201,7 +171,7 @@ export function modifyAction(endpoint, data, update) {
 	return function (dispatch) {
 		dispatch(snackbarAction(endpoint))
 		var json = JSON.stringify(data);
-		return fetch(backend + "/api/" + endpoint, {
+		return fetch(host + "/api/" + endpoint, {
 			method: 'put',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -217,7 +187,7 @@ export function modifyAction(endpoint, data, update) {
 export function workorderAction(endpoint, data, update) {
 	return function (dispatch) {
 		var json = JSON.stringify(data);
-		return fetch(backend + "/api/" + endpoint, {
+		return fetch(host + "/api/" + endpoint, {
 			method: 'put',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -241,5 +211,36 @@ export function changeTab(value) {
 	return {
 		type: 'CHANGE_TAB',
 		value
+	}
+}
+
+export function loggingIn() {
+	return {
+		type: 'LOGGING_IN'
+	}
+}
+export function loggingOut() {
+	return {
+		type: 'LOGGING_OUT'
+	}
+}
+export function getJobs() {
+	return {
+		type: 'GET_JOBS'
+	}
+}
+export function getWorkorders() {
+	return {
+		type: 'GET_WORKORDERS'
+	}
+}
+export function getDetails(id) {
+	return {
+		type: 'GET_DETAILS'
+	}
+}
+export function toggleNav() {
+	return {
+		type: 'TOGGLE_NAV'
 	}
 }

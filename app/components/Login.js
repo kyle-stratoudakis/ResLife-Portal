@@ -34,7 +34,10 @@ const Login = React.createClass({
 			if(message === 'Incorrect Username or Password') {
 				return (
 					<div style={{color: red600}}>
+						<br />
 						{message}
+						<br />
+						<a target="_blank" href="https://pwreset.southernct.edu/_layouts/PG/login.aspx">Forgot Password?</a>
 					</div>
 				)
 			}
@@ -127,6 +130,7 @@ const Login = React.createClass({
 									/>
 									<br />
 									{this.handleMessage()}
+									<br />
 									<div className='row'>
 										<FlatButton label='Log In' type='submit' backgroundColor={'#E0E0E0'} hoverColor={'#BDBDBD'}/>
 									</div>

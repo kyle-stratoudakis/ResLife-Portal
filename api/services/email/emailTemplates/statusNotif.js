@@ -1,6 +1,6 @@
 var config = require('../../../../../config');
 const statusNotif = function(status, wo) {
-	var host = config.mailLinkBack + ':' + config.frontendPORT;
+	var host = config.HOST;
 	var message;
 	if(status === 'checked') {
 		message = 'approved by your hall director.'

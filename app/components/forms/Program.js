@@ -59,6 +59,8 @@ class Program extends Component{
 			opposed: '',
 			abstained: '',
 			councilApproval: '',
+			evaluation: '',
+			attendance: '',
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
@@ -115,6 +117,8 @@ class Program extends Component{
 				opposed: wo.opposed || '',
 				abstained: wo.abstained || '',
 				councilApproval: wo.councilApproval || '',
+				evaluation: wo.evaluation || '',
+				attendance: wo.attendance || '',
 				label: (wo._id ? 'Edit' : 'Submit')
 			})
 		}
@@ -133,6 +137,7 @@ class Program extends Component{
 	}
 
 	getActionButtons() {
+		console.log('getActionButtons')
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
@@ -144,6 +149,7 @@ class Program extends Component{
 			jobId: jobId,
 			jwt: this.props.token.jwt
 		}
+		console.log(data)
 		let disabled;
 		if(!(role === 'submitter') && this.props.details._id) {
 			if(role === 'hall_director'){

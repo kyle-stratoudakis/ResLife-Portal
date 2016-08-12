@@ -1,6 +1,5 @@
 var juice = require('juice');
 var fs = require('fs'); 
-var xfdf = require('xfdf')
 var mailer = require('./mailer');
 var notifModel= require('../../model/notification');
 var programModel= require('../../model/program');
@@ -8,6 +7,7 @@ var userModel = require('../../model/user');
 var confirmNew = require('./emailTemplates/confirmNew');
 var statusNotif = require('./emailTemplates/statusNotif');
 var pCardForm = require('./emailTemplates/pCardForm');
+var pcardAuthForm = require('./emailTemplates/pcardAuthForm');
 
 const notification_middleware = function(req, res, next) {
 	if(!req.body){
@@ -41,48 +41,57 @@ const notification_middleware = function(req, res, next) {
 		template = statusNotif('reviewer approved', wo);
 	}
 	if(req.email === 'approved') {
-		template = pCardForm(wo);
-		// mailOptions.attachments = [{ filename: 'P-Card Form.pdf', path: './services/MailServices/forms/pcard_form.pdf' }];
-		programModel.findById(wo._id)
-		.select('user title date time name email location funding')
+		var email = pCardForm(wo);
+		programModel.findOne({ _id: wo._id })
 		.populate({
-			path: 'user',
-			select: 'primary_contact -_id',
+			path: 'checked',
+			select: 'name -_id',
+			model: userModel
+		})
+		.populate({
+			path: 'reviewed',
+			select: 'name -_id',
+			model: userModel
+		})
+		.populate({
+			path: 'approved',
+			select: 'name -_id',
 			model: userModel
 		})
 		.exec(function(err, fields) {
-			var formFields = { 
-				fields: {
-					programTitle: fields.title,
-					eventDateTime: fields.date.toUTCString(),
-					eventLocation: fields.location,
-					amountRequested: fields.funding,
-					pCardAmount: fields.funding,
-					hootlootAmount: fields.funding,
-					firstName: fields.name,
-					lastName: fields.name,
-					email: fields.email,
-					phone: fields.user.primary_contact
+			if(!err) {
+				try {
+					mailOptions.attachments = [{ filename: 'P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 				}
+				catch(ex) {
+					console.log('pcard auth attachment error: ' + ex);
+				}
+
+				juice.juiceResources(email, {}, function(err, inlined) {
+					if(err) {
+						console.log(err)
+					}
+					else {
+						mailOptions.html = inlined;
+						mailer(mailOptions);
+					}
+				});
 			}
-			var builder = new xfdf({ pdf: 'https://prd-stuaff01.southernct.edu/residencelife/reslife/forms/pcard_form.pdf' });
-			builder.fromJSON(formFields);
-			fs.writeFile('p-card.xfdf', builder.generate());
-			// console.log(builder.generate());
 		})
-		// mailOptions.attachments = [{ filename: 'P-Card Form.pdf', content:  }];
 	}
 
 	// Inline CSS for HTML mail and send email
-	juice.juiceResources(template, {}, function(err, inlined) {
-		if(err) {
-			console.log(err)
-		}
-		else {
-			mailOptions.html = inlined;
-			mailer(mailOptions);
-		}
-	});
+	if(template) {
+		juice.juiceResources(template, {}, function(err, inlined) {
+			if(err) {
+				console.log(err)
+			}
+			else {
+				mailOptions.html = inlined;
+				mailer(mailOptions);
+			}
+		});	
+	}
 
 	// Check notification type and register notification
 	if(req.notif === 'new') {
