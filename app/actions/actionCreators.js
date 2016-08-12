@@ -1,8 +1,8 @@
 import { push } from 'react-router-redux';
 import CryptoJS from 'crypto-js';
-import { HOST } from '../../../config';
+import { PROTOCOL, HOST } from '../../../config';
 
-const host = 'http://' + HOST;
+const host = PROTOCOL + HOST;
 
 export function performRoute(route) {
 	return function(dispatch) {

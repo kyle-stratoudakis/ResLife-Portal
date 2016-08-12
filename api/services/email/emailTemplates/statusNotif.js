@@ -1,6 +1,6 @@
 var config = require('../../../../../config');
 const statusNotif = function(status, wo) {
-	var host = config.HOST;
+	var host = config.PROTOCOL + config.HOST;
 	var message;
 	if(status === 'checked') {
 		message = 'approved by your hall director.'
@@ -99,7 +99,7 @@ const statusNotif = function(status, wo) {
 									>
 									  <tr>
 										<td>
-										  <a href="http://`+host+`/job/Programs/View/Programs/`+wo._id+`">Access Program</a>
+										  <a href="`+host+`/job/Programs/View/Programs/`+wo._id+`">Access Program</a>
 										</td>
 									  </tr>
 									</table>

@@ -77,7 +77,7 @@ const ContentRow = React.createClass({
 			return (
 				<div>
 					{description.substring(0, 120)}
-					<Link to={'/job/'+this.props.location+'/View/'+_id}> ...</Link>
+					<Link to={'/job/'+this.props.location+'/View/'+this.props.location+'/'+_id}>...</Link>
 				</div>
 			)	
 		}

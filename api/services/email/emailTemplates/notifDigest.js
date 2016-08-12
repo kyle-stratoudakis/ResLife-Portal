@@ -110,7 +110,7 @@ const notifDigest = function(user, notifs) {
 
 function generateTable(notifs) {
 	var w;
-	var host = config.HOST;
+	var host = config.PROTOCOL + config.HOST;
 	var table = '';
 	notifs.map(function(notif) {
 		w = notif.workorder;
@@ -126,7 +126,7 @@ function generateTable(notifs) {
 					>
 					  <tr>
 						<td>
-						  <a href="https://`+host+`/job/Programs/View/Programs/`+w._id+`">View</a>
+						  <a href="`+host+`/job/Programs/View/Programs/`+w._id+`">View</a>
 						</td>
 					  </tr>
 					</table>

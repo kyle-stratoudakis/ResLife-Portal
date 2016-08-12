@@ -1,6 +1,6 @@
 var config = require('../../../../../config');
 const confirmNew = function(wo) {
-	var host = config.HOST;
+	var host = config.PROTOCOL + config.HOST;
 	return (
 		`<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
 		<html xmlns='http://www.w3.org/1999/xhtml'>
@@ -83,7 +83,7 @@ const confirmNew = function(wo) {
 									>
 									  <tr>
 										<td>
-										  <a href="http://`+host+`/job/Programs/View/Programs/`+wo._id+`">Access Program</a>
+										  <a href="`+host+`/job/Programs/View/Programs/`+wo._id+`">Access Program</a>
 										</td>
 									  </tr>
 									</table>

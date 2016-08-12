@@ -1,20 +1,17 @@
 {
-  "name": "Res-Life-Portal",
+  "name": "ResLife-Portal",
   "version": "0.0.2",
-  "description": ":) ",
+  "description": "SCSU Office of Residence Life Workflow Portal",
   "scripts": {
     "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js",
     "build": "npm run clean && npm run build:webpack",
-    "test": "NODE_ENV=production mocha './tests/**/*.spec.js' --compilers js:babel-core/register",
-    "clean": "rimraf dist",
-    "start": "node devServer.js",
-    "tunnel": "browser-sync start --proxy localhost:7770 --tunnel wesbos"
+    "start": "node devServer.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kyle-stratoudakis/ResLife-frontend"
+    "url": "https://github.com/kyle-stratoudakis/ResLife-Portal"
   },
-  "author": "Kyle Stratoudakis, Utibeabasi Udo-Okon",
+  "author": "Kyle Stratoudakis",
   "license": "MIT",
   "dependencies": {
     "activedirectory": "^0.7.2",
@@ -30,7 +27,6 @@
     "babel-preset-stage-0": "^6.5.0",
     "babel-runtime": "^6.9.2",
     "body-parser": "^1.15.2",
-    "crypto-js": "^3.1.6",
     "css-loader": "^0.23.1",
     "eslint": "^2.9.0",
     "eslint-plugin-babel": "^3.2.0",
@@ -69,13 +65,11 @@
     "url-loader": "^0.5.7",
     "webpack": "^1.13.0",
     "webpack-dev-middleware": "^1.6.1",
-    "webpack-hot-middleware": "^2.10.0",
-    "xfdf": "^0.2.0"
+    "webpack-hot-middleware": "^2.10.0"
   },
   "devDependencies": {
     "expect": "^1.18.0",
     "expect-jsx": "^2.5.1",
-    "material-ui": "^0.14.4",
     "mocha": "^2.4.5",
     "react-addons-test-utils": "^15.0.2",
     "react-dropzone": "^3.4.0",
