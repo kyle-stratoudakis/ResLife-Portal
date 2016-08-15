@@ -12,7 +12,7 @@ routes.use('/hallcouncil', hallcouncil);
 routes.use('/techsupport', techsupport);
 
 routes.get('/aggregateNotifs', function(req, res) {
-	if(req.query) {
+	if(req.query.hour) {
 		var currentHour = parseInt(req.query.hour, 10);
 		aggregate(currentHour);
 		res.sendStatus(200);

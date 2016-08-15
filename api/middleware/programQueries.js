@@ -18,7 +18,8 @@ const programQueries = function(req, res, next) {
 				'user': userId,
 				'checked': { $ne: null },
 				'reviewed': { $ne: null },
-				'approved': { $ne: null }
+				'approved': { $ne: null },
+				'evaluated': null
 			};
 		}
 		else if(status === 'completed') {

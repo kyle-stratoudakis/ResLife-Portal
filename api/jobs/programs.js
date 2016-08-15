@@ -65,7 +65,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 	if(data.councilOpposed) program.councilOpposed = data.councilOpposed;
 	if(data.councilAbstained) program.councilAbstained = data.councilAbstained;
 	if(data.councilApproval) program.councilApproval = data.councilApproval;
-	
+
 	if(data.evalTime) program.evalTime = data.evalTime;
 	if(data.evalAttendance) program.evalAttendance = data.evalAttendance;
 	if(data.evalCost) program.evalCost = data.evalCost;
@@ -240,25 +240,6 @@ route.put('/put/return', jsonParser, m_role, function(req, res){
 	});
 });
 
-route.put('/put/evaluation', jsonParser, m_role, function(req, res){
-	var decodedUser = req.decodedUser;
-	var id = req.body.id
-	var role = decodedUser.role;
-
-	programModel.findOne({ _id: id }, function(err, program) {
-		if(err) {
-			console.log(err);
-		}
-		else {
-			program.evaluation = data.evaluation;
-			program.attendance = data.attendance;
-			program.evaluated = decodedUser._id;
-			program.save();
-			res.json({status: 'evaluation'});
-		}
-	});
-});
-
 route.get('/get/details', function(req, res) {
 	if(req.query.jwt) {
 		var id = req.query.id;
@@ -289,7 +270,6 @@ route.get('/get/details', function(req, res) {
 			}
 			else {
 				if(program === null) program = {};
-				console.log(program);
 				res.json(program);
 			}
 		});

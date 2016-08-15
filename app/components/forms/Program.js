@@ -454,7 +454,6 @@ class Program extends Component{
 							floatingLabelText='End Time'
 							value={this.state.evalTime}
 						/>
-
 						<FormsyText
 							name='evalAttendance'
 							required
@@ -463,7 +462,6 @@ class Program extends Component{
 							floatingLabelText='Attendance'
 							value={this.state.evalAttendance}
 						/>
-
 						<FormsyText
 							name='evalCost'
 							required
@@ -472,7 +470,6 @@ class Program extends Component{
 							floatingLabelText='Actual Cost'
 							value={this.state.evalCost}
 						/>
-
 						<Subheader>P-card and Reciepts Returned</Subheader>
 						<FormsyRadioGroup name='evalCardReturn' defaultSelected={this.state.evalCardReturn} required>
 							<FormsyRadio
@@ -484,7 +481,6 @@ class Program extends Component{
 								label='Yes'
 							/>
 						</FormsyRadioGroup>
-
 						<FormsyText
 							name='evalOutcomes'
 							required
@@ -494,7 +490,6 @@ class Program extends Component{
 							floatingLabelText='Achieved Outcomes'
 							value={this.state.evalOutcomes}
 						/>
-
 						<FormsyText
 							name='evalStrengths'
 							required
@@ -504,7 +499,6 @@ class Program extends Component{
 							floatingLabelText='Strengths'
 							value={this.state.evalStrengths}
 						/>
-
 						<FormsyText
 							name='evalWeaknesses'
 							required
@@ -514,7 +508,6 @@ class Program extends Component{
 							floatingLabelText='Weaknesses'
 							value={this.state.evalWeaknesses}
 						/>
-
 						<FormsyText
 							name='evalSuggestions'
 							required
@@ -524,7 +517,6 @@ class Program extends Component{
 							floatingLabelText='Suggestions for Improvement'
 							value={this.state.evalSuggestions}
 						/>
-
 						<FormsyText
 							name='evalOther'
 							fullWidth={true}
@@ -534,7 +526,6 @@ class Program extends Component{
 							value={this.state.evalOther}
 						/>
 					</div>
-
 				</div>
 
 			)
@@ -562,7 +553,6 @@ class Program extends Component{
 				>
 					<Divider />
 					<Subheader style={ {paddingBottom: '0.25em'} }>Basic Information</Subheader>
-
 					<div style={centerStyle}>
 						{this.renderSearchId()}
 						<FormsyText
@@ -574,7 +564,6 @@ class Program extends Component{
 							floatingLabelText='Title'
 							value={this.state.title}
 						/>
-
 						<FormsyDate
 							name='date'
 							required
@@ -586,7 +575,6 @@ class Program extends Component{
 							floatingLabelText='Date'
 							value={this.state.date}
 						/>
-
 						<FormsyTime
 							name='time'
 							required
@@ -595,7 +583,6 @@ class Program extends Component{
 							floatingLabelText='Time'
 							value={this.state.time}
 						/>
-
 						<FormsySelect
 							name='type'
 							required
@@ -627,7 +614,6 @@ class Program extends Component{
 
 					<Divider />
 					<Subheader>Program Details</Subheader>
-
 					<div style={centerStyle}>
 						<FormsyText
 							name='location'
@@ -638,7 +624,6 @@ class Program extends Component{
 							floatingLabelText='Location'
 							value={this.state.location}
 						/>
-
 						<FormsyText
 							name='outcomes'
 							required
@@ -648,7 +633,6 @@ class Program extends Component{
 							floatingLabelText='Outcomes'
 							value={this.state.outcomes}
 						/>
-
 						<FormsyText
 							name='description'
 							required
@@ -658,10 +642,8 @@ class Program extends Component{
 							floatingLabelText='Description'
 							value={this.state.description}
 						/>
-
 						<FormsyText
 							name='department'
-							// required
 							fullWidth={true}
 							multiLine={true}
 							hintText='Collaborating Department?'
@@ -672,7 +654,6 @@ class Program extends Component{
 
 					<Divider />
 					<Subheader>Funding</Subheader>
-
 					<div style={centerStyle}>
 						{this.state.items.map(this.renderItem)}
 						<FlatButton
@@ -686,7 +667,6 @@ class Program extends Component{
 
 					<Divider />
 					<Subheader>Staff</Subheader>
-
 					<div style={centerStyle}>
 						{this.state.staff.map(this.renderStaff)}
 						<FlatButton

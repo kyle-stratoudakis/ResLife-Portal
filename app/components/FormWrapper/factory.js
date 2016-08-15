@@ -1,6 +1,10 @@
 import hoistStatics from 'hoist-non-react-statics';
-import { Paper, IconMenu, MenuItem, FontIcon, IconButton, RaisedButton } from 'material-ui';
-import TrackProgram from '../TrackProgram' ;
+import Paper from 'material-ui/Paper'
+import IconMenu from 'material-ui/IconMenu'
+import MenuItem from 'material-ui/MenuItem'
+import FontIcon from 'material-ui/FontIcon'
+import IconButton from 'material-ui/IconButton'
+import RaisedButton from 'material-ui/RaisedButton'
 
 export default function factory(React, empty) {
 	const { Component } = React
@@ -37,13 +41,26 @@ export default function factory(React, empty) {
 
 			getTitle() {
 				let location = this.props.params['_job'];
+				let action = this.props.location.pathname.split('/')[3];
 				let title;
+
+				if(action === 'New') {
+					title = 'New';
+				}
+				else if(action === 'View') {
+					title = 'View / Edit';
+				}
+				else if(action === 'Evaluate') {
+					title = 'Evaluate';
+				}
+
 				if(location === 'Programs') {
-					title = (this.props.params['_id'] ? 'View / Edit Program' : 'New Program')
+					title += ' Program';
 				}
 				else if(location === 'TechSupport') {
-					title = (this.props.params['_id'] ? 'View / Edit Tech Request' : 'New Tech Request')
+					title += ' Tech Request';
 				}
+
 				return title
 			}
 

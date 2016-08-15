@@ -31,11 +31,11 @@ const router = (
 				<Route path="/Home" component={Auth(CardGrid)} />
 				<Route path="job/:_job">
 					<IndexRoute component={Auth(JobContent)} />
-					{/* Porgams Routes */}
+					{/* Progams Routes */}
 					<Route path="New/Program" component={Auth(Program)} />
 					<Route path="View/Programs/:_id" component={Auth(Program)} />
 					<Route path="Edit/Programs/:_id" component={Auth(Program)} />
-					<Route path="Recap/:_id" component={Auth(Program)} />
+					<Route path="Evaluate/Programs/:_id" component={Auth(Program)} />
 					{/* TechRequest Routes */}
 					<Route path="New/TechRequest" component={Auth(TechRequest)} />
 					<Route path="View/TechSupport/:_id" component={Auth(TechRequest)} />

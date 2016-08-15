@@ -9,7 +9,7 @@ const jsonParser = bodyParser.json()
 
 route.post('/', jsonParser, function(req, res) {
 	var data = req.body;
-	var username = data.username;
+	var username = data.username.split('@')[0].toLowerCase();
 	var password = data.password;
 	var payload;
 	var token;
@@ -25,7 +25,7 @@ route.post('/', jsonParser, function(req, res) {
 			res.json({message: 'Incorrect Username or Password'});
 		}
 		else if (auth) {
-			userModel.findOne({'username': data.username}, function(err, user){
+			userModel.findOne({'username': username}, function(err, user){
 				if(err) { console.log('mongoose ' + err) }
 				else if(user) { // Known user logged in again
 					token = jwt.encode(user, accessConfig.secret);
@@ -41,9 +41,9 @@ route.post('/', jsonParser, function(req, res) {
 				}
 				else { // new user with details
 					var newUser = userModel({
-						username: data.username,
+						username: username,
 						name: data.name,
-						email: data.username+'@southernct.edu',
+						email: username+'@southernct.edu',
 						primary_contact: data.primary_contact,
 						hall: data.hall,
 						jobs: [
