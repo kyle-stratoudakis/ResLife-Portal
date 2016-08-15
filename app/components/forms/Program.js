@@ -33,6 +33,7 @@ class Program extends Component{
 		this.renderSearchId = this.renderSearchId.bind(this);
 		this.formatDate = this.formatDate.bind(this);
 		this.renderTypeContent = this.renderTypeContent.bind(this);
+		this.renderEvaluation = this.renderEvaluation.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -53,26 +54,27 @@ class Program extends Component{
 			reviewed: null,
 			approved: null,
 			councilDate: {},
-			motionedBy: '',
-			secondedBy: '',
-			inFavor: '',
-			opposed: '',
-			abstained: '',
+			councilMotioned: '',
+			councilSeconded: '',
+			councilFavor: '',
+			councilOpposed: '',
+			councilAbstained: '',
 			councilApproval: '',
-			evaluation: '',
-			attendance: '',
+			evalTime: {},
+			evalAttendance: '',
+			evalCost: '',
+			evalCardReturn: '',
+			evalOutcomes: '',
+			evalStrengths: '',
+			evalWeaknesses: '',
+			evalSuggestions: '',
+			evalOther: '',
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
 					marginLeft: 'auto', 
 					marginRight: 'auto', 
 					width: '50%'
-				},
-				switchStyle: {
-					marginBottom: 16,
-				},
-				submitStyle: {
-					marginTop: 32,
 				},
 				listStyle: {
 					marginLeft: '1em',
@@ -111,14 +113,23 @@ class Program extends Component{
 				reviewed: wo.reviewed,
 				approved: wo.approved,
 				councilDate: (wo.councilDate ? new Date(wo.councilDate) : {}),
-				motionedBy: wo.motionedBy || '',
-				secondedBy: wo.secondedBy || '',
-				inFavor: wo.inFavor || '',
-				opposed: wo.opposed || '',
-				abstained: wo.abstained || '',
+				councilMotioned: wo.councilMotioned || '',
+				councilSeconded: wo.councilSeconded || '',
+				councilFavor: wo.councilFavor || '',
+				councilOpposed: wo.councilOpposed || '',
+				councilAbstained: wo.councilAbstained || '',
 				councilApproval: wo.councilApproval || '',
 				evaluation: wo.evaluation || '',
 				attendance: wo.attendance || '',
+				evalTime: (wo.evalTime ? new Date(wo.evalTime) : {}),
+				evalAttendance: wo.evalAttendance || '',
+				evalCost: wo.evalCost || '',
+				evalCardReturn: wo.evalCardReturn || '',
+				evalOutcomes: wo.evalOutcomes || '',
+				evalStrengths: wo.evalStrengths || '',
+				evalWeaknesses: wo.evalWeaknesses || '',
+				evalSuggestions: wo.evalSuggestions || '',
+				evalOther: wo.evalOther || '',
 				label: (wo._id ? 'Edit' : 'Submit')
 			})
 		}
@@ -137,7 +148,6 @@ class Program extends Component{
 	}
 
 	getActionButtons() {
-		console.log('getActionButtons')
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
@@ -149,7 +159,6 @@ class Program extends Component{
 			jobId: jobId,
 			jwt: this.props.token.jwt
 		}
-		console.log(data)
 		let disabled;
 		if(!(role === 'submitter') && this.props.details._id) {
 			if(role === 'hall_director'){
@@ -367,49 +376,49 @@ class Program extends Component{
 								value={this.state.councilDate}
 							/>
 							<FormsyText
-								name='motionedBy'
+								name='councilMotioned'
 								required
 								fullWidth={true}
 								multiLine={true}
 								hintText='Who initiated this resolution'
 								floatingLabelText='Motioned By'
-								value={this.state.motionedBy}
+								value={this.state.councilMotioned}
 							/>
 							<FormsyText
-								name='secondedBy'
+								name='councilSeconded'
 								required
 								fullWidth={true}
 								multiLine={true}
 								hintText='Who seconded this resolution'
 								floatingLabelText='Seconded By'
-								value={this.state.secondedBy}
+								value={this.state.councilSeconded}
 							/>
 							<FormsyText
-								name='inFavor'
+								name='councilFavor'
 								required
 								validation='isNumeric'
 								validationError='Please use only numbers'
 								hintText='Number of members in Favor'
 								floatingLabelText='Number In Favor'
-								value={this.state.inFavor}
+								value={this.state.councilFavor}
 							/>
 							<FormsyText
-								name='opposed'
+								name='councilOpposed'
 								required
 								validation='isNumeric'
 								validationError='Please use only numbers'
 								hintText='Number of members opposed'
 								floatingLabelText='Number Opposed'
-								value={this.state.opposed}
+								value={this.state.councilOpposed}
 							/>
 							<FormsyText
-								name='abstained'
+								name='councilAbstained'
 								required
 								validation='isNumeric'
 								validationError='Please use only numbers'
 								hintText='Number of members abstained'
 								floatingLabelText='Number abstained'
-								value={this.state.abstained}
+								value={this.state.councilAbstained}
 							/>
 							<Subheader>Council Approval</Subheader>
 							<FormsyRadioGroup name='councilApproval' defaultSelected={this.state.councilApproval} required>
@@ -426,6 +435,109 @@ class Program extends Component{
 					</div>
 				)
 			}
+		}
+	}
+
+	renderEvaluation () {
+		let { centerStyle } = this.state.styles;
+		if(this.refs.form && this.state.approved) {
+			return (
+				<div>
+					<Divider />
+					<Subheader>Program Evaluation</Subheader>
+					<div style={centerStyle}>
+						<FormsyTime
+							name='evalTime'
+							required
+							fullWidth={true}
+							hintText='When did the event end?'
+							floatingLabelText='End Time'
+							value={this.state.evalTime}
+						/>
+
+						<FormsyText
+							name='evalAttendance'
+							required
+							fullWidth={true}
+							hintText='How many students attended?'
+							floatingLabelText='Attendance'
+							value={this.state.evalAttendance}
+						/>
+
+						<FormsyText
+							name='evalCost'
+							required
+							fullWidth={true}
+							hintText='How much did you actually spend?'
+							floatingLabelText='Actual Cost'
+							value={this.state.evalCost}
+						/>
+
+						<Subheader>P-card and Reciepts Returned</Subheader>
+						<FormsyRadioGroup name='evalCardReturn' defaultSelected={this.state.evalCardReturn} required>
+							<FormsyRadio
+								value='no'
+								label='No'
+							/>
+							<FormsyRadio
+								value='yes'
+								label='Yes'
+							/>
+						</FormsyRadioGroup>
+
+						<FormsyText
+							name='evalOutcomes'
+							required
+							fullWidth={true}
+							multiLine={true}
+							hintText='What learning outcomes were achieved?'
+							floatingLabelText='Achieved Outcomes'
+							value={this.state.evalOutcomes}
+						/>
+
+						<FormsyText
+							name='evalStrengths'
+							required
+							fullWidth={true}
+							multiLine={true}
+							hintText='What were the programs strengths?'
+							floatingLabelText='Strengths'
+							value={this.state.evalStrengths}
+						/>
+
+						<FormsyText
+							name='evalWeaknesses'
+							required
+							fullWidth={true}
+							multiLine={true}
+							hintText='What were the programs weaknesses?'
+							floatingLabelText='Weaknesses'
+							value={this.state.evalWeaknesses}
+						/>
+
+						<FormsyText
+							name='evalSuggestions'
+							required
+							fullWidth={true}
+							multiLine={true}
+							hintText='What could improve this program for if done again?'
+							floatingLabelText='Suggestions for Improvement'
+							value={this.state.evalSuggestions}
+						/>
+
+						<FormsyText
+							name='evalOther'
+							fullWidth={true}
+							multiLine={true}
+							hintText='Other Comments or Concerns?'
+							floatingLabelText='Other Comments or Concerns (0ptional)'
+							value={this.state.evalOther}
+						/>
+					</div>
+
+				</div>
+
+			)
 		}
 	}
 
@@ -584,6 +696,8 @@ class Program extends Component{
 							onClick={this.addJSONStaff.bind(this)}
 						/>
 					</div>
+
+					{this.renderEvaluation()}
 
 					<Divider />
 

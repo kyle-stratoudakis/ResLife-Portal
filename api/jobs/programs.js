@@ -43,27 +43,38 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		type: data.type,
 		date: data.date,
 		time: data.time,
-		items: JSON.stringify(data.items),
-		staff: JSON.stringify(data.staff),
-		department: data.department,
 		location: data.location,
 		department: data.department,
 		outcomes: data.outcomes,
 		description: data.description,
-		funding: data.funding || null,
-		fundingType: data.fundingType || '',
-		councilDate: data.councilDate || '',
-		motionedBy: data.motionedBy || '',
-		secondedBy: data.secondedBy || '',
-		inFavor: data.inFavor || '',
-		opposed: data.opposed || '',
-		abstained: data.abstained || '',
-		councilApproval: data.councilApproval || '',
 		checked: null,
 		reviewed: null,
 		approved: null,
 		evaluated: null
 	});
+
+	if(data.items) program.items = JSON.stringify(data.items);
+	if(data.staff) program.staff = JSON.stringify(data.staff);
+	if(data.funding) program.funding = data.funding;
+	if(data.fundingType) program.fundingType = data.fundingType;
+
+	if(data.councilDate) program.councilDate = data.councilDate;
+	if(data.councilMotioned) program.councilMotioned = data.councilMotioned;
+	if(data.councilSeconded) program.councilSeconded = data.councilSeconded;
+	if(data.councilFavor) program.councilFavor = data.councilFavor;
+	if(data.councilOpposed) program.councilOpposed = data.councilOpposed;
+	if(data.councilAbstained) program.councilAbstained = data.councilAbstained;
+	if(data.councilApproval) program.councilApproval = data.councilApproval;
+	
+	if(data.evalTime) program.evalTime = data.evalTime;
+	if(data.evalAttendance) program.evalAttendance = data.evalAttendance;
+	if(data.evalCost) program.evalCost = data.evalCost;
+	if(data.evalCardReturn) program.evalCardReturn = data.evalCardReturn;
+	if(data.evalOutcomes) program.evalOutcomes = data.evalOutcomes;
+	if(data.evalStrengths) program.evalStrengths = data.evalStrengths;
+	if(data.evalWeaknesses) program.evalWeaknesses = data.evalWeaknesses;
+	if(data.evalSuggestions) program.evalSuggestions = data.evalSuggestions;
+	if(data.evalOther) program.evalOther = data.evalOther;
 
 	if(role === 'submitter') {
 		req.notif = 'new';
@@ -114,17 +125,33 @@ route.put('/put/update', jsonParser, m_role, function(req, res){
 		program.outcomes = data.outcomes;
 		program.description = data.description;
 		program.department = data.department;
-		program.items = JSON.stringify(data.items);
-		program.funding = data.funding || null;
-		program.fundingType = data.fundingType || '';
-		program.staff = JSON.stringify(data.staff);
+
+		if(data.items) program.items = JSON.stringify(data.items);
+		if(data.staff) program.staff = JSON.stringify(data.staff);
+		if(data.funding) program.funding = data.funding;
+		if(data.fundingType) program.fundingType = data.fundingType;
+
 		if(data.councilDate) program.councilDate = data.councilDate;
-		if(data.motionedBy) program.motionedBy = data.motionedBy;
-		if(data.secondedBy) program.secondedBy = data.secondedBy;
-		if(data.inFavor) program.inFavor = data.inFavor;
-		if(data.opposed) program.opposed = data.opposed;
-		if(data.abstained) program.abstained = data.abstained;
+		if(data.councilMotioned) program.councilMotioned = data.councilMotioned;
+		if(data.councilSeconded) program.councilSeconded = data.councilSeconded;
+		if(data.councilFavor) program.councilFavor = data.councilFavor;
+		if(data.councilOpposed) program.councilOpposed = data.councilOpposed;
+		if(data.councilAbstained) program.councilAbstained = data.councilAbstained;
 		if(data.councilApproval) program.councilApproval = data.councilApproval;
+		
+		if(data.evalTime || data.evalAttendance || data.evalCost || data.evalCardReturn || data.evalOutcomes || data.evalStrengths || data.evalWeaknesses || data.evalSuggestions || data.evalOther) {
+			program.evaluated = decodedUser._id
+		}
+		if(data.evalTime) program.evalTime = data.evalTime;
+		if(data.evalAttendance) program.evalAttendance = data.evalAttendance;
+		if(data.evalCost) program.evalCost = data.evalCost;
+		if(data.evalCardReturn) program.evalCardReturn = data.evalCardReturn;
+		if(data.evalOutcomes) program.evalOutcomes = data.evalOutcomes;
+		if(data.evalStrengths) program.evalStrengths = data.evalStrengths;
+		if(data.evalWeaknesses) program.evalWeaknesses = data.evalWeaknesses;
+		if(data.evalSuggestions) program.evalSuggestions = data.evalSuggestions;
+		if(data.evalOther) program.evalOther = data.evalOther;
+
 		program.save(function() {
 			if(err) {
 				console.log(err)

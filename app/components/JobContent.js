@@ -35,7 +35,7 @@ let JobContent = React.createClass({
 				key={endpoint._id}
 				value={i}
 				label={endpoint.name}
-				// style={{background: grey500}}
+				style={{background: grey500}}
 				onActive={this.handleEndpoint.bind(null, endpoint.route)}>
 				<ContentRow
 					parentEndpoint={endpoint.route}

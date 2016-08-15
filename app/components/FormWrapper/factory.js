@@ -23,6 +23,7 @@ export default function factory(React, empty) {
 			}
 
 			onSubmit(formData) {
+				console.log(formData)
 				let location = this.props.params['_job'];
 				let index = this.props.jobs.findIndex((job) => job.link === location);
 				let jobId = this.props.jobs[index]._id;

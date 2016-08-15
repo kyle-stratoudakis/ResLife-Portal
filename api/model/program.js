@@ -38,14 +38,21 @@ var programSchema = new mongoose.Schema({
 	funding: String,
 	fundingType: String,
 	councilDate: Date,
-	motionedBy: String,
-	secondedBy: String,
-	inFavor: String,
-	opposed: String,
-	abstained: String,
+	councilMotioned: String,
+	councilSeconded: String,
+	councilFavor: String,
+	councilOpposed: String,
+	councilAbstained: String,
 	councilApproval: String,
-	evaluation: String,
-	attendance: String
+	evalTime: Date,
+	evalAttendance: String,
+	evalCost: String,
+	evalCardReturn: String,
+	evalOutcomes: String,
+	evalStrengths: String,
+	evalWeaknesses: String,
+	evalSuggestions: String,
+	evalOther: String,
 });
 
 module.exports = db.model('program', programSchema);

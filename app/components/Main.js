@@ -17,14 +17,14 @@ import Snackbar from 'material-ui/Snackbar'
 import Subheader from 'material-ui/Subheader'
 import { NavigationMoreVert } from 'material-ui/svg-icons';
 
-const muiTheme = getMuiTheme({
-	palette: {
-		primary1Color: colors.grey500,
-		primary2Color: colors.indigo800,
-		pickerHeaderColor: colors.indigo800,
-		accent1Color: colors.indigo800
-  }
-})
+// const muiTheme = getMuiTheme({
+// 	palette: {
+// 		primary1Color: colors.grey500,
+// 		primary2Color: colors.indigo800,
+// 		pickerHeaderColor: colors.indigo800,
+// 		accent1Color: colors.indigo800
+// 	}
+// });
 
 const Main = React.createClass({
 	renderJob (job, i) {
@@ -62,7 +62,8 @@ const Main = React.createClass({
 			</div>
 		)
 		return (
-			<MuiThemeProvider muiTheme={getMuiTheme(muiTheme)}>
+			// <MuiThemeProvider muiTheme={getMuiTheme(muiTheme)}>
+			<MuiThemeProvider muiTheme={getMuiTheme()}>
 				<div className="app">
 					<nav className="navbar-fixed-top">
 						<AppBar
