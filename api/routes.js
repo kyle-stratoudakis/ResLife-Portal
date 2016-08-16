@@ -15,7 +15,7 @@ routes.get('/aggregateNotifs', function(req, res) {
 	if(req.query.hour) {
 		var currentHour = parseInt(req.query.hour, 10);
 		aggregate(currentHour);
-		res.sendStatus(200);
+		res.status(200).send(new Date().toUTCString() + ' aggregate OK\n');
 	}
 });
 
@@ -23,7 +23,7 @@ routes.get('/pcard', function(req, res) {
 	if(req.query.id) {
 		var filename;
 		filename = generatePcard(req.query.id);
-		res.sendStatus(200);
+		res.status(200).send(new Date().toUTCString() + ' printed pdf for ' + req.query.id);
 	}
 });
 

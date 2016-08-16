@@ -58,76 +58,77 @@ const pcardAuthForm = function(program) {
 	// User Name Email Phone
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.fillColor('black');
-	doc.text(getString('Name', 45) + getString('Email', 45) + 'Phone', {indent: 10, characterSpacing: 0.25, lineGap: -15});
+	doc.text(getString('Name', 45) + getString('Email', 45) + 'Phone', {indent: 10, characterSpacing: 0.25, lineGap: -5});
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.moveDown(0.25);
 	doc.fillColor('black');
 	doc.text(getString(program.name, 40) + getString(program.email, 30) + program.primary_contact, {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.moveDown(0.5);
 	// Program ID Title Amount
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.fillColor('black');
-	doc.text(getString('ID', 25) + getString('Title', 75) + 'Amount', {indent: 10, characterSpacing: 0.25, lineGap: -15});
+	doc.text(getString('ID', 25) + getString('Title', 75) + 'Amount', {indent: 10, characterSpacing: 0.25, lineGap: -5});
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.moveDown(0.25);
 	doc.fillColor('black');
 	doc.text(getString(program.searchId, 20) + getString(program.title, 60) + program.funding, {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.moveDown(0.5);
 	// Program Date, Time Type, Location
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.moveDown(0.25);
 	doc.fillColor('black');
-	doc.text(getString('Date, time', 40) + getString('Type', 50) + 'Location', {indent: 10, characterSpacing: 0.25, lineGap: -15});
+	doc.text(getString('Date, time', 40) + getString('Type', 50) + 'Location', {indent: 10, characterSpacing: 0.25, lineGap: -5});
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.fillColor('black');
 	doc.moveDown(0.25);
 	doc.text(getString(getDateTime(program.date, program.time), 35) + getString(program.type, 50) + program.location, {indent: 10, characterSpacing: 0.25, lineGap: -5} );
-	doc.moveDown(0.25);
+	doc.moveDown(0.5);
 	// Program Description
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.moveDown(0.25);
 	doc.fillColor('black');
-	doc.text('Description', {indent: 10, characterSpacing: 0.25, lineGap: -15});
+	doc.text('Description', {indent: 10, characterSpacing: 0.25, lineGap: -5});
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.fillColor('black');
 	doc.moveDown(0.25);
 	doc.fontSize(10);
 	doc.text(getString(program.description, 375), {indent: 10, characterSpacing: 0.25} );
-    doc.fontSize(12);
-	doc.moveUp(0.25);
+    doc.moveDown(0.5);
 	// Program Approvers
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.moveDown(0.25);
 	doc.fillColor('black');
-	doc.text('Approval', {indent: 10, characterSpacing: 0.25, lineGap: -15});
+	doc.text('Approval', {indent: 10, characterSpacing: 0.25, lineGap: -5});
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.fillColor('black');
 	doc.moveDown(0.25);
@@ -138,13 +139,24 @@ const pcardAuthForm = function(program) {
 	// Signitures
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.text('                ________________________________________________________________________________________________________________________');
+	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(8);
-	doc.moveDown(2);
+	doc.moveDown(2.5);
 	doc.fillColor('black');
 	doc.text('Pick up Signiture ___________________________________________________________________ Date ___________________');
 	doc.moveDown(3);
 	doc.text('Return and Reciept Signiture _________________________________________________________ Date ___________________');
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.moveDown(1);
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.moveDown(1);
+
+	// Timestamp
+	doc.fontSize(7);
+	doc.moveDown(1);
+	doc.fillColor('grey');
+	doc.text(getDate(new Date()) + ' Southern Connecticut State University, Office of Residence Life');
    
 	// Header logo image
 	doc.image('./api/services/email/emailTemplates/residence-life-logo.png', 25, 40, {width: 160});
@@ -172,7 +184,6 @@ function padRight(str, num) {
 }
 
 function getDateTime(date, time) {
-	var d = new Date(date);
 	var t = new Date(time);
 	var hr = t.getHours();
 	var mn = t.getMinutes();
@@ -184,7 +195,12 @@ function getDateTime(date, time) {
 	if(mn < 10) {
 		mn = '0'+ mn;
 	}
-	return (d.getMonth()+1) +'/'+ d.getDate() +'/'+ d.getFullYear() +', '+ hr +':'+ mn + tod;
+	return getDate(date) +', '+ hr +':'+ mn + tod;
+}
+
+function getDate(date) {
+	var d = new Date(date);
+	return (d.getMonth()+1) +'/'+ d.getDate() +'/'+ d.getFullYear();
 }
 
 module.exports = pcardAuthForm;

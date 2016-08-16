@@ -29,9 +29,11 @@ const pcard = function(id) {
 			catch (ex) {
 				console.log('stand alone pcard generator error: ' + ex)
 			}
-			return filename
 		}
 	})
+	.then(function(filename) {
+		return filename
+	});
 }
 
 module.exports = pcard;

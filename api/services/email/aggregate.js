@@ -65,12 +65,19 @@ function buildMail(user) {
 }
 
 const markAsSent = function(user, notifId) {
-	notifModel.findByIdAndUpdate(notifId, { $push: {sent: user._id} })
-	.exec(function(err) {
-		if(err) {
+	notifModel.findById(notifId, function(err, notif) {
+		if(!err && notif) {
+			if(notif.event === 'edited') {
+				notif.remove();
+			}
+			else {
+				notif.sent.push(user._id);
+			}
+		}
+		else if(err) {
 			console.log(err);
 		}
-	});
+	})
 }
 
 module.exports = aggregate;
