@@ -44,7 +44,6 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		date: data.date,
 		time: data.time,
 		location: data.location,
-		department: data.department,
 		outcomes: data.outcomes,
 		description: data.description,
 		checked: null,
@@ -53,6 +52,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		evaluated: null
 	});
 
+	if(data.department) program.department = data.department;
 	if(data.items) program.items = JSON.stringify(data.items);
 	if(data.staff) program.staff = JSON.stringify(data.staff);
 	if(data.funding) program.funding = data.funding;
@@ -97,17 +97,13 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		program.approvedDate = new Date();
 	}
 
-	program.save(function(err) {
-		if(err) {
-			console.log(err);
-		}
-		else {
-			res.json(program._id);
-			req.workorder = program;
-			req.email = 'new';
-			next();
-		}
-	});
+	program.save()
+	.then(function(saved) {
+		res.json(program._id);
+		req.workorder = program;
+		req.email = 'new';
+		next();
+	})
 });
 route.post('/post/create', m_notif);
 
@@ -124,13 +120,20 @@ route.put('/put/update', jsonParser, m_role, function(req, res){
 		program.location = data.location;
 		program.outcomes = data.outcomes;
 		program.description = data.description;
-		program.department = data.department;
 
+		req.email = 'edited';
+ 		req.notif = 'edited';
+		
+		if(data.department) program.department = data.department;
 		if(data.items) program.items = JSON.stringify(data.items);
 		if(data.staff) program.staff = JSON.stringify(data.staff);
 		if(data.funding) program.funding = data.funding;
 		if(data.fundingType) program.fundingType = data.fundingType;
-
+ 		
+ 		if(data.councilDate || data.councilMotioned || data.councilSeconded || data.councilFavor || data.councilOpposed || data.councilAbstained || data.councilApproval) {
+ 			req.email = 'hall_council';
+ 			req.notif = 'hall_council';
+ 		}
 		if(data.councilDate) program.councilDate = data.councilDate;
 		if(data.councilMotioned) program.councilMotioned = data.councilMotioned;
 		if(data.councilSeconded) program.councilSeconded = data.councilSeconded;
@@ -141,6 +144,8 @@ route.put('/put/update', jsonParser, m_role, function(req, res){
 		
 		if(data.evalTime || data.evalAttendance || data.evalCost || data.evalCardReturn || data.evalOutcomes || data.evalStrengths || data.evalWeaknesses || data.evalSuggestions || data.evalOther) {
 			program.evaluated = decodedUser._id
+			req.email = 'evaluated';
+			req.notif = 'evaluated';
 		}
 		if(data.evalTime) program.evalTime = data.evalTime;
 		if(data.evalAttendance) program.evalAttendance = data.evalAttendance;
@@ -163,6 +168,7 @@ route.put('/put/update', jsonParser, m_role, function(req, res){
 		});
 	})
 });
+route.put('/put/update', m_notif);
 
 route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 	var decodedUser = req.decodedUser;
@@ -186,23 +192,25 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 				program.reviewedDate = new Date();
 				req.email = 'reviewed';
 				req.notif = 'reviewed';
-				if(program.funding === null) {
+				if(!program.funding) {
 					program.approved = userId;
 					program.approvedDate = new Date();
 					req.email = 'reviewer_approved';
+					req.notif = 'delete_notif';
 				}
 			}
 			else if(role === 'approver') {
 				program.approved = userId;
 				program.approvedDate = new Date();
 				req.email = 'approved';
+				req.notif = 'delete_notif';
 			}
 			program.save()
 			.then(function(saved) {
 				req.workorder = saved;
 				res.json({status: 'approve'});
 				next();
-			})
+			});
 		}
 	});
 })
@@ -221,24 +229,33 @@ route.put('/put/return', jsonParser, m_role, function(req, res){
 			if(role === 'hall_director') {
 				program.checked = null;
 				program.checkedDate = null;
+				req.email = 'return_checked';
+				req.notif = 'return_checked'
 			}
 			else if(role === 'reviewer') {
 				program.reviewed = null;
 				program.reviewedDate = null;
-				if(program.funding === null) {
+				req.email = 'deny_reviewed';
+				req.notif = 'deny_reviewed';
+				if(!program.funding) {
 					program.approved = null;
 					program.approvedDate = null;
+					req.email = 'deny_reviewer_approved';
+					req.notif = 'deny_reviewer_approved';
 				}
 			}
 			else if(role === 'approver') {
 				program.approved = null;
 				program.approvedDate = null;
+				req.email = 'deny_approved';
+				req.notif = 'deny_approved';
 			}
 			program.save();
 			res.json({status: 'return'});
 		}
 	});
 });
+route.put('/put/return', m_notif);
 
 route.get('/get/details', function(req, res) {
 	if(req.query.jwt) {

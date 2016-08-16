@@ -42,23 +42,13 @@ export default function factory(React, empty) {
 			getTitle() {
 				let location = this.props.params['_job'];
 				let action = this.props.location.pathname.split('/')[3];
-				let title;
-
-				if(action === 'New') {
-					title = 'New';
-				}
-				else if(action === 'View') {
-					title = 'View / Edit';
-				}
-				else if(action === 'Evaluate') {
-					title = 'Evaluate';
-				}
+				let title = '';
 
 				if(location === 'Programs') {
-					title += ' Program';
+					title += action + ' Program';
 				}
 				else if(location === 'TechSupport') {
-					title += ' Tech Request';
+					title += action + ' Tech Request';
 				}
 
 				return title

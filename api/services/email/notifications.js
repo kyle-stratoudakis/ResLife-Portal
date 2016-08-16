@@ -1,5 +1,4 @@
 var juice = require('juice');
-var fs = require('fs'); 
 var mailer = require('./mailer');
 var notifModel= require('../../model/notification');
 var programModel= require('../../model/program');
@@ -30,7 +29,7 @@ const notification_middleware = function(req, res, next) {
 		template = statusNotif('checked', wo);
 	}
 	if(req.email === 'reviewed') {
-		if(wo.checked && wo.reviewed && (wo.funding !== null)) {
+		if(wo.checked && wo.reviewed && wo.funding) {
 			template = statusNotif('funding', wo);
 		}
 		else {
@@ -95,15 +94,36 @@ const notification_middleware = function(req, res, next) {
 
 	// Check notification type and register notification
 	if(req.notif === 'new') {
-		registerNotif('hall_director_'+wo.hall, 'new', wo);
+		registerNotif(wo.hall+'_new', 'new', wo);
 	}
-	if(req.notif === 'checked') {
+	else if(req.notif === 'checked') {
 		registerNotif('reviewer', 'checked', wo);
 	}
-	if(req.notif === 'reviewed') {
-		if(wo.checked && wo.reviewed && (wo.funding !== null)) {
+	else if(req.notif === 'reviewed') {
+		if(wo.checked && wo.reviewed && wo.funding) {
 			registerNotif('approver', 'funding', wo);
 		}
+		else {
+			deleteNotif(wo._id);
+		}
+	}
+	else if(req.notif === 'edited') {
+		registerNotif(wo.hall+'_new', 'edited', wo);
+	}
+	else if(req.notif === 'deny_checked') {
+		registerNotif(req.decodedUser._id+'_denied', 'hall director denied', wo);
+	}
+	else if(req.notif === 'deny_reviewed') {
+		registerNotif(req.decodedUser._id+'_denied', 'reviewer denied', wo);
+	}
+	else if(req.notif === 'deny_reviewer_approved') {
+		registerNotif(req.decodedUser._id+'_denied', 'reviewer denied', wo);
+	}
+	else if(req.notif === 'approver_denied') {
+		registerNotif(req.decodedUser._id+'_denied', 'approver denied', wo)
+	}
+	else if(req.notif === 'delete_notif') {
+		deleteNotif(wo._id);
 	}
 
 	next();
@@ -130,4 +150,11 @@ function registerNotif(role, event, workorder) {
 	})
 }
 
+function deleteNotif(id) {
+	notifModel.remove({ workorder: id }, function(err) {
+		if(err) {
+			console.log('deleteNotif err: ' + err);
+		}
+	});
+}
 module.exports = notification_middleware;

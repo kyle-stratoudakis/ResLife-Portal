@@ -27,8 +27,7 @@ const aggregate = function(currentHour) {
 
 function buildMail(user) {
 	var query = {
-		role: {$in: user.notifRoles}, 
-		sent: {$nin: [user._id]}
+		role: {$in: user.notifRoles}
 	}
 
 	var mailOptions = {
@@ -52,12 +51,13 @@ function buildMail(user) {
 				}
 				else {
 					mailOptions.html = inlined;
-					
 					mailer(mailOptions);
 
 					for(var i = 0; i < notifs.length; i++) {
 						markAsSent(user, notifs[i]._id);
 					}
+
+					console.log('mailed aggregate of ' + notifs.length + ' notifs');
 				}
 			});
 		}
@@ -65,7 +65,6 @@ function buildMail(user) {
 }
 
 const markAsSent = function(user, notifId) {
-	console.log('marking sent')
 	notifModel.findByIdAndUpdate(notifId, { $push: {sent: user._id} })
 	.exec(function(err) {
 		if(err) {
