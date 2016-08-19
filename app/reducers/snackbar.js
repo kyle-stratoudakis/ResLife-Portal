@@ -1,30 +1,60 @@
-function snackbar(state=[], action) {
+function snackbar(state={}, action) {
 	switch(action.type) {
-	case 'SNACKBAR_ACTION' :
-		let message;
-		let autoHideDuration = 3000;
+	case 'SNACKBAR_ALERT':
+		let message = action.endpoint;
+		let autoHideDuration = 4000;
+		let open = true;
+		let actionEndpoint = action.endpoint.toLowerCase();
 
-		if(action.endpoint === 'programs/put/approve') {
+		if(actionEndpoint === 'programs/post/create') {
+			message = 'Created Program';
+		}
+		else if(actionEndpoint === 'programs/put/approve') {
 			message = 'Approved Program';
 		}
-		else if(action.endpoint === 'programs/put/return') {
+		else if(actionEndpoint === 'programs/put/update') {
+			message = 'Edited Program';
+		}
+		else if(actionEndpoint === 'programs/put/return') {
 			message = 'Returned Program';
 		}
 
 		return {
 			...state,
 			message,
-			autoHideDuration, 
+			autoHideDuration,
+			open
 		};
-	case '@@router/LOCATION_CHANGE' :
+	case 'SNACKBAR_ERROR':
+		message = action.error;
+		autoHideDuration = 10000;
+		open = true;
+
+		return {
+			...state,
+			message,
+			autoHideDuration,
+			open
+		};
+	case 'SNACKBAR_CLOSE':
+		return { 
+			open: false,
+			autoHideDuration
+		};
+	case 'TOGGLE_NAV':
+		return { open: false };
+	case '@@router/LOCATION_CHANGE':
 		if(state.open === true) {
-			return { open: false};
+			return {
+				message: '',
+				open: false
+			};
 		}
 		else {
 			return state;
 		}
-	default :
-		return state;
+	default: 
+		return {open: state.open}
 	}
 }
 

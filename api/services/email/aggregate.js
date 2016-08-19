@@ -4,6 +4,7 @@ var notifModel= require('../../model/notification');
 var programModel= require('../../model/program');
 var mailer = require('./mailer');
 var notifDigest = require('./emailTemplates/notifDigest');
+var getDateTime = require('../../utils/getDateTime');
 
 const aggregate = function(currentHour) {
 	var query = {
@@ -32,7 +33,7 @@ function buildMail(user) {
 
 	var mailOptions = {
 		to: user.email,
-		subject: 'ResLife Portal Notifications',
+		subject: getDateTime(new Date(), new Date()) + ', ResLife Portal Notifications',
 	}
 
 	notifModel.find(query, {}, { sort: {type: 1} })
@@ -43,6 +44,7 @@ function buildMail(user) {
 	})
 	.exec(function(err, notifs) {
 		if(notifs && notifs.length > 0) {
+			// console.log(notifs)
 			mailOptions.text = JSON.stringify(notifs);
 
 			juice.juiceResources(notifDigest(user, notifs), {}, function(err, inlined) {

@@ -13,7 +13,7 @@ import TableHeader from 'material-ui/Table/TableHeader'
 import TableRow from 'material-ui/Table/TableRow'
 import TableHeaderColumn from 'material-ui/Table/TableHeaderColumn'
 import { ActionAssignment, ActionAssignmentTurnedIn, ActionAssignmentInd } from 'material-ui/svg-icons'; 
-import { green200, red200, amber200 } from 'material-ui/styles/colors'; 
+import { green200, red200, amber200, deepPurple200 } from 'material-ui/styles/colors'; 
 
 const ContentRow = React.createClass({
 	renderAction (action, id, i) {
@@ -52,25 +52,28 @@ const ContentRow = React.createClass({
 		}
 	},
 
-	renderAvatar(checked, reviewed, approved) { 
-	    let color; 
-	    let icon = <ActionAssignment /> 
-	    if(approved) { 
-	      color = green200 
-	    } 
-	    else if(checked && reviewed) { 
-	      color = amber200 
-	    } 
-	    else if(checked || reviewed) { 
-	      color = red200 
-	    } 
-	    return ( 
-	      <Avatar 
-	        icon={icon}  
-	        backgroundColor={color} 
-	      /> 
-	    ) 
-	  }, 
+	renderAvatar(checked, reviewed, approved, evaluated) {
+		let color;
+		let icon = <ActionAssignment />
+		if(evaluated) {
+			color = deepPurple200;
+		}
+		else if(approved) {
+			color = green200;
+		}
+		else if(checked && reviewed) {
+			color = amber200;
+		}
+		else if(checked || reviewed) {
+			color = red200;
+		}
+		return (
+			<Avatar
+				icon={icon}
+				backgroundColor={color}
+			/>
+		)
+	  },
 
 	renderDescription (description, _id) {
 		if(description && description.length > 120) {
@@ -87,13 +90,13 @@ const ContentRow = React.createClass({
 	},
 
 	renderRow (row, i) {
-		let{ checked, reviewed, approved } = row;
+		let{ checked, reviewed, approved, evaluated } = row;
 		let { searchId, title } = row; 
 		return (
 			<div className="container row" key={i}>
 				<div className="col-sm-4">
 					<CardHeader 
-						avatar={this.renderAvatar(checked, reviewed, approved)} 
+						avatar={this.renderAvatar(checked, reviewed, approved, evaluated)} 
 						title={(searchId ? searchId+' - '+title : title)} 
 						subtitle={row.name}
 					/>
@@ -108,7 +111,7 @@ const ContentRow = React.createClass({
 						{this.props.actions.map((action, i) => this.renderAction(action, row._id, i))}
 					</CardActions>
 				</div>
-			<Divider />
+				<Divider />
 			</div>
 		)
 	},

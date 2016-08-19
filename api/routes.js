@@ -4,7 +4,8 @@ const programs = require('./jobs/programs');
 const hallcouncil = require('./jobs/hallcouncil');
 const techsupport = require('./jobs/techsupport');
 const aggregate = require('./services/email/aggregate');
-const generatePcard = require('./services/email/standAlonePcard')
+const generatePcard = require('./services/email/standAlonePcard');
+const getDateTime = require('./utils/getDateTime');
 
 routes.use('/getJobs', getJobs);
 routes.use('/programs', programs);
@@ -15,7 +16,7 @@ routes.get('/aggregateNotifs', function(req, res) {
 	if(req.query.hour) {
 		var currentHour = parseInt(req.query.hour, 10);
 		aggregate(currentHour);
-		res.status(200).send(new Date().toUTCString() + ' aggregate OK\n');
+		res.status(200).send(getDateTime(new Date(), new Date()) + ', aggregate OK\n');
 	}
 });
 

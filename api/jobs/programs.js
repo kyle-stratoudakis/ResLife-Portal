@@ -85,8 +85,17 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		req.notif = 'checked';
 	}
 	if(role === 'reviewer') {
+		program.checked = decodedUser._id;
+		program.checkedDate = new Date();
 		program.reviewed = decodedUser._id;
 		program.reviewedDate = new Date();
+		if(!program.funding) {
+			program.approved = decodedUser._id;
+			program.approvedDate = new Date();
+		}
+		else {
+			req.notif = 'reviewed';
+		}
 	}
 	if(role === 'approver') {
 		program.checked = decodedUser._id;
@@ -97,17 +106,22 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		program.approvedDate = new Date();
 	}
 
-	program.save()
-	.then(function(saved) {
-		res.json(program._id);
-		req.workorder = program;
-		req.email = 'new';
-		next();
-	})
+	program.save(function(err, saved) {
+		if(!err) {
+			res.json(program._id);
+			req.workorder = program;
+			req.email = 'new';
+			next();
+		}
+		else {
+			res.status(500).send(err);
+			console.log(err)
+		}
+	});
 });
 route.post('/post/create', m_notif);
 
-route.put('/put/update', jsonParser, m_role, function(req, res){
+route.put('/put/update', jsonParser, m_role, function(req, res, next){
 	var decodedUser = req.decodedUser;
 	var data = req.body.data;
 	var formId = req.body.formId;
@@ -143,7 +157,8 @@ route.put('/put/update', jsonParser, m_role, function(req, res){
 		if(data.councilApproval) program.councilApproval = data.councilApproval;
 		
 		if(data.evalTime || data.evalAttendance || data.evalCost || data.evalCardReturn || data.evalOutcomes || data.evalStrengths || data.evalWeaknesses || data.evalSuggestions || data.evalOther) {
-			program.evaluated = decodedUser._id
+			program.evaluated = decodedUser._id;
+			program.evaluatedDate = new Date();
 			req.email = 'evaluated';
 			req.notif = 'evaluated';
 		}
@@ -157,13 +172,14 @@ route.put('/put/update', jsonParser, m_role, function(req, res){
 		if(data.evalSuggestions) program.evalSuggestions = data.evalSuggestions;
 		if(data.evalOther) program.evalOther = data.evalOther;
 
-		program.save(function() {
-			if(err) {
-				console.log(err)
+		program.save(function(err, saved) {
+			if(!err) {
+				res.status(200).json(saved._id);
+				next();
 			}
 			else {
-				// console.log('program_updated', program);
-				res.json(program._id);
+				res.status(500).send(err);
+				console.log(err)
 			}
 		});
 	})
@@ -205,18 +221,24 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 				req.email = 'approved';
 				req.notif = 'delete_notif';
 			}
-			program.save()
-			.then(function(saved) {
-				req.workorder = saved;
-				res.json({status: 'approve'});
-				next();
+
+			program.save(function(err, saved) {
+				if(!err) {
+					req.workorder = saved;
+					res.status(200).json({status: 'approve'});
+					next();
+				}
+				else {
+					res.status(500).send(err);
+					console.log(err)
+				}
 			});
 		}
 	});
 })
 route.put('/put/approve', m_notif);
 
-route.put('/put/return', jsonParser, m_role, function(req, res){
+route.put('/put/return', jsonParser, m_role, function(req, res, next){
 	var decodedUser = req.decodedUser;
 	var id = req.body.id
 	var role = decodedUser.role;
@@ -230,7 +252,7 @@ route.put('/put/return', jsonParser, m_role, function(req, res){
 				program.checked = null;
 				program.checkedDate = null;
 				req.email = 'return_checked';
-				req.notif = 'return_checked'
+				req.notif = 'return_checked';
 			}
 			else if(role === 'reviewer') {
 				program.reviewed = null;
@@ -250,8 +272,17 @@ route.put('/put/return', jsonParser, m_role, function(req, res){
 				req.email = 'deny_approved';
 				req.notif = 'deny_approved';
 			}
-			program.save();
-			res.json({status: 'return'});
+			program.save(function(err, saved) {
+				if(!err) {
+					req.workorder = saved;
+					res.status(200).json({status: 'return'});
+					next();
+				}
+				else {
+					res.status(500).send(err);
+					console.log(err)
+				}
+			});
 		}
 	});
 });
@@ -262,32 +293,17 @@ route.get('/get/details', function(req, res) {
 		var id = req.query.id;
 		programModel.findOne({'_id': id})
 		.populate({
-			path: 'user',
-			select: 'name',
-			model: userModel
-		})
-		.populate({
-			path: 'checked',
-			select: 'name',
-			model: userModel
-		})
-		.populate({
-			path: 'reviewed',
-			select: 'name',
-			model: userModel
-		})
-		.populate({
-			path: 'approved',
-			select: 'name',
+			path: 'user checked reviewed approved evaluated',
+			select: 'name -_id',
 			model: userModel
 		})
 		.exec(function(err, program) {
-			if(err){
-				console.log(err);
-			}
-			else {
+			if(!err) {
 				if(program === null) program = {};
 				res.json(program);
+			}
+			else {
+				console.log(err);
 			}
 		});
 	}

@@ -92,12 +92,12 @@ const Main = React.createClass({
 					</nav>
 					<br /><br /><br />
 					{React.cloneElement(this.props.children, this.props)}
-					<Snackbar
-						open={this.props.snackbar.open || false}
+					{/*<Snackbar
+						open={this.props.snackbar.open}
 						message={this.props.snackbar.message}
 						autoHideDuration={this.props.snackbar.autoHideDuration}
-						// onRequestClose={this.props.snackbar.onRequestClose}
-					/>
+						onRequestClose={this.props.snackBarClose}
+					/>*/}
 					<br /><br /><br />
 				</div>
 			</MuiThemeProvider>

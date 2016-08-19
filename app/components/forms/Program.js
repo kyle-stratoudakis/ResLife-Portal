@@ -53,6 +53,7 @@ class Program extends Component{
 			checked: null,
 			reviewed: null,
 			approved: null,
+			evaluated: null,
 			councilDate: {},
 			councilMotioned: '',
 			councilSeconded: '',
@@ -77,9 +78,9 @@ class Program extends Component{
 					width: '50%'
 				},
 				listStyle: {
-					marginLeft: '1em',
-					marginRight: '1em',
-					padding: 'none'
+					// marginLeft: '1em',
+					// marginRight: '1em',
+					padding: '1em'
 				},
 				listPaperStyle: {
 					marginBottom: '1em'
@@ -112,6 +113,7 @@ class Program extends Component{
 				checked: wo.checked,
 				reviewed: wo.reviewed,
 				approved: wo.approved,
+				evaluated: wo.evaluated,
 				councilDate: (wo.councilDate ? new Date(wo.councilDate) : {}),
 				councilMotioned: wo.councilMotioned || '',
 				councilSeconded: wo.councilSeconded || '',
@@ -119,8 +121,6 @@ class Program extends Component{
 				councilOpposed: wo.councilOpposed || '',
 				councilAbstained: wo.councilAbstained || '',
 				councilApproval: wo.councilApproval || '',
-				evaluation: wo.evaluation || '',
-				attendance: wo.attendance || '',
 				evalTime: (wo.evalTime ? new Date(wo.evalTime) : {}),
 				evalAttendance: wo.evalAttendance || '',
 				evalCost: wo.evalCost || '',
@@ -272,7 +272,7 @@ class Program extends Component{
 			if(itemsArray){
 				itemsArray.map(function(item) {
 					if(item.cost !== ''){
-						total+=parseFloat(item.cost, 10);
+						total+=parseFloat(item.cost.replace(/[^0-9.]/g, ""), 10);
 					}
 				});
 				if(total > 0){
@@ -294,6 +294,7 @@ class Program extends Component{
 								required
 								floatingLabelText='Total Cost'
 								disabled={true}
+								fullWidth={true}
 								style={listStyle}
 								value={'$' + total.toFixed(2)}
 							/>
@@ -350,6 +351,7 @@ class Program extends Component{
 					floatingLabelText='ID'
 					value={this.state.searchId}
 					disabled={true}
+					fullWidth={true}
 				/>
 			)
 		}
@@ -440,7 +442,7 @@ class Program extends Component{
 
 	renderEvaluation () {
 		let { centerStyle } = this.state.styles;
-		if(this.refs.form && this.state.approved) {
+		if(this.refs.form && (this.state.approved || this.state.evaluated)) {
 			return (
 				<div>
 					<Divider />
@@ -540,8 +542,12 @@ class Program extends Component{
 		let { centerStyle } = this.state.styles;
 		return (
 			<div>
-				<div className='row'>
-					<TrackProgram workOrder={this.props.details} />
+				<br />
+				<Divider />
+				<Subheader>Program tracker</Subheader>
+				<div style={centerStyle}>
+					{/*<TrackProgram workOrder={this.props.details} />*/}
+					<TrackProgram workOrder={this.props.details} size={screen.width}/>
 				</div>
 				<Formsy.Form
 					ref='form'

@@ -27,7 +27,7 @@ export default function factory(React, empty) {
 			}
 
 			onSubmit(formData) {
-				console.log(formData)
+				// console.log(formData)
 				let location = this.props.params['_job'];
 				let index = this.props.jobs.findIndex((job) => job.link === location);
 				let jobId = this.props.jobs[index]._id;
@@ -64,29 +64,27 @@ export default function factory(React, empty) {
 				}
 
 				return (
-					<div>
-						<div className="container" style={center}>
-							<br/>
-							<Paper style={ {'padding': '0 1rem 3rem 2rem' } } zDepth={2}>
-								<div className="row" style={{ margin: 'auto' }}>
-									<div className="col-sm-11">
-										<h2>{this.getTitle()}</h2>
-									</div>
-									{/*<div className="col-sm-1">
-										<IconMenu
-											iconButtonElement={<IconButton><FontIcon className="material-icons">{'settings'}</FontIcon></IconButton>}
-											anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-											targetOrigin={{horizontal: 'right', vertical: 'top'}}
-										>
-											<MenuItem primaryText="Refresh" />
-											<MenuItem primaryText="Send feedback" />
-											<MenuItem primaryText="Sign out" />
-										</IconMenu>
-									</div>*/}
+					<div className="container">
+						<br/>
+						<Paper style={ {'padding': '0 1rem 3rem 2rem' } } zDepth={2}>
+							<div className="row" style={{ margin: 'auto' }}>
+								<div className="col-sm-11">
+									<h2>{this.getTitle()}</h2>
 								</div>
-								<DecoratedComponent {...this.props} onSubmit={this.onSubmit} workOrder={this.props.details} />
-							</Paper>
-						</div>
+								{/*<div className="col-sm-1">
+									<IconMenu
+										iconButtonElement={<IconButton><FontIcon className="material-icons">{'settings'}</FontIcon></IconButton>}
+										anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+										targetOrigin={{horizontal: 'right', vertical: 'top'}}
+									>
+										<MenuItem primaryText="Refresh" />
+										<MenuItem primaryText="Send feedback" />
+										<MenuItem primaryText="Sign out" />
+									</IconMenu>
+								</div>*/}
+							</div>
+							<DecoratedComponent {...this.props} onSubmit={this.onSubmit} workOrder={this.props.details} />
+						</Paper>
 					</div>
 				)
 			}

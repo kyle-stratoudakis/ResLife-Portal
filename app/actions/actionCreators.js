@@ -31,6 +31,7 @@ export function login(data, redirect) {
 			},
 			body: json
 		})
+		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => handleMessages(dispatch, json))
 		.then(json => dispatch(loggedIn(json)))
@@ -75,8 +76,10 @@ export function fetchJobs(jwt) {
 		dispatch(getJobs())
 		// console.log('getJobs', host + "/api/getJobs?jwt=" + jwt)
 		return fetch(host + "/api/getJobs?jwt=" + jwt)
+		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => dispatch(receiveJobs(json)))
+		.catch(err => console.log('fetchJobs', err))
 	}
 }
 
@@ -92,9 +95,10 @@ export function fetchWorkorders(query) {
 		dispatch(getWorkorders())
 		// console.log(host + "/api/" + query)
 		return fetch(host + "/api/" + query)
+		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => dispatch(receiveWorkorders(json)))
-		.catch((err, json) => console.log(err, json))
+		.catch(err => console.log('fetchWorkorders', err))
 	}
 }
 
@@ -109,19 +113,19 @@ export function receiveWorkorders(workOrders) {
 export function fetchDetails(location, query) {
 	return function (dispatch) {
 		dispatch(getDetails())
-		console.log(host + "/api/" + location + "/get/details" + query)
+		// console.log(host + "/api/" + location + "/get/details" + query)
 		return fetch(host + "/api/" + location + "/get/details" + query)
+		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => dispatch(receiveDetails(json)))
-		.catch(err => console.log(err))
+		.catch(err => console.log('fetchDetails', err))
 	}
 }
 
 export function receiveDetails(details) {
 	return {
 		type: 'RECEIVE_DETAILS',
-		details,
-		received: Date().now
+		details
 	}
 }
 
@@ -141,8 +145,11 @@ export function submitForm(jwt, location, jobId, data) {
 			},
 			body: json
 		})
+		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => dispatch(push('/job/' + location + '/View/' + location + '/'+json)))
+		.then(dispatch(snackbarAlert(location + '/post/create')))
+		.catch(err => console.log('submitForm', err))
 	}
 }
 
@@ -162,14 +169,16 @@ export function updateForm(jwt, location, formId, jobId, data) {
 			},
 			body: json
 		})
+		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => dispatch(fetchDetails(location, '?jwt='+jwt+'&id='+json)))
+		.then(dispatch(snackbarAlert(location + '/put/update')))
+		.catch(err => console.log('updateForm', err))
 	}
 }
 
 export function modifyAction(endpoint, data, update) {
 	return function (dispatch) {
-		dispatch(snackbarAction(endpoint))
 		var json = JSON.stringify(data);
 		return fetch(host + "/api/" + endpoint, {
 			method: 'put',
@@ -179,7 +188,9 @@ export function modifyAction(endpoint, data, update) {
 			},
 			body: json
 		})
+		.then(handleErrors)
 		.then(() => dispatch(fetchWorkorders(update)))
+		.then(dispatch(snackbarAlert(endpoint)))
 		.catch(err => console.log('modifyAction', err))
 	}
 }
@@ -195,25 +206,35 @@ export function workorderAction(endpoint, data, update) {
 			},
 			body: json
 		})
+		.then(handleErrors)
 		.then(() => dispatch(fetchDetails(update, '?jwt='+data.jwt+'&id='+data.id)))
-		.catch(err => console.log('modifyAction', err))
+		.catch(err => console.log('workorderAction', err))
 	}
 }
 
-export function snackbarAction(endpoint) {
+export function snackbarAlert(endpoint) {
 	return {
-		type: 'SNACKBAR_ACTION',
+		type: 'SNACKBAR_ALERT',
 		endpoint
 	}
 }
-
+export function snackbarError(error) {
+	return {
+		type: 'SNACKBAR_ERROR',
+		error
+	}
+}
+export function snackbarClose() {
+	return {
+		type: 'SNACKBAR_CLOSE'
+	}
+}
 export function changeTab(value) {
 	return {
 		type: 'CHANGE_TAB',
 		value
 	}
 }
-
 export function loggingIn() {
 	return {
 		type: 'LOGGING_IN'
@@ -243,4 +264,12 @@ export function toggleNav() {
 	return {
 		type: 'TOGGLE_NAV'
 	}
+}
+
+function handleErrors(response) {
+	if(!response.ok) {
+		console.log('errResponse', response)
+		throw Error(response.statusText);
+	}
+	return response;
 }

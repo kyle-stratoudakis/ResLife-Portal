@@ -103,7 +103,8 @@ const programQueries = function(req, res, next) {
 			description: 1,
 			checked: 1,
 			reviewed: 1,
-			approved: 1
+			approved: 1,
+			evaluated: 1
 		};
 
 		req.programSort = {

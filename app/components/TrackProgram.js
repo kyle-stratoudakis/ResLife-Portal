@@ -82,9 +82,11 @@ const TrackProgram = React.createClass({
 		const approved = <ActionAssignmentTurnedIn color={lightGreen500} />;
 		const pending = <ActionAssignmentInd color={grey500} />;
 		let workorder = this.props.workOrder;
+		let linear = (this.props.size > 500 ? true : false);
+		let orientation = (this.props.size > 500 ? 'horizontal' : 'vertical');
 		return(
 			<div style={ {'paddingRight': '1em' } }>
-				<Stepper linear={true} orientation='horizontal'>
+				<Stepper linear={linear} orientation={orientation}>
 					<Step>
 						<StepLabel icon={(workorder._id ? <ActionAssignment color={lightGreen500} /> : <ActionAssignment color={grey500} />)}>
 							{this.renderStatus('submission')}

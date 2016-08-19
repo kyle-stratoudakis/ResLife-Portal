@@ -5,11 +5,11 @@ var programModel= require('../../model/program');
 var userModel = require('../../model/user');
 var confirmNew = require('./emailTemplates/confirmNew');
 var statusNotif = require('./emailTemplates/statusNotif');
-var pCardForm = require('./emailTemplates/pCardForm');
+var fundingApproval = require('./emailTemplates/fundingApproval');
 var pcardAuthForm = require('./emailTemplates/pcardAuthForm');
 
 const notification_middleware = function(req, res, next) {
-	if(!req.body){
+	if(!req.workorder.email) {
 		next();
 	}
 
@@ -40,20 +40,10 @@ const notification_middleware = function(req, res, next) {
 		template = statusNotif('reviewer approved', wo);
 	}
 	if(req.email === 'approved') {
-		var email = pCardForm(wo);
+		var email = fundingApproval(wo);
 		programModel.findOne({ _id: wo._id })
 		.populate({
-			path: 'checked',
-			select: 'name -_id',
-			model: userModel
-		})
-		.populate({
-			path: 'reviewed',
-			select: 'name -_id',
-			model: userModel
-		})
-		.populate({
-			path: 'approved',
+			path: 'checked reviewed approved',
 			select: 'name -_id',
 			model: userModel
 		})
@@ -97,7 +87,7 @@ const notification_middleware = function(req, res, next) {
 		registerNotif(wo.hall+'_new', 'new', wo);
 	}
 	else if(req.notif === 'checked') {
-		registerNotif('reviewer', 'checked', wo);
+		registerNotif(wo.hall+'_reviewer', 'checked', wo);
 	}
 	else if(req.notif === 'reviewed') {
 		if(wo.checked && wo.reviewed && wo.funding) {
