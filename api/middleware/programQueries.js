@@ -4,91 +4,62 @@ const programQueries = function(req, res, next) {
 	var userHall = decodedUser.hall;
 	var role = req.decodedUser.role;
 	var status = req.query.status;
-	var query = null
+	var halls = (req.query.hall ? req.query.hall : null);
+	var query = {};
+
+	if(halls) {
+		query.hall = { $in: halls };
+	}
+	console.log('halls', halls)
 
 	if(role === 'submitter') {
+		query.user = userId;
+
 		if(status === 'pending') {
-			query = {
-				'user': userId,
-				'approved': null
-			};
+			query.approved = null;
 		}
 		else if(status === 'approved') {
-			query = {
-				'user': userId,
-				'checked': { $ne: null },
-				'reviewed': { $ne: null },
-				'approved': { $ne: null },
-				'evaluated': null
-			};
+			query.checked = { $ne: null };
+			query.reviewed = { $ne: null };
+			query.approved = { $ne: null };
+			query.evaluated = null ;
 		}
 		else if(status === 'completed') {
-			query = {
-				'user': userId,
-				'checked': { $ne: null },
-				'reviewed': { $ne: null },
-				'approved': { $ne: null },
-				'evaluated': { $ne: null }
-			};
-		}
-		else if(status === 'all') {
-			query = {
-				'user': userId,
-			};
+			query.checked = { $ne: null };
+			query.reviewed = { $ne: null };
+			query.approved = { $ne: null };
+			query.evaluated = null ;
 		}
 	}
 	else if(role === 'hall_director') {
+		query.hall = userHall;
+
 		if(status === 'pending') {
-			query = {
-				'hall': userHall,
-				'checked': null
-			};
+			query.checked = null;
 		}
 		else if(status === 'approved') {
-			query = {
-				'hall': userHall,
-				'checked': { $ne: null },
-				'approved': null
-			};
-		}
-		else if(status === 'all') {
-			query = {
-				'hall': userHall,
-			};
+			query.checked = { $ne: null };
+			query.approved = null;
 		}
 	}
 	else if(role === 'reviewer') {
 		if(status === 'pending') {
-			query = {
-				'checked': { $ne: null },
-				'reviewed': null
-			};
+			query.checked = { $ne: null };
+			query.reviewed = null;
 		}
 		else if(status === 'approved') {
-			query = {
-				'reviewed': { $ne: null },
-				'approved': null
-			};
-		}
-		else if(status === 'all') {
-			query = {};
+			query.reviewed = { $ne: null };
+			query.approved = null;
 		}
 	}
 	else if(role === 'approver') {
 		if(status === 'pending') {
-			query = {
-				'checked': { $ne: null },
-				'reviewed': { $ne: null },
-				'approved': null
-			};
+			query.checked = { $ne: null };
+			query.reviewed = { $ne: null };
+			query.approved = null;
 		}
 		else if(status === 'approved') {
-			query = {
-				'approved': { $ne: null },
-			};
-		}
-		else if(status === 'all') {
-			query = {};
+			query.approved = { $ne: null };
 		}
 	}
 

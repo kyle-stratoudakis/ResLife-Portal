@@ -74,7 +74,6 @@ const Login = React.createClass({
 							floatingLabelText='Hall'
 						>
 							<MenuItem value='Brownell' primaryText='Brownell' />
-							<MenuItem value='Central_Office' primaryText='Central Office' />
 							<MenuItem value='Chase' primaryText='Chase' />
 							<MenuItem value='Farnham' primaryText='Farnham' />
 							<MenuItem value='Hickerson' primaryText='Hickerson' />
@@ -92,7 +91,7 @@ const Login = React.createClass({
 
 	render () {
 		let { centerStyle } = this.state;
-		return(
+		return (
 			<MuiThemeProvider muiTheme={getMuiTheme()}>
 				<div className='app'>
 					<nav className='navbar-fixed-top'>
@@ -116,6 +115,8 @@ const Login = React.createClass({
 									<br />
 									<FormsyText
 										required
+										// autoComplete='off'
+										ref='username'
 										name='username'
 										hintText='MySCSU Username'
 										floatingLabelText='Username'
@@ -123,6 +124,7 @@ const Login = React.createClass({
 									<br />
 									<FormsyText
 										required
+										ref='password'
 										name='password'
 										type='password'
 										hintText='MySCSU Password'
@@ -142,7 +144,7 @@ const Login = React.createClass({
 					<div className='col-sm-4'></div>
 					<br /><br /><br />
 				</div>
-				</MuiThemeProvider>
+			</MuiThemeProvider>
 		)
 	}
 });

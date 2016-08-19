@@ -239,7 +239,7 @@ class Program extends Component{
 					required
 					hintText='Include name and quantity'
 					floatingLabelText='Item Description'
-					multiLine={true}
+					// multiLine={true}
 					style={listStyle}
 					value={item.description}
 				/>
@@ -529,7 +529,6 @@ class Program extends Component{
 						/>
 					</div>
 				</div>
-
 			)
 		}
 	}
