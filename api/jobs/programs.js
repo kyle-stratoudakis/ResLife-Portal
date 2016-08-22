@@ -16,7 +16,7 @@ route.get('/get/workorders', m_role, m_programQuery, function(req, res) {
 	var empty = [{'_id': 'x','title': 'No Programs','description': 'No Programs Found'}]
 
 	programModel.find(query, projection, sort, function(err, programs) {
-		if(err){
+		if(err) {
 			console.log(err);
 		}
 		else {
@@ -57,6 +57,9 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 	if(data.staff) program.staff = JSON.stringify(data.staff);
 	if(data.funding) program.funding = data.funding;
 	if(data.fundingType) program.fundingType = data.fundingType;
+
+	if(data.travelAuthorization) program.travelAuthorization = data.travelAuthorization;
+	if(data.chartwellsQuote) program.chartwellsQuote = data.chartwellsQuote;
 
 	if(data.councilDate) program.councilDate = data.councilDate;
 	if(data.councilMotioned) program.councilMotioned = data.councilMotioned;
@@ -143,6 +146,9 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 		if(data.staff) program.staff = JSON.stringify(data.staff);
 		if(data.funding) program.funding = data.funding;
 		if(data.fundingType) program.fundingType = data.fundingType;
+
+		if(data.travelAuthorization) program.travelAuthorization = data.travelAuthorization;
+		if(data.chartwellsQuote) program.chartwellsQuote = data.chartwellsQuote;
  		
  		if(data.councilDate || data.councilMotioned || data.councilSeconded || data.councilFavor || data.councilOpposed || data.councilAbstained || data.councilApproval) {
  			req.email = 'hall_council';

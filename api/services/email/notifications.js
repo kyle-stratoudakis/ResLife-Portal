@@ -1,7 +1,7 @@
 var juice = require('juice');
 var mailer = require('./mailer');
-var notifModel= require('../../model/notification');
-var programModel= require('../../model/program');
+var notifModel = require('../../model/notification');
+var programModel = require('../../model/program');
 var userModel = require('../../model/user');
 var confirmNew = require('./emailTemplates/confirmNew');
 var statusNotif = require('./emailTemplates/statusNotif');
@@ -9,8 +9,13 @@ var fundingApproval = require('./emailTemplates/fundingApproval');
 var pcardAuthForm = require('./emailTemplates/pcardAuthForm');
 
 const notification_middleware = function(req, res, next) {
-	if(!req.workorder.email) {
-		next();
+	try {
+		if(!req.workorder.email) {
+			next();
+		}
+	}
+	catch(ex) {
+		console.log(req.workorder._id, ex);		
 	}
 
 	var template;

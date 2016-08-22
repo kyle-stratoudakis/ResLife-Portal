@@ -54,6 +54,8 @@ var programSchema = new mongoose.Schema({
 	evalWeaknesses: String,
 	evalSuggestions: String,
 	evalOther: String,
+	travelAuthorization: String,
+	chartwellsQuote: String,
 });
 
 module.exports = db.model('program', programSchema);

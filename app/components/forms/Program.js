@@ -34,6 +34,7 @@ class Program extends Component{
 		this.formatDate = this.formatDate.bind(this);
 		this.renderTypeContent = this.renderTypeContent.bind(this);
 		this.renderEvaluation = this.renderEvaluation.bind(this);
+		this.renderQuote = this.renderQuote.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -70,6 +71,8 @@ class Program extends Component{
 			evalWeaknesses: '',
 			evalSuggestions: '',
 			evalOther: '',
+			travelAuthorization: 'onCampus',
+			chartwellsQuote: '',
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
@@ -130,6 +133,8 @@ class Program extends Component{
 				evalWeaknesses: wo.evalWeaknesses || '',
 				evalSuggestions: wo.evalSuggestions || '',
 				evalOther: wo.evalOther || '',
+				travelAuthorization: wo.travelAuthorization || 'onCampus',
+				chartwellsQuote: wo.chartwellsQuote || '',
 				label: (wo._id ? 'Edit' : 'Submit')
 			})
 		}
@@ -278,7 +283,7 @@ class Program extends Component{
 				if(total > 0){
 					return (
 						<div className='row'>
-						<Subheader>Funding Type</Subheader>
+							<Subheader>Funding Type</Subheader>
 							<FormsyRadioGroup name='fundingType' defaultSelected={this.state.fundingType} required>
 								<FormsyRadio
 									value='pcard'
@@ -298,10 +303,37 @@ class Program extends Component{
 								style={listStyle}
 								value={'$' + total.toFixed(2)}
 							/>
+							{this.renderQuote(total)}
 						</div>
 					)
 				}
 			}
+		}
+	}
+
+	renderQuote(total) {
+		if(total >= 99) {
+			return (
+				<div>
+					<br />
+					If your total funding request for food purchases is over $99.00 you must request a competing quote from Chartwells.
+					<Subheader>Chartwells Quote</Subheader>
+					<FormsyRadioGroup name='chartwellsQuote' defaultSelected={this.state.chartwellsQuote} required>
+						<FormsyRadio
+							value='notRequired'
+							label='Not Required'
+						/>
+						<FormsyRadio
+							value='no'
+							label='No'
+						/>
+						<FormsyRadio
+							value='yes'
+							label='Yes'
+						/>
+					</FormsyRadioGroup>
+				</div>
+			)
 		}
 	}
 
@@ -629,6 +661,21 @@ class Program extends Component{
 							floatingLabelText='Location'
 							value={this.state.location}
 						/>
+						<Subheader>Travel Authorization Form Completed</Subheader>
+						<FormsyRadioGroup name='travelAuthorization' defaultSelected={this.state.travelAuthorization} required>
+							<FormsyRadio
+								value='onCampus'
+								label='Staying on campus'
+							/>
+							<FormsyRadio
+								value='no'
+								label='No'
+							/>
+							<FormsyRadio
+								value='yes'
+								label='Yes'
+							/>
+						</FormsyRadioGroup>
 						<FormsyText
 							name='outcomes'
 							required

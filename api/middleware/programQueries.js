@@ -10,7 +10,7 @@ const programQueries = function(req, res, next) {
 	if(halls) {
 		query.hall = { $in: halls };
 	}
-	console.log('halls', halls)
+	// console.log('halls', halls)
 
 	if(role === 'submitter') {
 		query.user = userId;
