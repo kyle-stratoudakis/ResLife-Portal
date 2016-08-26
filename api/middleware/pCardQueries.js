@@ -1,16 +1,9 @@
-const programQueries = function(req, res, next) {
+const pCardQueries = function(req, res, next) {
 	var decodedUser = req.decodedUser;
 	var userId = decodedUser._id;
-	var userHall = decodedUser.hall;
 	var role = req.decodedUser.role;
 	var status = req.query.status;
-	var halls = (req.query.hall ? req.query.hall : null);
 	var query = {};
-
-	if(halls) {
-		query.hall = { $in: halls };
-	}
-	// console.log('halls', halls)
 
 	if(role === 'submitter') {
 		query.user = userId;
@@ -19,42 +12,32 @@ const programQueries = function(req, res, next) {
 			query.approved = null;
 		}
 		else if(status === 'approved') {
-			query.checked = { $ne: null };
 			query.reviewed = { $ne: null };
 			query.approved = { $ne: null };
-			query.evaluated = null ;
-		}
-		else if(status === 'completed') {
-			query.checked = { $ne: null };
-			query.reviewed = { $ne: null };
-			query.approved = { $ne: null };
-			query.evaluated = { $ne: null };
 		}
 	}
-	else if(role === 'hall_director') {
-		query.hall = userHall;
+	else if(role === 'rha') {
+		query.cardType = 'rha';
 
 		if(status === 'pending') {
-			query.checked = null;
+			query.checked = { $ne: userId };
+			query.reviewed = null;
 		}
 		else if(status === 'approved') {
-			query.checked = { $ne: null };
-			query.approved = null;
+			query.checked = userId;
 		}
 	}
 	else if(role === 'reviewer') {
 		if(status === 'pending') {
-			query.checked = { $ne: null };
+			query.needsCheck = false;
 			query.reviewed = null;
 		}
 		else if(status === 'approved') {
 			query.reviewed = { $ne: null };
-			query.approved = null;
 		}
 	}
 	else if(role === 'approver') {
 		if(status === 'pending') {
-			query.checked = { $ne: null };
 			query.reviewed = { $ne: null };
 			query.approved = null;
 		}
@@ -64,21 +47,18 @@ const programQueries = function(req, res, next) {
 	}
 
 	if(query) {
-		req.programQuery = query;
+		// console.log(role, status, query)
+		req.query = query;
 
-		req.programProjection = {
+		req.projection = {
 			searchId: 1,
 			title: 1,
 			name: 1,
-			type: 1,
 			description: 1,
-			checked: 1,
-			reviewed: 1,
-			approved: 1,
-			evaluated: 1
+			approved: 1
 		};
 
-		req.programSort = {
+		req.sort = {
 			sort: {
 				'_id': 1
 			}
@@ -88,4 +68,4 @@ const programQueries = function(req, res, next) {
 	}
 }
 
-module.exports = programQueries;
+module.exports = pCardQueries;

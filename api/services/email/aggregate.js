@@ -45,7 +45,7 @@ function buildMail(user) {
 	.exec(function(err, notifs) {
 		if(notifs && notifs.length > 0) {
 			// console.log(notifs)
-			mailOptions.text = JSON.stringify(notifs);
+			mailOptions.text = JSON.stringify(notifs, '	', '\n');
 
 			juice.juiceResources(notifDigest(user, notifs), {}, function(err, inlined) {
 				if(err) {
@@ -59,7 +59,7 @@ function buildMail(user) {
 						markAsSent(user, notifs[i]._id);
 					}
 
-					console.log('mailed aggregate of ' + notifs.length + ' notifs');
+					console.log('mailed ' + notifs.length + ' notifs to ' + user.email);
 				}
 			});
 		}
@@ -69,11 +69,12 @@ function buildMail(user) {
 const markAsSent = function(user, notifId) {
 	notifModel.findById(notifId, function(err, notif) {
 		if(!err && notif) {
-			if(notif.event === 'edited') {
+			if(notif.temp === true) {
 				notif.remove();
 			}
 			else {
 				notif.sent.push(user._id);
+				notif.save();
 			}
 		}
 		else if(err) {

@@ -1,6 +1,16 @@
 var config = require('../../../../../config');
-const confirmNew = function(wo) {
+const confirmNew = function(wo, type) {
 	var host = config.PROTOCOL + config.HOST;
+	var message;
+	var link;
+	if(type === 'program') {
+		message = `Your program <strong><i>`+wo.title+`</i></strong> has been submitted. You can view the status or edit this program by logging into the portal and navigating to RA Programs or by clicking the button below.`;
+		link = `<a href="`+host+`/job/Programs/View/Programs/`+wo._id+`">Access Program</a>`;
+	}
+	else if(type === 'pcard'){
+		message = `Your funding request <strong><i>`+wo.title+`</i></strong> has been submitted. You can view the status or edit this request by logging into the portal and navigating to Funding or by clicking the button below.`;
+		link = `<a href="`+host+`/job/Funding/View/Funding/`+wo._id+`">Access Request</a>`;
+	}
 	return (
 		`<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
 		<html xmlns='http://www.w3.org/1999/xhtml'>
@@ -60,7 +70,7 @@ const confirmNew = function(wo) {
 							  <tbody>
 								<tr>
 								  <td>
-									<h2>New Program Confirmation</h2>
+									<h2>Submission Confirmation</h2>
 								  </td>
 								</tr>
 								<tr>
@@ -70,7 +80,7 @@ const confirmNew = function(wo) {
 								</tr>
 								<tr>
 								  <td>
-									Your program <strong><i>`+wo.title+`</i></strong> has been submitted. You can view the status or edit this program by logging into the portal and navigating to RA Programs or by clicking the button below.
+									`+message+`
 								  </td>
 								</tr>
 								<tr>
@@ -83,7 +93,7 @@ const confirmNew = function(wo) {
 									>
 									  <tr>
 										<td>
-										  <a href="`+host+`/job/Programs/View/Programs/`+wo._id+`">Access Program</a>
+										  `+link+`
 										</td>
 									  </tr>
 									</table>

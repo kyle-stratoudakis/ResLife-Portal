@@ -12,6 +12,7 @@ injectTapEventPlugin();
 import App from './components/App';
 import Login from './components/Login';
 import Program from './components/forms/Program';
+import PCardRequest from './components/forms/PCardRequest';
 import CardGrid from './components/CardGrid';
 import JobContent from './components/JobContent';
 import TechRequest from './components/forms/TechRequest';
@@ -36,6 +37,10 @@ const router = (
 					<Route path="View/Programs/:_id" component={Auth(Program)} />
 					<Route path="Edit/Programs/:_id" component={Auth(Program)} />
 					<Route path="Evaluate/Programs/:_id" component={Auth(Program)} />
+				{/* Funding Requests Routes */}
+					<Route path="New/Funding" component={Auth(PCardRequest)} />
+					<Route path="View/Funding/:_id" component={Auth(PCardRequest)} />
+					<Route path="Edit/Funding/:_id" component={Auth(PCardRequest)} />
 					{/* TechRequest Routes */}
 					<Route path="New/TechRequest" component={Auth(TechRequest)} />
 					<Route path="View/TechSupport/:_id" component={Auth(TechRequest)} />

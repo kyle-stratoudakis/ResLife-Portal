@@ -47,6 +47,9 @@ export default function factory(React, empty) {
 				if(location === 'Programs') {
 					title += action + ' Program';
 				}
+				else if(location === 'Funding') {
+					title += action + ' Funding Request';
+				}
 				else if(location === 'TechSupport') {
 					title += action + ' Tech Request';
 				}

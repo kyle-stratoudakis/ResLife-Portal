@@ -35,6 +35,7 @@ class Program extends Component{
 		this.renderTypeContent = this.renderTypeContent.bind(this);
 		this.renderEvaluation = this.renderEvaluation.bind(this);
 		this.renderQuote = this.renderQuote.bind(this);
+		this.handleToggle = this.handleToggle.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -240,8 +241,8 @@ class Program extends Component{
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Item '+(i+1)}</Subheader>
 				<FormsyText
-					name={'items['+i+'][description]'}
 					required
+					name={'items['+i+'][description]'}
 					hintText='Include name and quantity'
 					floatingLabelText='Item Description'
 					// multiLine={true}
@@ -250,14 +251,15 @@ class Program extends Component{
 				/>
 				<br />
 				<FormsyText
-					name={'items['+i+'][cost]'}
 					required
+					name={'items['+i+'][cost]'}
 					validation='isNumeric'
 					validationError='Please use only numbers'
 					hintText='Total item cost'
 					floatingLabelText='Item cost'
 					style={listStyle}
 					value={item.cost}
+					disabled={(this.state.reviewed ? true : false)}
 				/>
 				<FlatButton
 					label='Remove'
@@ -284,7 +286,12 @@ class Program extends Component{
 					return (
 						<div className='row'>
 							<Subheader>Funding Type</Subheader>
-							<FormsyRadioGroup name='fundingType' defaultSelected={this.state.fundingType} required>
+							<FormsyRadioGroup
+								required
+								name='fundingType'
+								valueSelected={this.state.fundingType}
+								onChange={this.handleToggle} 
+							>
 								<FormsyRadio
 									value='pcard'
 									label='P-Card'
@@ -318,7 +325,12 @@ class Program extends Component{
 					<br />
 					If your total funding request for food purchases is over $99.00 you must request a competing quote from Chartwells.
 					<Subheader>Chartwells Quote</Subheader>
-					<FormsyRadioGroup name='chartwellsQuote' defaultSelected={this.state.chartwellsQuote} required>
+					<FormsyRadioGroup
+						required
+						name='chartwellsQuote'
+						valueSelected={this.state.chartwellsQuote}
+						onChange={this.handleToggle} 
+					>
 						<FormsyRadio
 							value='notRequired'
 							label='Not Required'
@@ -361,7 +373,7 @@ class Program extends Component{
 					required
 					hintText='Additional Staff'
 					floatingLabelText='Staff Name'
-					multiLine={true}
+					// multiLine={true}
 					style={listStyle}
 					value={staff.name}
 				/>
@@ -455,7 +467,12 @@ class Program extends Component{
 								value={this.state.councilAbstained}
 							/>
 							<Subheader>Council Approval</Subheader>
-							<FormsyRadioGroup name='councilApproval' defaultSelected={this.state.councilApproval} required>
+							<FormsyRadioGroup
+								required
+								name='councilApproval'
+								valueSelected={this.state.councilApproval}
+								onChange={this.handleToggle} 
+							>
 								<FormsyRadio
 									value='approved'
 									label='Approved'
@@ -505,7 +522,12 @@ class Program extends Component{
 							value={this.state.evalCost}
 						/>
 						<Subheader>P-card and Reciepts Returned</Subheader>
-						<FormsyRadioGroup name='evalCardReturn' defaultSelected={this.state.evalCardReturn} required>
+						<FormsyRadioGroup
+							required
+							name='evalCardReturn'
+							valueSelected={this.state.evalCardReturn}
+							onChange={this.handleToggle} 
+						>
 							<FormsyRadio
 								value='no'
 								label='No'
@@ -569,6 +591,12 @@ class Program extends Component{
 		return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
 	}
 
+	handleToggle(e, value) {
+		let data = {};
+		data[e.target.name] = value;
+		this.setState(data);
+	}
+
 	render() {
 		let { centerStyle } = this.state.styles;
 		return (
@@ -577,7 +605,6 @@ class Program extends Component{
 				<Divider />
 				<Subheader>Program tracker</Subheader>
 				<div style={centerStyle}>
-					{/*<TrackProgram workOrder={this.props.details} />*/}
 					<TrackProgram workOrder={this.props.details} size={screen.width}/>
 				</div>
 				<Formsy.Form
@@ -662,7 +689,12 @@ class Program extends Component{
 							value={this.state.location}
 						/>
 						<Subheader>Travel Authorization Form Completed</Subheader>
-						<FormsyRadioGroup name='travelAuthorization' defaultSelected={this.state.travelAuthorization} required>
+						<FormsyRadioGroup
+							required
+							name='travelAuthorization'
+							valueSelected={this.state.travelAuthorization}
+							onChange={this.handleToggle} 
+						>
 							<FormsyRadio
 								value='onCampus'
 								label='Staying on campus'
@@ -713,6 +745,7 @@ class Program extends Component{
 							type='button'
 							label='Add Item'
 							onClick={this.addJSONItem.bind(this)}
+							disabled={(this.state.reviewed ? true : false)}
 						/>
 						{this.renderCostTotal()}
 					</div>

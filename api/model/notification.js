@@ -15,7 +15,7 @@ var notifSchema = new mongoose.Schema({
 	event: String,
 	type: String,
 	message: String,
-	urgent: Boolean
+	temp: Boolean
 });
 
 module.exports = db.model('notification', notifSchema);

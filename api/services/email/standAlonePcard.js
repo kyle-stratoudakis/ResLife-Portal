@@ -5,17 +5,7 @@ var pcardAuthForm = require('./emailTemplates/pcardAuthForm');
 const pcard = function(id) {
 	programModel.findOne({ _id: id })
 	.populate({
-		path: 'checked',
-		select: 'name -_id',
-		model: userModel
-	})
-	.populate({
-		path: 'reviewed',
-		select: 'name -_id',
-		model: userModel
-	})
-	.populate({
-		path: 'approved',
+		path: 'checked reviewed approved',
 		select: 'name -_id',
 		model: userModel
 	})

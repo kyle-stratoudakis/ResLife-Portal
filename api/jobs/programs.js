@@ -15,7 +15,9 @@ route.get('/get/workorders', m_role, m_programQuery, function(req, res) {
 	var sort = req.programSort;
 	var empty = [{'_id': 'x','title': 'No Programs','description': 'No Programs Found'}]
 
-	programModel.find(query, projection, sort, function(err, programs) {
+	programModel.find(query, projection, sort)
+	.lean()
+	.exec(function(err, programs) {
 		if(err) {
 			console.log(err);
 		}
@@ -111,8 +113,8 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 
 	program.save(function(err, saved) {
 		if(!err) {
-			res.json(program._id);
-			req.workorder = program;
+			res.json(saved._id);
+			req.workorder = saved;
 			req.email = 'new';
 			next();
 		}
@@ -181,6 +183,7 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 		program.save(function(err, saved) {
 			if(!err) {
 				res.status(200).json(saved._id);
+				req.workorder = saved;
 				next();
 			}
 			else {
@@ -230,8 +233,8 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 
 			program.save(function(err, saved) {
 				if(!err) {
-					req.workorder = saved;
 					res.status(200).json({status: 'approve'});
+					req.workorder = saved;
 					next();
 				}
 				else {
@@ -280,8 +283,8 @@ route.put('/put/return', jsonParser, m_role, function(req, res, next){
 			}
 			program.save(function(err, saved) {
 				if(!err) {
-					req.workorder = saved;
 					res.status(200).json({status: 'return'});
+					req.workorder = saved;
 					next();
 				}
 				else {
@@ -297,12 +300,13 @@ route.put('/put/return', m_notif);
 route.get('/get/details', function(req, res) {
 	if(req.query.jwt) {
 		var id = req.query.id;
-		programModel.findOne({'_id': id})
+		programModel.findOne({ '_id': id })
 		.populate({
 			path: 'user checked reviewed approved evaluated',
 			select: 'name -_id',
 			model: userModel
 		})
+		.lean()
 		.exec(function(err, program) {
 			if(!err) {
 				if(program === null) program = {};
@@ -314,5 +318,64 @@ route.get('/get/details', function(req, res) {
 		});
 	}
 });
+
+// route.get('/get/tableData', function(req, res) {
+// 	var fs = require('fs');
+// 	var getDate = require('../utils/getDate');
+// 	var getTime = require('../utils/getTime');
+// 	var getDateTime = require('../utils/getDateTime');
+// 	if(req.query.hall) {
+// 		console.log(req.query.hall)
+// 		programModel.find({ hall: req.query.hall }) 
+// 		.select('approved approvedDate checked checkedDate date description email evaluated hall location name outcomes primary_contact reviewed reviewedDate searchId submittedDate time title type user')
+// 		.populate({
+// 			path: 'user checked reviewed approved evaluated',
+// 			select: 'name -_id',
+// 			model: userModel
+// 		})
+// 		.lean()
+// 		.exec(function(err, programs) {
+// 			console.log(err, programs)
+// 			if(programs && programs.length > 0) {
+// 				console.log(programs[0])
+// 				var table = fs.createWriteStream('result.csv');
+// 				var cell;
+// 				var keys = Object.keys(programs[0]);
+// 				console.log(keys);
+// 				result += keys.join(',') + '\n';
+// 				for(var i = 0; i < programs.length; i++) {
+// 					for(var k = 0; k < keys.length; k++) {
+						
+// 						cell = programs[i][keys[k]];
+						
+// 						if(keys[k] === 'date') cell = getDate(new Date(cell));
+// 						if(keys[k] === 'time') cell = getTime(new Date(cell));
+// 						if(keys[k] === 'submittedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
+// 						if(keys[k] === 'checkedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
+// 						if(keys[k] === 'reviewedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
+// 						if(keys[k] === 'approvedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
+// 						if(keys[k] === 'evaluatedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
+// 						if(keys[k] === 'user' || keys[k] === 'checked' || keys[k] === 'reviewed' || keys[k] === 'approved' || keys[k] === 'evaluated') {
+// 							if(cell) cell = cell.name;
+// 						}
+
+// 						if(keys[k] === 'description') {
+// 							cell = cell.replace(/,/g, '');
+// 						}
+
+// 						if(cell === undefined || cell === null) cell = '';
+
+// 						table.write(cell + ',');
+// 					}
+// 					table.write('\n');
+// 				}
+// 				fs.writeFile('result.csv', result, function(err) {
+// 					if(err) console.log(err)
+// 				});
+// 			}
+// 		});
+// 		res.sendStatus(200);
+// 	}
+// });
 
 module.exports = route;

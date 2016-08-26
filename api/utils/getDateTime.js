@@ -1,18 +1,11 @@
 const getDate = require('./getDate');
+const getTime = require('./getTime');
 
 const getDateTime = function(date, time) {
-	var t = new Date(time);
-	var hr = t.getHours();
-	var mn = t.getMinutes();
-	var tod = (hr >= 12 ? ' pm' : ' am');
-	if(hr > 12) {
-		hr = hr - 12;
-		tod = ' pm';
-	}
-	if(mn < 10) {
-		mn = '0'+ mn;
-	}
-	return getDate(date) +', '+ hr +':'+ mn + tod;
+	var d = getDate(date);
+	var t = getTime(time);
+	console.log(t);
+	return  d +', '+ t;
 }
 
 module.exports = getDateTime;

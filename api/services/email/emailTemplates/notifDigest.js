@@ -81,11 +81,6 @@ const notifDigest = function(user, notifs) {
 								  	  cellspacing="0"
 								  	  width="100%"
 								  	>
-								  	  <thead>
-								  	    <th>ID</th>
-								  	    <th>Title</th>
-								  	    <th>Action</th>
-								  	  </thead>
 								  	  <tbody>
 									  	`+generateTable(notifs)+`
 								  	  </tbody>
@@ -109,9 +104,15 @@ const notifDigest = function(user, notifs) {
 }
 
 function generateTable(notifs) {
+	// console.log(notifs);
 	var w;
 	var host = config.PROTOCOL + config.HOST;
-	var table = '';
+	var table = `<tr>
+				  <td><h3>ID</h3></td>
+				  <td><h3>Title</h3></td>
+				  <td><h3>Action</h3></td>
+				</tr>`;
+
 	notifs.map(function(notif) {
 		w = notif.workorder;
 		table +=`<tr>
@@ -126,12 +127,12 @@ function generateTable(notifs) {
 					>
 					  <tr>
 						<td>
-						  <a href="`+host+`/job/Programs/View/Programs/`+w._id+`">View</a>
+							<a href="`+host+`/job/Programs/View/Programs/`+w._id+`">View</a>
 						</td>
 					  </tr>
 					</table>
 				</td>
-			</tr>`;
+			</tr>`
 	});
 	return table
 }

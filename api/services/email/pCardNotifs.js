@@ -1,14 +1,14 @@
 var juice = require('juice');
 var mailer = require('./mailer');
+var pCardModel = require('../../model/pCardRequest');
 var notifModel = require('../../model/notification');
-var programModel = require('../../model/program');
 var userModel = require('../../model/user');
 var confirmNew = require('./emailTemplates/confirmNew');
-var statusNotif = require('./emailTemplates/statusNotif');
 var fundingApproval = require('./emailTemplates/fundingApproval');
 var pcardAuthForm = require('./emailTemplates/pcardAuthForm');
 
 const notification_middleware = function(req, res, next) {
+	// console.log('pcardNotifs', req.email, req.notif);
 	try {
 		if(!req.workorder.email) {
 			next();
@@ -28,25 +28,14 @@ const notification_middleware = function(req, res, next) {
 
 	// Check email type and set template
 	if(req.email === 'new') {
-		template = confirmNew(wo, 'program');
-	}
-	if(req.email === 'checked') {
-		template = statusNotif('checked', wo);
+		template = confirmNew(wo, 'pcard');
 	}
 	if(req.email === 'reviewed') {
-		if(wo.checked && wo.reviewed && wo.funding) {
-			template = statusNotif('funding', wo);
-		}
-		else {
-			template = statusNotif('reviewed', wo);
-		}
-	}
-	if(req.email === 'reviewer_approved') {
-		template = statusNotif('reviewer approved', wo);
+		template = statusNotif('funding', wo);
 	}
 	if(req.email === 'approved') {
 		var email = fundingApproval(wo);
-		programModel.findOne({ _id: wo._id })
+		pCardModel.findOne({ _id: wo._id })
 		.populate({
 			path: 'checked reviewed approved',
 			select: 'name -_id',
@@ -55,10 +44,13 @@ const notification_middleware = function(req, res, next) {
 		.exec(function(err, fields) {
 			if(!err) {
 				try {
+					fields.date = new Date();
+					fields.time = new Date();
+					fields.type = fields.cardtype;
 					mailOptions.attachments = [{ filename: 'P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 				}
 				catch(ex) {
-					console.log('pcard auth attachment error, wo._id: ' + wo._id);
+					console.log('pcard attachment error, wo._id: ' + wo._id);
 					console.log(ex);
 				}
 
@@ -67,6 +59,7 @@ const notification_middleware = function(req, res, next) {
 						console.log(err)
 					}
 					else {
+						mailOptions.to = 'thibaultk1@southernct.edu';
 						mailOptions.html = inlined;
 						mailer(mailOptions);
 					}
@@ -90,37 +83,28 @@ const notification_middleware = function(req, res, next) {
 
 	// Check notification type and register notification
 	if(req.notif === 'new') {
-		registerNotif(wo.hall+'_new', 'new', wo);
+		registerNotif('funding_new', 'new', wo);
+	}
+	else if(req.notif === 'rha_new') {
+		registerNotif('rha_new', 'RHA new', wo);
 	}
 	else if(req.notif === 'checked') {
-		registerNotif(wo.hall+'_reviewer', 'checked', wo);
+		var newRole;
+		// Determine who checked request and leave notif for other checker
+		for(var i = 0; i < wo.checked.length; i++) {
+			if(wo.checked[i] === '57a367a4ed0beeff20739568') newRole = 'rha_two'; // exclude Mandi Kuster
+			if(wo.checked[i] === '57a367b1ed0beeff20739569') newRole = 'rha_one'; // exclude Mark Parrott
+		}
+		registerNotif(newRole, 'RHA checked', wo);
+	}
+	else if(req.notif === 'checked_complete') {
+		registerNotif('funding_new', 'RHA checked', wo);
 	}
 	else if(req.notif === 'reviewed') {
-		if(wo.checked && wo.reviewed && wo.funding) {
-			registerNotif('approver', 'funding', woe);
-		}
-		else {
-			deleteNotif(wo._id);
-		}
-	}
-	else if(req.notif === 'edited') {
-		console.log('notif - edited')
-		registerTempNotif(wo.hall+'_edited', 'edited', wo);
-	}
-	else if(req.notif === 'deny_checked') {
-		registerTempNotif(req.decodedUser._id+'_denied', 'hall director denied', wo);
-	}
-	else if(req.notif === 'deny_reviewed') {
-		registerTempNotif(req.decodedUser._id+'_denied', 'reviewer denied', wo);
-	}
-	else if(req.notif === 'deny_reviewer_approved') {
-		registerTempNotif(req.decodedUser._id+'_denied', 'reviewer denied', wo);
-	}
-	else if(req.notif === 'approver_denied') {
-		registerTempNotif(req.decodedUser._id+'_denied', 'approver denied', wo)
+		registerNotif('approver', 'funding', wo);
 	}
 	else if(req.notif === 'delete_notif') {
-		deleteNotif(wo._id);
+		deleteNotif({ workorder: wo._id });
 	}
 
 	next();
@@ -144,7 +128,7 @@ function registerNotif(role, event, workorder) {
 			});
 			newNotif.save();
 		}
-	})
+	});
 }
 
 function registerTempNotif(role, event, wo) {
@@ -159,8 +143,8 @@ function registerTempNotif(role, event, wo) {
 	newNotif.save();
 }
 
-function deleteNotif(id) {
-	notifModel.remove({ workorder: id }, function(err) {
+function deleteNotif(query) {
+	notifModel.remove(query, function(err) {
 		if(err) {
 			console.log('deleteNotif err: ' + err);
 		}
