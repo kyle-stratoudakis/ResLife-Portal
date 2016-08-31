@@ -21,7 +21,7 @@ const notification_middleware = function(req, res, next) {
 	var template;
 	var wo = req.workorder;
 	var mailOptions = {
-		to: wo.email,
+		to: getHD(wo.hall),
 		subject: wo.title,
 		text: JSON.stringify(wo),
 	}
@@ -55,7 +55,7 @@ const notification_middleware = function(req, res, next) {
 		.exec(function(err, fields) {
 			if(!err) {
 				try {
-					mailOptions.attachments = [{ filename: 'P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
+					mailOptions.attachments = [{ filename: 'ID:'+wo.searchId+' P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 				}
 				catch(ex) {
 					console.log('pcard auth attachment error, wo._id: ' + wo._id);
@@ -97,7 +97,7 @@ const notification_middleware = function(req, res, next) {
 	}
 	else if(req.notif === 'reviewed') {
 		if(wo.checked && wo.reviewed && wo.funding) {
-			registerNotif('approver', 'funding', woe);
+			registerNotif('approver', 'funding', wo);
 		}
 		else {
 			deleteNotif(wo._id);
@@ -165,5 +165,38 @@ function deleteNotif(id) {
 			console.log('deleteNotif err: ' + err);
 		}
 	});
+}
+
+function getHD(hall) {
+	var email = 'stratoudakk1@southernct.edu'
+	if(hall === 'Schwartz') {
+		email = 'gleifertn1@southernct.edu';
+	}
+	else if(hall === 'West') {
+		email = 'dishiane1@southernct.edu';
+	}
+	else if(hall === 'Brownell') {
+		email = 'rizkj1@southernct.edu';
+	}
+	else if(hall === 'Chase') {
+		email = 'eppsjrw1@southernct.edu';
+	}
+	else if(hall === 'Farnham') {
+		email = 'vargasc1@southernct.edu';
+	}
+	else if(hall === 'Hickerson') {
+		email = 'codyk2@southernct.edu';
+	}
+	else if(hall === 'Neff') {
+		email = 'johnsonj103@southernct.edu';
+	}
+	else if(hall === 'North') {
+		email = 'boneta1@southernct.edu';
+	}
+	else if(hall === 'Wilkinson') {
+		email = 'hoffmannk1@southernct.edu';
+	}
+
+	return email;
 }
 module.exports = notification_middleware;

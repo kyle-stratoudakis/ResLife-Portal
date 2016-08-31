@@ -19,8 +19,6 @@ const sendMail = function(mailOptions) {
 
 	mailOptions.from = config.mailFrom;
 
-	// console.log(smtpConfig, mailOptions);
-
 	var transporter = nodemailer.createTransport(smtp(smtpConfig));
 	// var transporter = nodemailer.createTransport(stub(smtpConfig));
 	// console.log('Attempting to send mail')
