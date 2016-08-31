@@ -24,10 +24,20 @@ var pCardSchema = new mongoose.Schema({
 	reviewedDate: Date,
 	approvedDate: Date,
 	items: String,
+	staff: String,
 	description: String,
 	cardType: String,
 	funding: String,
-	needsCheck: Boolean
+	needsCheck: Boolean,
+	type: String,
+	date: Date,
+	time: Date,
+	staff: String,
+	location: String,
+	department: String,
+	outcomes: String,
+	travelAuthorization: String,
+	chartwellsQuote: String,
 });
 
 module.exports = db.model('pCardRequest', pCardSchema);

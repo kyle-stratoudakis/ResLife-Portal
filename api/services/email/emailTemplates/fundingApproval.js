@@ -1,5 +1,4 @@
 const fundingApproval = function(wo) {
-	console.log('funding approval');
 	return (
 		`<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
 		<html xmlns='http://www.w3.org/1999/xhtml'>
@@ -69,7 +68,7 @@ const fundingApproval = function(wo) {
 								</tr>
 								<tr>
 								  <td>
-									Funding was approved for the program `+wo.title+`. Attached is a generated P-Card authorization form with the programs details filled out.
+									Funding was approved for the program <strong><i>`+wo.title+`</i></strong>. Attached is a generated P-Card authorization form with the programs details filled out.
 								  </td>
 								</tr>
 								<tr>

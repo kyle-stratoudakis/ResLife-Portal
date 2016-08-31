@@ -46,12 +46,22 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		email: decodedUser.email,
 		primary_contact: decodedUser.primary_contact,
 		hall: decodedUser.hall,
-		items: JSON.stringify(data.items),
 		description: data.description,
 		cardType: data.cardType,
-		funding: data.funding,
+		type: data.type,
+		date: data.date,
+		time: data.time,
+		location: data.location,
+		outcomes: data.outcomes,
+		travelAuthorization: data.travelAuthorization,
 		needsCheck: (data.cardType === 'rha' ? true : false)
 	});
+
+	if(data.items) request.items = JSON.stringify(data.items);
+	if(data.staff) request.staff = JSON.stringify(data.staff);
+	if(data.funding) request.funding = data.funding;
+	if(data.department) request.department = data.department;
+	if(data.chartwellsQuote) request.chartwellsQuote = data.chartwellsQuote;
 
 	if(role === 'submitter') {
 		if(!request.needsCheck === true) {
@@ -94,10 +104,17 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 	pCardModel.findOne({ _id: formId }, function(err, request) {
 		request.title = data.title;
 		request.type = data.type;
-		request.items = JSON.stringify(data.items);
 		request.description = data.description;
 		request.cardType = data.cardType;
-		request.amount = data.amount;
+		request.location = data.location;
+		request.outcomes = data.outcomes;
+		request.travelAuthorization = data.travelAuthorization;
+
+		if(data.items) request.items = JSON.stringify(data.items);
+		if(data.staff) request.staff = JSON.stringify(data.staff);
+		if(data.funding) request.funding = data.funding;
+		if(data.department) request.department = data.department;
+		if(data.chartwellsQuote) request.chartwellsQuote = data.chartwellsQuote;
 
 		if(request.cardType === 'rha') {
 			if(request.checked.length < totalChecked) {

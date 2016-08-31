@@ -21,7 +21,7 @@ const notification_middleware = function(req, res, next) {
 	var template;
 	var wo = req.workorder;
 	var mailOptions = {
-		to: getHD(wo.hall),
+		to: wo.email,
 		subject: wo.title,
 		text: JSON.stringify(wo),
 	}
@@ -54,8 +54,9 @@ const notification_middleware = function(req, res, next) {
 		})
 		.exec(function(err, fields) {
 			if(!err) {
+				mailOptions.to = getHD(wo.hall);
 				try {
-					mailOptions.attachments = [{ filename: 'ID:'+wo.searchId+' P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
+					mailOptions.attachments = [{ filename: 'ID-'+wo.searchId+' P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 				}
 				catch(ex) {
 					console.log('pcard auth attachment error, wo._id: ' + wo._id);
@@ -148,7 +149,6 @@ function registerNotif(role, event, workorder) {
 }
 
 function registerTempNotif(role, event, wo) {
-	console.log('tempNotif')
 	var newNotif = new notifModel({
 		workorder: wo._id,
 		role: role,
