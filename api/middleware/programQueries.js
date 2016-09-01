@@ -41,6 +41,18 @@ const programQueries = function(req, res, next) {
 			query.checked = { $ne: null };
 			query.approved = null;
 		}
+		else if(status === 'completed') {
+			query.checked = { $ne: null };
+			query.reviewed = { $ne: null };
+			query.approved = { $ne: null };
+			query.evaluated = null ;
+		}
+		else if(status === 'evaluated') {
+			query.checked = { $ne: null };
+			query.reviewed = { $ne: null };
+			query.approved = { $ne: null };
+			query.evaluated = { $ne: null };
+		}
 	}
 	else if(role === 'reviewer') {
 		if(status === 'pending') {

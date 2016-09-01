@@ -256,34 +256,6 @@ class pCardRequest extends Component{
 				if(total > 0){
 					return (
 						<div className='row'>
-							<Subheader>Card Type</Subheader>
-							<FormsyRadioGroup
-								required
-								name='cardType'
-								valueSelected={this.state.cardType}
-								onChange={this.handleToggle} 
-							>
-								<FormsyRadio
-									value='farnham'
-									label='Farnham Program Space'
-								/>
-								<FormsyRadio
-									value='conferences'
-									label='ResLife Conferences'
-								/>
-								<FormsyRadio
-									value='general'
-									label='ResLife General'
-								/>
-								<FormsyRadio
-									value='programming'
-									label='ResLife Programming'
-								/>
-								<FormsyRadio
-									value='rha'
-									label='Residence Hall Association'
-								/>
-							</FormsyRadioGroup>
 							<FormsyText
 								name='funding'
 								required
@@ -384,104 +356,6 @@ class pCardRequest extends Component{
 		}
 	}
 
-	renderEvaluation () {
-		let { centerStyle } = this.state.styles;
-		if(this.refs.form && (this.state.approved || this.state.evaluated)) {
-			return (
-				<div>
-					<Divider />
-					<Subheader>Program Evaluation</Subheader>
-					<div style={centerStyle}>
-						<FormsyTime
-							name='evalTime'
-							required
-							fullWidth={true}
-							hintText='When did the event end?'
-							floatingLabelText='End Time'
-							value={this.state.evalTime}
-						/>
-						<FormsyText
-							name='evalAttendance'
-							required
-							fullWidth={true}
-							hintText='How many students attended?'
-							floatingLabelText='Attendance'
-							value={this.state.evalAttendance}
-						/>
-						<FormsyText
-							name='evalCost'
-							required
-							fullWidth={true}
-							hintText='How much did you actually spend?'
-							floatingLabelText='Actual Cost'
-							value={this.state.evalCost}
-						/>
-						<Subheader>P-card and Reciepts Returned</Subheader>
-						<FormsyRadioGroup
-							required
-							name='evalCardReturn'
-							valueSelected={this.state.evalCardReturn}
-							onChange={this.handleToggle} 
-						>
-							<FormsyRadio
-								value='no'
-								label='No'
-							/>
-							<FormsyRadio
-								value='yes'
-								label='Yes'
-							/>
-						</FormsyRadioGroup>
-						<FormsyText
-							name='evalOutcomes'
-							required
-							fullWidth={true}
-							multiLine={true}
-							hintText='What learning outcomes were achieved?'
-							floatingLabelText='Achieved Outcomes'
-							value={this.state.evalOutcomes}
-						/>
-						<FormsyText
-							name='evalStrengths'
-							required
-							fullWidth={true}
-							multiLine={true}
-							hintText='What were the programs strengths?'
-							floatingLabelText='Strengths'
-							value={this.state.evalStrengths}
-						/>
-						<FormsyText
-							name='evalWeaknesses'
-							required
-							fullWidth={true}
-							multiLine={true}
-							hintText='What were the programs weaknesses?'
-							floatingLabelText='Weaknesses'
-							value={this.state.evalWeaknesses}
-						/>
-						<FormsyText
-							name='evalSuggestions'
-							required
-							fullWidth={true}
-							multiLine={true}
-							hintText='What could improve this program for if done again?'
-							floatingLabelText='Suggestions for Improvement'
-							value={this.state.evalSuggestions}
-						/>
-						<FormsyText
-							name='evalOther'
-							fullWidth={true}
-							multiLine={true}
-							hintText='Other Comments or Concerns?'
-							floatingLabelText='Other Comments or Concerns (0ptional)'
-							value={this.state.evalOther}
-						/>
-					</div>
-				</div>
-			)
-		}
-	}
-
 	formatDate(d) {
 		return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
 	}
@@ -538,6 +412,34 @@ class pCardRequest extends Component{
 							floatingLabelText='Time'
 							value={this.state.time}
 						/>
+						<Subheader>Card Type</Subheader>
+						<FormsyRadioGroup
+							required
+							name='cardType'
+							valueSelected={this.state.cardType}
+							onChange={this.handleToggle} 
+						>
+							<FormsyRadio
+								value='farnham'
+								label='Farnham Program Space'
+							/>
+							<FormsyRadio
+								value='conferences'
+								label='ResLife Conferences'
+							/>
+							<FormsyRadio
+								value='general'
+								label='ResLife General'
+							/>
+							<FormsyRadio
+								value='programming'
+								label='ResLife Programming'
+							/>
+							<FormsyRadio
+								value='rha'
+								label='Residence Hall Association'
+							/>
+						</FormsyRadioGroup>
 					</div>
 
 					<Divider />
