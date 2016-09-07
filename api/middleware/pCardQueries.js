@@ -20,7 +20,7 @@ const pCardQueries = function(req, res, next) {
 		query.cardType = 'rha';
 
 		if(status === 'pending') {
-			query.checked = { $ne: userId };
+			query.checked = null;
 			query.reviewed = null;
 		}
 		else if(status === 'approved') {

@@ -114,10 +114,9 @@ function generateTable(notifs) {
 				</tr>`;
 
 	notifs.map(function(notif) {
-		w = notif.workorder;
 		table +=`<tr>
-				<td>`+w.searchId+`</td>
-				<td>`+w.title+`</td>
+				<td>`+notif.searchId+`</td>
+				<td>`+notif.title+`</td>
 				<td>
 					<table
 						class="mui-btn mui-btn--raised"
@@ -127,7 +126,7 @@ function generateTable(notifs) {
 					>
 					  <tr>
 						<td>
-							<a href="`+host+`/job/Programs/View/Programs/`+w._id+`">View</a>
+							<a href="`+host+`/job/`+notif.location+`/View/`+notif.location+`/`+notif.workorder+`">View</a>
 						</td>
 					  </tr>
 					</table>

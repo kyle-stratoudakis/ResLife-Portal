@@ -14,6 +14,7 @@ const aggregate = function(currentHour) {
 	var notifTimes;
 
 	userModel.find(query, function(err, users) {
+		console.log('\nNotif Aggregate ' + getDateTime(new Date(), new Date()));
 		for(var i in users) {
 			notifTimes = users[i].notifTimes;
 			for(var t = 0; t < notifTimes.length; t++) {
@@ -37,11 +38,6 @@ function buildMail(user) {
 	}
 
 	notifModel.find(query, {}, { sort: {type: 1} })
-	.populate({
-		path: 'workorder',
-		select: 'searchId title',
-		model: programModel
-	})
 	.exec(function(err, notifs) {
 		if(notifs && notifs.length > 0) {
 			// console.log(notifs)

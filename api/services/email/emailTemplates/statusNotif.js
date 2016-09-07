@@ -3,6 +3,8 @@ const statusNotif = function(status, wo) {
 	var host = config.PROTOCOL + config.HOST;
 	var message = 'processed';
 	var title = 'Program Status Update';
+	var location = 'Programs';
+	var label = 'Program'
 	if(status === 'checked') {
 		title = 'Hall Director Approved';
 		message = 'approved by your hall director.';
@@ -20,8 +22,21 @@ const statusNotif = function(status, wo) {
 		message = 'approved by an associate director and is awaiting funding approval from the department director.';
 	}
 	else if(status === 'reviewer approved') {
-		message = 'approved by an assoicate director';
+		message = 'approved by an assoicate director.';
 	}
+	else if(status === 'rha_checked') {
+		title = 'Request Status Update';
+		message = 'checked by RHA board member.';
+		location = 'Funding';
+		label = 'Request';
+	}
+	else if(status === 'funding_reviewed') {
+		title = 'Request Status Update';
+		message = 'approved by an associate director.';
+		location = 'Funding';
+		label = 'Request';
+	}
+
 	return (
 		`<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
 		<html xmlns='http://www.w3.org/1999/xhtml'>
@@ -91,7 +106,7 @@ const statusNotif = function(status, wo) {
 								</tr>
 								<tr>
 								  <td>
-									Your program <strong><i>`+wo.title+` </i></strong> has been `+message+` You can view the status of this program by logging into the portal and navigating to RA Programs or by clicking the button below.
+									Your `+label.toLowerCase()+` <strong><i>`+wo.title+` </i></strong> has been `+message+` You can view the status of this `+label.toLowerCase()+` by logging into the portal or by clicking the button below.
 								  </td>
 								</tr>
 								<tr>
@@ -104,7 +119,7 @@ const statusNotif = function(status, wo) {
 									>
 									  <tr>
 										<td>
-										  <a href="`+host+`/job/Programs/View/Programs/`+wo._id+`">Access Program</a>
+										  <a href="`+host+`/job/`+location+`/View/`+location+`/`+wo._id+`">Access `+label+`</a>
 										</td>
 									  </tr>
 									</table>

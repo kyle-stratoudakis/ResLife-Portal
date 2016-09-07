@@ -2,16 +2,12 @@ const route = require('express').Router();
 
 const pCardModel= require('../model/pCardRequest');
 const userModel= require('../model/user');
-const m_notif = require('../services/email/pCardNotifs');
+const m_notif = require('../services/email/notifications');
 const m_role = require('../middleware/role');
 const m_pCardQueries = require('../middleware/pCardQueries');
 const getSearchId = require('../utils/getSearchId');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
-
-// Used to determine number of RHA checkers must
-// approve before RHA funding is sent to reviewer
-const totalChecked = 2;
 
 route.get('/get/workorders', m_role, m_pCardQueries, function(req, res) {
 	var query = req.query;
@@ -38,6 +34,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 	var role = decodedUser.role;
 
 	var request = new pCardModel({
+		application: "Funding",
 		searchId: getSearchId(),
 		submittedDate: new Date(),
 		title: data.title,
@@ -65,7 +62,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 
 	if(role === 'submitter') {
 		if(!request.needsCheck === true) {
-			req.notif = 'new';
+			req.notif = 'pcard_new';
 		}
 		else {
 			req.notif = 'rha_new';
@@ -85,7 +82,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		if(!err) {
 			res.json(saved._id);
 			req.workorder = saved;
-			req.email = 'new';
+			req.email = 'pcard_new';
 			next();
 		}
 		else {
@@ -117,14 +114,9 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 		if(data.chartwellsQuote) request.chartwellsQuote = data.chartwellsQuote;
 
 		if(request.cardType === 'rha') {
-			if(request.checked.length < totalChecked) {
+			if(!request.checked) {
 				request.needsCheck = true;
-				req.notif = 'checked';
 			}
-		}
-		else {
-			request.checked = [];
-			request.checkedDates = [];
 		}
 
 		request.save(function(err, saved) {
@@ -153,25 +145,24 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 			console.log(err);
 		}
 		else {
-			if(role === 'reviewer') {
+			if(role === 'rha') {
+				request.checked = decodedUser._id;
+				request.checkedDates = new Date();
+				request.needsCheck = false;
+				req.email = 'rha_checked';
+				req.notif = 'rha_checked';
+			}
+			else if(role === 'reviewer') {
 				request.reviewed = decodedUser._id;
 				request.reviewedDate = new Date();
-				req.notif = 'reviewed';
+				req.email = 'funding_reviewed';
+				req.notif = 'funding_reviewed';
 			}
 			else if(role === 'approver') {
 				request.approved = decodedUser._id;
 				request.approvedDate = new Date();
-				req.email = 'approved';
+				req.email = 'funding_approved';
 				req.notif = 'delete_notif';
-			}
-			else if(role === 'rha') {
-				request.checked.push(decodedUser._id);
-				request.checkedDates.push(new Date());
-				req.notif = 'checked';
-				if(request.checked.length >= totalChecked) {
-					request.needsCheck = false;
-					req.notif = 'checked_complete';
-				}
 			}
 
 			request.save(function(err, saved) {
@@ -200,6 +191,11 @@ route.put('/put/return', jsonParser, m_role, function(req, res, next) {
 			console.log(err);
 		}
 		else {
+			if(role === 'rha') {
+				request.checked = null;
+				request.checkedDates = null;
+				request.needsCheck = true;
+			}
 			if(role === 'reviewer') {
 				request.reviewed = null;
 				request.reviewedDate = null;
@@ -207,18 +203,6 @@ route.put('/put/return', jsonParser, m_role, function(req, res, next) {
 			else if(role === 'approver') {
 				request.approved = null;
 				request.approvedDate = null;
-			}
-			else if(role === 'rha') {
-				var newChecked = [];
-				var newCheckedDates = [];
-				for (var i = 0; i < request.checked.length; i++) {
-					if(!request.checked[i] === decodedUser._id) {
-						newChecked.push(request.checked[i]);
-						newCheckedDates(request.checkedDates[i]);
-					}
-				}
-				request.checked = newChecked;
-				request.checkedDates = newCheckedDates;
 			}
 		}
 
@@ -242,7 +226,7 @@ route.get('/get/details', function(req, res) {
 		var id = req.query.id;
 		pCardModel.findOne({ _id: id })
 		.populate({
-			path: 'user reviewed approved',
+			path: 'user checked reviewed approved',
 			select: 'name -_id',
 			model: userModel
 		})

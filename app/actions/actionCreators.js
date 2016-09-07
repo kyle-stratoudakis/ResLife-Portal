@@ -177,6 +177,30 @@ export function updateForm(jwt, location, formId, jobId, data) {
 	}
 }
 
+export function comment(jwt, location, formId, jobId, data) {
+	return function (dispatch) {
+		var json = JSON.stringify({
+				jwt,
+				formId,
+				jobId,
+				data
+			});
+		return fetch(host + "/api/" + location + "/put/comment", {
+			method: 'put',
+			headers: {
+				'Accept': 'application/json, text/plain, */*',
+				'Content-Type': 'application/json'
+			},
+			body: json
+		})
+		.then(handleErrors)
+		.then(response => response.json())
+		.then(json => dispatch(fetchDetails(location, '?jwt='+jwt+'&id='+json)))
+		.then(dispatch(snackbarAlert(location + '/put/comment')))
+		.catch(err => console.log('comment', err))
+	}
+}
+
 export function modifyAction(endpoint, data, update) {
 	return function (dispatch) {
 		var json = JSON.stringify(data);

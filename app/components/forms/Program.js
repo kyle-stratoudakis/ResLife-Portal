@@ -36,6 +36,7 @@ class Program extends Component{
 		this.renderEvaluation = this.renderEvaluation.bind(this);
 		this.renderQuote = this.renderQuote.bind(this);
 		this.handleToggle = this.handleToggle.bind(this);
+		this.renderAddComment = this.renderAddComment.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -84,10 +85,10 @@ class Program extends Component{
 				listStyle: {
 					// marginLeft: '1em',
 					// marginRight: '1em',
-					padding: '1em'
+					paddingLeft: '1em'
 				},
 				listPaperStyle: {
-					marginBottom: '1em'
+					// marginBottom: '1em'
 				},
 				actionStyle: {
 					marginTop: '1em',
@@ -151,6 +152,16 @@ class Program extends Component{
 		this.setState({
 			canSubmit: false,
 		});
+	}
+
+	formatDate(d) {
+		return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
+	}
+
+	handleToggle(e, value) {
+		let data = {};
+		data[e.target.name] = value;
+		this.setState(data);
 	}
 
 	getActionButtons() {
@@ -373,7 +384,7 @@ class Program extends Component{
 					required
 					hintText='Additional Staff'
 					floatingLabelText='Staff Name'
-					// multiLine={true}
+					multiLine={true}
 					style={listStyle}
 					value={staff.name}
 				/>
@@ -587,14 +598,28 @@ class Program extends Component{
 		}
 	}
 
-	formatDate(d) {
-		return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-	}
-
-	handleToggle(e, value) {
-		let data = {};
-		data[e.target.name] = value;
-		this.setState(data);
+	renderAddComment() {
+		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
+		return (
+			<Paper style={listPaperStyle}>
+				<Formsy.Form
+					ref='form'
+					onValid={this.enableButton}
+					onInvalid={this.disableButton}
+					//onValidSubmit={this.submitComment.bind(this)}
+					onValidSubmit={this.submitForm}
+					onInvalidSubmit={this.notifyFormError}
+				>
+					<FormsyText
+						name={'message'}
+						required
+						floatingLabelText='Add Comment'
+						multiLine={true}
+						// style={listStyle}
+					/>
+				</Formsy.Form>
+			</Paper>
+		)
 	}
 
 	render() {
@@ -603,7 +628,7 @@ class Program extends Component{
 			<div>
 				<br />
 				<Divider />
-				<Subheader>Program tracker</Subheader>
+				<Subheader>Program Tracker</Subheader>
 				<div style={centerStyle}>
 					<TrackProgram workOrder={this.props.details} size={screen.width}/>
 				</div>
@@ -764,8 +789,17 @@ class Program extends Component{
 
 					{this.renderEvaluation()}
 
+					{/*
+					Add Comment Box
 					<Divider />
+					<Subheader>Comments</Subheader>
+					<div style={centerStyle}>
+						{this.renderAddComment()}
+					</div>
+					*/}
 
+					<Divider />
+					<Subheader>Actions</Subheader>
 					<div style={centerStyle}>
 						{this.getActionButtons()}
 					</div>

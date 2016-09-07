@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var userSchema = require('./schema/user');
+var commentSchema = require('./schema/comment');
 var Schema = mongoose.Schema;
 var config = require('../../../config');
 mongoose.Promise = global.Promise;
@@ -14,6 +15,7 @@ var programSchema = new mongoose.Schema({
 	reviewed: { type: Schema.Types.ObjectId, ref: 'user' },
 	approved: { type: Schema.Types.ObjectId, ref: 'user' },
 	evaluated: { type: Schema.Types.ObjectId, ref: 'user' },
+	application: String,
 	searchId: String,
 	title: String,
 	name: String,
@@ -56,6 +58,7 @@ var programSchema = new mongoose.Schema({
 	evalOther: String,
 	travelAuthorization: String,
 	chartwellsQuote: String,
+	comments: [commentSchema]
 });
 
 module.exports = db.model('program', programSchema);

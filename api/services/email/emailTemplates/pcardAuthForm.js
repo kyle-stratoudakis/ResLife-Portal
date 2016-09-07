@@ -92,14 +92,14 @@ const pcardAuthForm = function(program) {
 	doc.fontSize(12);
 	doc.moveDown(0.25);
 	doc.fillColor('black');
-	doc.text(getString('Date, time', 40) + getString('Type', 50) + 'Location', {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.text(getString('Date, time', 30) + getString('Type', 40) + 'Location', {indent: 10, characterSpacing: 0.25, lineGap: -5});
 	doc.fontSize(7);
 	doc.fillColor('grey');
 	doc.text('________________________________________________________________________________________________________________________');
 	doc.fontSize(12);
 	doc.fillColor('black');
 	doc.moveDown(0.25);
-	doc.text(getString(getDateTime(program.date, program.time), 35) + getString(program.type, 50) + program.location, {indent: 10, characterSpacing: 0.25, lineGap: -5} );
+	doc.text(getString(getDateTime(program.date, program.time), 23) + getString(program.type, 40) + program.location, {indent: 10, characterSpacing: 0.25, lineGap: -5} );
 	doc.moveDown(0.5);
 	// Program Description
 	doc.fontSize(7);

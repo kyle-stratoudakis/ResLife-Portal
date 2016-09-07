@@ -10,9 +10,10 @@ var user = db.model('user', userSchema);
 
 var pCardSchema = new mongoose.Schema({
 	user: { type: Schema.Types.ObjectId, ref: 'user' },
-	checked: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+	checked: { type: Schema.Types.ObjectId, ref: 'user' },
 	reviewed: { type: Schema.Types.ObjectId, ref: 'user' },
 	approved: { type: Schema.Types.ObjectId, ref: 'user' },
+	application: String,
 	searchId: String,
 	title: String,
 	name: String,
@@ -20,7 +21,7 @@ var pCardSchema = new mongoose.Schema({
 	primary_contact: String,
 	hall: String,
 	submittedDate: Date,
-	checkedDates: [Date],
+	checkedDates: Date,
 	reviewedDate: Date,
 	approvedDate: Date,
 	items: String,
