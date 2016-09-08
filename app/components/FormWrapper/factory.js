@@ -74,27 +74,36 @@ export default function factory(React, empty) {
 								<div className="col-sm-11">
 									<h2>{this.getTitle()}</h2>
 								</div>
-								{/*<div className="col-sm-1">
+								<div className="col-sm-1">
 									<IconMenu
 										iconButtonElement={<IconButton><FontIcon className="material-icons">{'settings'}</FontIcon></IconButton>}
 										anchorOrigin={{horizontal: 'right', vertical: 'top'}}
 										targetOrigin={{horizontal: 'right', vertical: 'top'}}
 									>
-										<MenuItem primaryText="Refresh" />
-										<MenuItem primaryText="Send feedback" />
-										<MenuItem primaryText="Sign out" />
+										<MenuItem primaryText="Disable Notification" disabled={true}/>
+										<MenuItem 
+											primaryText="Download Form"
+											disabled={this.props.details.application === 'Programs' && this.props.details.approved ? false : true}
+											onClick={this.handleClick.bind(this)}
+										/>
 									</IconMenu>
-								</div>*/}
+								</div>
 							</div>
 							<DecoratedComponent {...this.props} onSubmit={this.onSubmit} workOrder={this.props.details} />
 						</Paper>
 					</div>
 				)
 			}
+		
+			handleClick() {
+				this.props.programPdf(this.props.details._id, this.props.details.application);
+			}
+
 		}
 
 		return hoistStatics(FormWrapper, DecoratedComponent)
 	}
+
 
 	return wrapComponent
 }

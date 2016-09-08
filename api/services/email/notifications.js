@@ -16,10 +16,12 @@ const notification_middleware = function(req, res, next) {
 		to: wo.email,
 		subject: wo.title,
 		text: JSON.stringify(wo),
+		workorder: wo._id
 	}
 
 	// Check email type and set template
 	if(req.email) {
+		mailOptions.event = req.email;
 		if(req.email === 'new') {
 			template = confirmNew(wo, 'program');
 		}
@@ -45,6 +47,9 @@ const notification_middleware = function(req, res, next) {
 		}
 		else if(req.email === 'reviewer_approved') {
 			template = statusNotif('reviewer approved', wo);
+		}
+		else if(req.email === 'denied') {
+			template = statusNotif('denied', wo);
 		}
 		else if(req.email === 'approved') {
 			var email = fundingApproval(wo);
@@ -79,42 +84,41 @@ const notification_middleware = function(req, res, next) {
 			})
 		}
 		else if(req.email === 'funding_approved') {
-		var email = fundingApproval(wo);
-		pCardModel.findOne({ _id: wo._id })
-		.populate({
-			path: 'checked reviewed approved',
-			select: 'name -_id',
-			model: userModel
-		})
-		.exec(function(err, fields) {
-			if(!err) {
-				try {
-					fields.date = new Date();
-					fields.time = new Date();
-					fields.type = fields.cardType;
-					if(!fields.checkedDate) fields.checkedDate = '';
-					mailOptions.attachments = [{ filename: 'P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
-				}
-				catch(ex) {
-					console.log('pcard attachment error, wo._id: ' + wo._id);
-					console.log(ex);
-				}
+			var email = fundingApproval(wo);
+			pCardModel.findOne({ _id: wo._id })
+			.populate({
+				path: 'checked reviewed approved',
+				select: 'name -_id',
+				model: userModel
+			})
+			.exec(function(err, fields) {
+				if(!err) {
+					try {
+						fields.date = new Date();
+						fields.time = new Date();
+						fields.type = fields.cardType;
+						if(!fields.checkedDate) fields.checkedDate = '';
+						mailOptions.attachments = [{ filename: 'P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
+					}
+					catch(ex) {
+						console.log('pcard attachment error, wo._id: ' + wo._id);
+						console.log(ex);
+					}
 
-				juice.juiceResources(email, {}, function(err, inlined) {
-					if(err) {
-						console.log(err)
-					}
-					else {
-						mailOptions.to = 'stratoudakk1@southernct.edu';
-						// mailOptions.to = 'thibaultk1@southernct.edu';
-						mailOptions.html = inlined;
-						mailer(mailOptions);
-						console.log('mailed pcard for '+ wo.searchId +' to ' + mailOptions.to);
-					}
-				});
-			}
-		})
-	}
+					juice.juiceResources(email, {}, function(err, inlined) {
+						if(err) {
+							console.log(err)
+						}
+						else {
+							mailOptions.to = 'thibaultk1@southernct.edu';
+							mailOptions.html = inlined;
+							mailer(mailOptions);
+							console.log('mailed pcard for '+ wo.searchId +' to ' + mailOptions.to);
+						}
+					});
+				}
+			})
+		}
 
 		// Inline CSS for HTML mail and send email
 		if(template) {

@@ -4,7 +4,7 @@ var notifModel= require('../../model/notification');
 var programModel= require('../../model/program');
 var mailer = require('./mailer');
 var notifDigest = require('./emailTemplates/notifDigest');
-var getDateTime = require('../../utils/getDateTime');
+var getDateTime = require('../../../utils/getDateTime');
 
 const aggregate = function(currentHour) {
 	var query = {
@@ -35,6 +35,7 @@ function buildMail(user) {
 	var mailOptions = {
 		to: user.email,
 		subject: getDateTime(new Date(), new Date()) + ', ResLife Portal Notifications',
+		event: 'notifDigest'
 	}
 
 	notifModel.find(query, {}, { sort: {type: 1} })

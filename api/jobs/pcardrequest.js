@@ -13,7 +13,7 @@ route.get('/get/workorders', m_role, m_pCardQueries, function(req, res) {
 	var query = req.query;
 	var projection = req.projection;
 	var sort = req.sort;
-	var empty = [{'_id': 'x','title': 'No Requests','description': 'No Funding Requests Found'}]
+	var empty = [{'_id': 'x','title': 'No Requests','description': 'No Funding Requests Found', 'submittedDate': new Date()}]
 
 	pCardModel.find(query, projection, sort)
 	.lean()
@@ -147,7 +147,7 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 		else {
 			if(role === 'rha') {
 				request.checked = decodedUser._id;
-				request.checkedDates = new Date();
+				request.checkedDate = new Date();
 				request.needsCheck = false;
 				req.email = 'rha_checked';
 				req.notif = 'rha_checked';
@@ -193,7 +193,7 @@ route.put('/put/return', jsonParser, m_role, function(req, res, next) {
 		else {
 			if(role === 'rha') {
 				request.checked = null;
-				request.checkedDates = null;
+				request.checkedDate = null;
 				request.needsCheck = true;
 			}
 			if(role === 'reviewer') {

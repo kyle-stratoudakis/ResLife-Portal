@@ -65,7 +65,9 @@
     "url-loader": "^0.5.7",
     "webpack": "^1.13.0",
     "webpack-dev-middleware": "^1.6.1",
-    "webpack-hot-middleware": "^2.10.0"
+    "webpack-hot-middleware": "^2.10.0",
+    "winston": "^2.2.0",
+    "winston-mongodb": "^1.6.1"
   },
   "devDependencies": {
     "expect": "^1.18.0",

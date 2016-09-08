@@ -36,11 +36,6 @@ const notification_middleware = function(req, res, next) {
 	if(req.email === 'approved') {
 		var email = fundingApproval(wo);
 		pCardModel.findOne({ _id: wo._id })
-		.populate({
-			path: 'checked reviewed approved',
-			select: 'name -_id',
-			model: userModel
-		})
 		.exec(function(err, fields) {
 			if(!err) {
 				try {
@@ -88,16 +83,7 @@ const notification_middleware = function(req, res, next) {
 	else if(req.notif === 'rha_new') {
 		registerNotif('rha_new', 'RHA new', wo);
 	}
-	else if(req.notif === 'checked') {
-		var newRole;
-		// Determine who checked request and leave notif for other checker
-		for(var i = 0; i < wo.checked.length; i++) {
-			if(wo.checked[i] === '57a367a4ed0beeff20739568') newRole = 'rha_two'; // exclude Mandi Kuster
-			if(wo.checked[i] === '57a367b1ed0beeff20739569') newRole = 'rha_one'; // exclude Mark Parrott
-		}
-		registerNotif(newRole, 'RHA checked', wo);
-	}
-	else if(req.notif === 'checked_complete') {
+	else if(req.notif === 'rha_checked') {
 		registerNotif('funding_new', 'RHA checked', wo);
 	}
 	else if(req.notif === 'reviewed') {
@@ -124,7 +110,8 @@ function registerNotif(role, event, workorder) {
 				workorder: workorder._id,
 				role: role,
 				event: event,
-				type: workorder.type
+				title: workorder.title,
+				searchId: workorder.searchId
 			});
 			newNotif.save();
 		}

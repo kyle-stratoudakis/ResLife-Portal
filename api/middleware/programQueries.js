@@ -84,6 +84,7 @@ const programQueries = function(req, res, next) {
 			name: 1,
 			type: 1,
 			description: 1,
+			submittedDate: 1,
 			checked: 1,
 			reviewed: 1,
 			approved: 1,

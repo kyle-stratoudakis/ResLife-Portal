@@ -24,6 +24,9 @@ const statusNotif = function(status, wo) {
 	else if(status === 'reviewer approved') {
 		message = 'approved by an assoicate director.';
 	}
+	else if(status === 'denied') {
+		message = 'denied';
+	}
 	else if(status === 'rha_checked') {
 		title = 'Request Status Update';
 		message = 'checked by RHA board member.';

@@ -13,7 +13,8 @@ import TableHeader from 'material-ui/Table/TableHeader'
 import TableRow from 'material-ui/Table/TableRow'
 import TableHeaderColumn from 'material-ui/Table/TableHeaderColumn'
 import { ActionAssignment, ActionAssignmentTurnedIn, ActionAssignmentInd } from 'material-ui/svg-icons'; 
-import { green200, red200, amber200, deepPurple200 } from 'material-ui/styles/colors'; 
+import { green200, red200, amber200, deepPurple200 } from 'material-ui/styles/colors';
+import getDate from '../../utils/getDate'; 
 
 const ContentRow = React.createClass({
 	renderAction (action, id, i) {
@@ -90,7 +91,8 @@ const ContentRow = React.createClass({
 	},
 
 	renderRow (row, i) {
-		let{ checked, reviewed, approved, evaluated } = row;
+		console.log(row)
+		let{ checked, reviewed, approved, evaluated, submittedDate } = row;
 		let { searchId, title } = row; 
 		return (
 			<div className="container row" key={i}>
@@ -101,12 +103,17 @@ const ContentRow = React.createClass({
 						subtitle={row.name}
 					/>
 				</div>
-				<div className="col-sm-5">
+				<div className="col-sm-4">
 					<CardText>
 						{this.renderDescription(row.description, row._id)}
 					</CardText>
 				</div>
-				<div className="col-sm-3">
+				<div className="col-sm-2">
+					<CardText>
+						{getDate(new Date(submittedDate))}
+					</CardText>
+				</div>
+				<div className="col-sm-2">
 					<CardActions>
 						{this.props.actions.map((action, i) => this.renderAction(action, row._id, i))}
 					</CardActions>
@@ -122,9 +129,11 @@ const ContentRow = React.createClass({
 				<Table>
 					<TableHeader displaySelectAll={false} adjustForCheckbox={false}>
 						<TableRow>
-							<TableHeaderColumn>Title</TableHeaderColumn>
-							<TableHeaderColumn>Description</TableHeaderColumn>
-							<TableHeaderColumn>Actions</TableHeaderColumn>
+							<TableHeaderColumn className="col-sm-4">Title</TableHeaderColumn>
+							<TableHeaderColumn className="col-sm-4">Description</TableHeaderColumn>
+							<TableHeaderColumn className="col-sm-2">Date Submitted</TableHeaderColumn>
+							<TableHeaderColumn className="col-sm-2">Actions</TableHeaderColumn>
+							<Divider />
 						</TableRow>
 					</TableHeader>
 				</Table>

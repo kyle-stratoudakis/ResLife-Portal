@@ -21,7 +21,7 @@ var pCardSchema = new mongoose.Schema({
 	primary_contact: String,
 	hall: String,
 	submittedDate: Date,
-	checkedDates: Date,
+	checkedDate: Date,
 	reviewedDate: Date,
 	approvedDate: Date,
 	items: String,

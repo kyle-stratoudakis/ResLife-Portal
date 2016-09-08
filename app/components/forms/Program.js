@@ -200,7 +200,7 @@ class Program extends Component{
 						backgroundColor='#ef9a9a'
 						hoverColor='#ef5350'
 						disabled={!disabled}
-						onClick={this.props.workorderAction.bind(this, 'programs/put/return', data, 'programs')}
+						onClick={this.props.workorderAction.bind(this, 'programs/put/return', data, 'Programs')}
 					/>
 					<FlatButton
 						style={actionStyle}
@@ -208,7 +208,7 @@ class Program extends Component{
 						backgroundColor='#C5E1A5'
 						hoverColor='#9CCC65'
 						disabled={disabled}
-						onClick={this.props.workorderAction.bind(this, 'programs/put/approve', data, 'programs')}
+						onClick={this.props.workorderAction.bind(this, 'programs/put/approve', data, 'Programs')}
 					/>
 				</div>
 			)

@@ -3,11 +3,11 @@ import { Stepper, Step, StepLabel, StepButton, StepContent } from 'material-ui'
 import { ActionAssignment, ActionAssignmentTurnedIn, ActionAssignmentInd } from 'material-ui/svg-icons';
 import { grey500, lightGreen500 } from 'material-ui/styles/colors';
 
-const TrackProgram = React.createClass({
+const TrackFunding = React.createClass({
 	getDate(date) {
 		let d = new Date(date)
-		let formated = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-		return formated;
+		let formattted = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
+		return formattted;
 	},
 
 	renderSteps() {
@@ -43,20 +43,11 @@ const TrackProgram = React.createClass({
 			steps.push(
 				<Step>
 					<StepLabel icon={(workorder.checked ? approved : pending)}>
-						Hall Director
+						RHA
 						<br />
 						{workorder.checked.name}
 						<br />
 						{workorder.checkedDate ? this.getDate(workorder.checkedDate) : ''}
-					</StepLabel>
-				</Step>
-			);
-		}
-		else {
-			steps.push(
-				<Step>
-					<StepLabel icon={pending}>
-						Hall Director
 					</StepLabel>
 				</Step>
 			);
@@ -123,4 +114,4 @@ const TrackProgram = React.createClass({
 	}
 });
 
-export default TrackProgram;
+export default TrackFunding;

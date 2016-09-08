@@ -55,6 +55,9 @@ const pCardQueries = function(req, res, next) {
 			title: 1,
 			name: 1,
 			description: 1,
+			submittedDate: 1,
+			checked: 1,
+			reviewed: 1,
 			approved: 1
 		};
 

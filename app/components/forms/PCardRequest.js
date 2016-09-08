@@ -12,6 +12,7 @@ import { red500 } from 'material-ui/styles/colors';
 import FormsyText from './Formsy/FormsyText';
 import FormsyDate from './Formsy/FormsyDate';
 import FormsyTime from './Formsy/FormsyTime';
+import TrackFunding from '../TrackFunding' ;
 import {
 	FormsyRadioGroup,
 	FormsyRadio,
@@ -137,15 +138,8 @@ class pCardRequest extends Component{
 				disabled = (approved ? true : false);
 			}
 			else if(role === 'rha') {
-				console.log(this.state.checked)
-				disabled = false;
-				for (var i = 0; i < this.state.checked.length; i++) {
-					if(this.state.checked[i] === this.props.token.user._id) {
-						console.log(this.state.checked[i], this.props.token.user._id, this.state.checked[i] === this.props.token.user._id)
-						disabled = true;
-						break;
-					}
-				}
+				// console.log(this.state.checked)
+				disabled = (checked ? true : false);
 			}
 			return (
 				<div>
@@ -160,7 +154,7 @@ class pCardRequest extends Component{
 						backgroundColor='#ef9a9a'
 						hoverColor='#ef5350'
 						disabled={!disabled}
-						onClick={this.props.workorderAction.bind(this, 'programs/put/return', data, 'programs')}
+						onClick={this.props.workorderAction.bind(this, 'Funding/put/return', data, 'Funding')}
 					/>
 					<FlatButton
 						style={actionStyle}
@@ -168,7 +162,7 @@ class pCardRequest extends Component{
 						backgroundColor='#C5E1A5'
 						hoverColor='#9CCC65'
 						disabled={disabled}
-						onClick={this.props.workorderAction.bind(this, 'programs/put/approve', data, 'programs')}
+						onClick={this.props.workorderAction.bind(this, 'Funding/put/approve', data, 'Funding')}
 					/>
 				</div>
 			)
@@ -380,6 +374,10 @@ class pCardRequest extends Component{
 					// onValidSubmit={this.submitForm}
 					onInvalidSubmit={this.notifyFormError}
 				>
+					<Subheader>Approval Tracker</Subheader>
+					<div style={centerStyle}>
+						<TrackFunding workOrder={this.props.details} size={screen.width}/>
+					</div>
 					<Divider />
 					<Subheader style={ {paddingBottom: '0.25em'} }>Basic Information</Subheader>
 					<div style={centerStyle}>

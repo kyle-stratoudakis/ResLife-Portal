@@ -219,7 +219,7 @@ export function modifyAction(endpoint, data, update) {
 	}
 }
 
-export function workorderAction(endpoint, data, update) {
+export function workorderAction(endpoint, data, route) {
 	return function (dispatch) {
 		var json = JSON.stringify(data);
 		return fetch(host + "/api/" + endpoint, {
@@ -231,7 +231,16 @@ export function workorderAction(endpoint, data, update) {
 			body: json
 		})
 		.then(handleErrors)
-		.then(() => dispatch(fetchDetails(update, '?jwt='+data.jwt+'&id='+data.id)))
+		.then(() => dispatch(push('/job/'+route)))
+		.catch(err => console.log('workorderAction', err))
+	}
+}
+
+export function programPdf(id, location) {
+	console.log('download ' + id);
+	return function (dispatch) {
+		return fetch(host + "/api/" + location + "/pcard?id=" + id)
+		.then(handleErrors)
 		.catch(err => console.log('workorderAction', err))
 	}
 }
