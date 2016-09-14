@@ -243,4 +243,36 @@ route.get('/get/details', function(req, res) {
 	}
 });
 
+const generatePcard = require('../services/email/emailTemplates/pcardAuthForm');
+route.get('/download', function(req, res) {
+	if(req.query.id) {
+		pCardModel.findOne({ _id: req.query.id })
+		.populate({
+			path: 'checked reviewed approved',
+			select: 'name -_id',
+			model: userModel
+		})
+		.exec(function(err, fields) {
+			if(!err && fields) {
+				try {
+					generatePcard(fields);
+				}
+				catch (ex) {
+					console.log('pCard generate: ' + ex)
+				}
+				setTimeout(function() {
+					try {
+						res.download('./api/services/email/sentForms/pcard-'+ fields._id +'.pdf');
+					}
+					catch (ex) {
+						console.log('pcard download pdf ' + ex);
+						res.status(500).send(ex);
+					}
+				}, 1500);
+			}
+		});
+	}
+});
+
+
 module.exports = route;

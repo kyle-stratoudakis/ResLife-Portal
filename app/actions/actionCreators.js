@@ -1,5 +1,4 @@
 import { push } from 'react-router-redux';
-import CryptoJS from 'crypto-js';
 import { PROTOCOL, HOST } from '../../../config';
 
 const host = PROTOCOL + HOST;
@@ -236,12 +235,40 @@ export function workorderAction(endpoint, data, route) {
 	}
 }
 
-export function programPdf(id, location) {
-	console.log('download ' + id);
-	return function (dispatch) {
-		return fetch(host + "/api/" + location + "/pcard?id=" + id)
-		.then(handleErrors)
-		.catch(err => console.log('workorderAction', err))
+export function downloadPdf(wo, location) {
+	var link = document.createElement('a');
+	link.setAttribute('href', host + "/api/" + location + "/download?id=" + wo._id);
+	link.setAttribute('download', 'P-Card Auth Form-'+wo.searchId);
+
+	if (document.createEvent) {
+		var event = document.createEvent('MouseEvents');
+		event.initEvent('click', true, true);
+		link.dispatchEvent(event);
+	}
+	else {
+		link.click();
+	}
+	
+	return {
+		type: 'DOWNLOAD_PDF'
+	}
+}
+
+export function emailUser(wo) {
+	var link = document.createElement('a');
+	link.setAttribute('href', `mailto:${wo.email}?Subject=${wo.title}`);
+	
+	if (document.createEvent) {
+		var event = document.createEvent('MouseEvents');
+		event.initEvent('click', true, true);
+		link.dispatchEvent(event);
+	}
+	else {
+		link.click();
+	}
+	
+	return {
+		type: 'EMAIL_USER'
 	}
 }
 

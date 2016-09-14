@@ -91,7 +91,7 @@ const ContentRow = React.createClass({
 	},
 
 	renderRow (row, i) {
-		console.log(row)
+		// console.log(row)
 		let{ checked, reviewed, approved, evaluated, submittedDate } = row;
 		let { searchId, title } = row; 
 		return (

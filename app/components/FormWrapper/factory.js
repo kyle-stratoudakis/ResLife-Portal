@@ -4,7 +4,7 @@ import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import FontIcon from 'material-ui/FontIcon'
 import IconButton from 'material-ui/IconButton'
-import RaisedButton from 'material-ui/RaisedButton'
+import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz'
 
 export default function factory(React, empty) {
 	const { Component } = React
@@ -76,15 +76,20 @@ export default function factory(React, empty) {
 								</div>
 								<div className="col-sm-1">
 									<IconMenu
-										iconButtonElement={<IconButton><FontIcon className="material-icons">{'settings'}</FontIcon></IconButton>}
+										iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}
 										anchorOrigin={{horizontal: 'right', vertical: 'top'}}
 										targetOrigin={{horizontal: 'right', vertical: 'top'}}
 									>
 										<MenuItem primaryText="Disable Notification" disabled={true}/>
+										<MenuItem
+											primaryText="Email User"
+											disabled={(this.props.details.email ? false : true)}
+											onClick={this.props.emailUser.bind(this, this.props.details)}
+										/>
 										<MenuItem 
 											primaryText="Download Form"
-											disabled={this.props.details.application === 'Programs' && this.props.details.approved ? false : true}
-											onClick={this.handleClick.bind(this)}
+											disabled={this.props.details.approved ? false : true}
+											onClick={this.props.downloadPdf.bind(this, this.props.details, this.props.details.application)}
 										/>
 									</IconMenu>
 								</div>
@@ -94,16 +99,8 @@ export default function factory(React, empty) {
 					</div>
 				)
 			}
-		
-			handleClick() {
-				this.props.programPdf(this.props.details._id, this.props.details.application);
-			}
-
 		}
-
 		return hoistStatics(FormWrapper, DecoratedComponent)
 	}
-
-
 	return wrapComponent
 }

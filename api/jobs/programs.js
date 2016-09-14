@@ -1,5 +1,5 @@
 const route = require('express').Router();
-
+const fs = require('fs');
 const programModel= require('../model/program');
 const userModel= require('../model/user');
 const m_notif = require('../services/email/notifications');
@@ -221,7 +221,7 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 				if(!program.funding) {
 					program.approved = userId;
 					program.approvedDate = new Date();
-					req.email = 'reviewer_approved';
+					req.email = 'approved';
 					req.notif = 'delete_notif';
 					console.log('program approved ' + program.searchId);
 				}
@@ -343,6 +343,37 @@ route.get('/get/details', function(req, res) {
 			}
 			else {
 				console.log(err);
+			}
+		});
+	}
+});
+
+const generatePcard = require('../services/email/emailTemplates/pcardAuthForm');
+route.get('/download', function(req, res) {
+	if(req.query.id) {
+		programModel.findOne({ _id: req.query.id })
+		.populate({
+			path: 'checked reviewed approved',
+			select: 'name -_id',
+			model: userModel
+		})
+		.exec(function(err, fields) {
+			if(!err && fields) {
+				try {
+					generatePcard(fields);
+				}
+				catch (ex) {
+					console.log('program generate: ' + ex)
+				}
+				setTimeout(function() {
+					try {
+						res.download('./api/services/email/sentForms/pcard-'+ fields._id +'.pdf');
+					}
+					catch (ex) {
+						console.log('program download pdf ' + ex);
+						res.status(500).send(ex);
+					}
+				}, 1500);
 			}
 		});
 	}

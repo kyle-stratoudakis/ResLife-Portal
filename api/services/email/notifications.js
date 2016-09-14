@@ -62,7 +62,10 @@ const notification_middleware = function(req, res, next) {
 			.exec(function(err, fields) {
 				if(!err) {
 					mailOptions.to = getHD(wo.hall);
+					if(!fields.funding) fields.funding = 'No Funding';
+
 					try {
+						console.log('notifs' + __dirname)
 						mailOptions.attachments = [{ filename: 'ID-'+wo.searchId+' P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 					}
 					catch(ex) {
@@ -98,6 +101,8 @@ const notification_middleware = function(req, res, next) {
 						fields.time = new Date();
 						fields.type = fields.cardType;
 						if(!fields.checkedDate) fields.checkedDate = '';
+						if(!fields.funding) fields.funding = 'No Funding';
+						
 						mailOptions.attachments = [{ filename: 'P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 					}
 					catch(ex) {
@@ -209,9 +214,9 @@ function registerNotif(role, event, workorder) {
 	})
 }
 
-function registerTempNotif(role, event, wo) {
+function registerTempNotif(role, event, workorder) {
 	var newNotif = new notifModel({
-		workorder: wo._id,
+		workorder: workorder._id,
 		role: role,
 		event: event,
 		title: workorder.title,

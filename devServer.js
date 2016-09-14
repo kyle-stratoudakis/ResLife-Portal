@@ -21,7 +21,7 @@ app.use(require('webpack-dev-middleware')(compiler, {
 app.use(require('webpack-hot-middleware')(compiler));
 
 app.use(m_allowCORS);
-app.use('/login', NoAD_login)
+app.use('/login', login)
 app.use('/api', routes)
 
 // Start server listening on configured IP:PORT

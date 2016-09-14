@@ -510,7 +510,6 @@ class Program extends Component{
 					<div style={centerStyle}>
 						<FormsyTime
 							name='evalTime'
-							required
 							fullWidth={true}
 							hintText='When did the event end?'
 							floatingLabelText='End Time'
@@ -518,7 +517,6 @@ class Program extends Component{
 						/>
 						<FormsyText
 							name='evalAttendance'
-							required
 							fullWidth={true}
 							hintText='How many students attended?'
 							floatingLabelText='Attendance'
@@ -526,7 +524,6 @@ class Program extends Component{
 						/>
 						<FormsyText
 							name='evalCost'
-							required
 							fullWidth={true}
 							hintText='How much did you actually spend?'
 							floatingLabelText='Actual Cost'
@@ -534,7 +531,6 @@ class Program extends Component{
 						/>
 						<Subheader>P-card and Reciepts Returned</Subheader>
 						<FormsyRadioGroup
-							required
 							name='evalCardReturn'
 							valueSelected={this.state.evalCardReturn}
 							onChange={this.handleToggle} 
@@ -550,7 +546,6 @@ class Program extends Component{
 						</FormsyRadioGroup>
 						<FormsyText
 							name='evalOutcomes'
-							required
 							fullWidth={true}
 							multiLine={true}
 							hintText='What learning outcomes were achieved?'
@@ -559,7 +554,6 @@ class Program extends Component{
 						/>
 						<FormsyText
 							name='evalStrengths'
-							required
 							fullWidth={true}
 							multiLine={true}
 							hintText='What were the programs strengths?'
@@ -568,7 +562,6 @@ class Program extends Component{
 						/>
 						<FormsyText
 							name='evalWeaknesses'
-							required
 							fullWidth={true}
 							multiLine={true}
 							hintText='What were the programs weaknesses?'
@@ -577,8 +570,6 @@ class Program extends Component{
 						/>
 						<FormsyText
 							name='evalSuggestions'
-							required
-							fullWidth={true}
 							multiLine={true}
 							hintText='What could improve this program for if done again?'
 							floatingLabelText='Suggestions for Improvement'

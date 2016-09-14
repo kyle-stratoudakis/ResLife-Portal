@@ -5,10 +5,10 @@ const pcardAuthForm = function(program) {
 	// console.log(program)
 	var margins = {top: 72, bottom: 0, left: 72, right: 72};
 	var info = {Title: 'P-Card Authorization: ' + program.searchId, Author: 'SCSU Office of Residence Life', Subject: ''};
-	var fileName = './api/services/email/sentForms/pcard-'+ program._id +'.pdf';
+	var filename = './api/services/email/sentForms/pcard-'+ program._id +'.pdf';
 	var doc = new pdfkit({margins: margins, info: info});
 
-	doc.pipe(fs.createWriteStream(fileName));
+	doc.pipe(fs.createWriteStream(filename));
 
 	// Title
 	doc.fontSize(16);
@@ -132,9 +132,9 @@ const pcardAuthForm = function(program) {
 	doc.fontSize(12);
 	doc.fillColor('black');
 	doc.moveDown(0.25);
-	doc.text('Hall Director: ' + program.checked.name + ', ' + getDateTime(program.checkedDate, program.checkedDate), {indent: 10});
-	doc.text('Reviewer: ' + program.reviewed.name + ', ' + getDateTime(program.reviewedDate, program.reviewedDate), {indent: 10});
-	doc.text('Director: ' + program.approved.name + ', ' + getDateTime(program.approvedDate, program.approvedDate), {indent: 10});
+	if(program.checked) doc.text('Checked: ' + program.checked.name + ', ' + getDateTime(program.checkedDate, program.checkedDate), {indent: 10});
+	doc.text('Reviewed: ' + program.reviewed.name + ', ' + getDateTime(program.reviewedDate, program.reviewedDate), {indent: 10});
+	doc.text('Approved: ' + program.approved.name + ', ' + getDateTime(program.approvedDate, program.approvedDate), {indent: 10});
 	
 	// Signitures
 	doc.fontSize(7);
@@ -162,7 +162,7 @@ const pcardAuthForm = function(program) {
 	doc.image('./api/services/email/emailTemplates/residence-life-logo.png', 25, 40, {width: 160});
 	doc.end();
 
-	return fileName;
+	return filename;
 }
 
 function getString(str, size) {

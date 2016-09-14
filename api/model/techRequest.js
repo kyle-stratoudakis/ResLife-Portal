@@ -10,6 +10,7 @@ var user = db.model('user', userSchema);
 var techRequestSchema = new mongoose.Schema({
 	user: { type: Schema.Types.ObjectId, ref: 'user' },
 	closed: { type: Schema.Types.ObjectId, ref: 'user' },
+	submittedDate: Date,
 	title: String,
 	name: String,
 	email: String,

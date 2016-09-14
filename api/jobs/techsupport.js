@@ -15,6 +15,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res) {
 	var role = decodedUser.role;
 
 	var techRequest = new techRequestModel({
+		submittedDate: new Date(),
 		title: data.title,
 		user: decodedUser._id,
 		name: decodedUser.name,
@@ -66,7 +67,7 @@ route.get('/get/workorders', m_role, m_techSupportQuery, function(req, res) {
 	var query = req.techSupportQuery;
 	var projection = req.techSupportProjection;
 	var sort = req.techSupportSort;
-	var empty = [{'_id': 'x','title': 'No Tech Requests','description': 'No Tech Requests Found'}]
+	var empty = [{'_id': 'x','title': 'No Tech Requests','description': 'No Tech Requests Found', 'Date': new Date()}]
 
 	techRequestModel.find(query, projection, sort, function(err, techRequests) {
 		if(err){
