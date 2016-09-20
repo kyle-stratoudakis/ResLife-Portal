@@ -257,7 +257,7 @@ export function downloadPdf(wo, location) {
 export function emailUser(wo) {
 	var link = document.createElement('a');
 	link.setAttribute('href', `mailto:${wo.email}?Subject=${wo.title}`);
-	
+
 	if (document.createEvent) {
 		var event = document.createEvent('MouseEvents');
 		event.initEvent('click', true, true);

@@ -19,7 +19,7 @@ import {
 	FormsySelect
 } from 'formsy-material-ui/lib';
 
-class Program extends Component{
+class Program extends Component {
 	constructor(props) {
 		super(props)
 

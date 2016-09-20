@@ -51,7 +51,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		location: data.location,
 		outcomes: data.outcomes,
 		travelAuthorization: data.travelAuthorization,
-		needsCheck: (data.cardType === 'rha' ? true : false)
+		needsCheck: (data.cardType === 'rha' || data.cardType === 'farnham' ? true : false)
 	});
 
 	if(data.items) request.items = JSON.stringify(data.items);
@@ -113,12 +113,6 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 		if(data.department) request.department = data.department;
 		if(data.chartwellsQuote) request.chartwellsQuote = data.chartwellsQuote;
 
-		if(request.cardType === 'rha') {
-			if(!request.checked) {
-				request.needsCheck = true;
-			}
-		}
-
 		request.save(function(err, saved) {
 			if(!err) {
 				res.status(200).json(saved._id);
@@ -145,7 +139,7 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 			console.log(err);
 		}
 		else {
-			if(role === 'rha') {
+			if(role === 'checker') {
 				request.checked = decodedUser._id;
 				request.checkedDate = new Date();
 				request.needsCheck = false;
@@ -191,7 +185,7 @@ route.put('/put/return', jsonParser, m_role, function(req, res, next) {
 			console.log(err);
 		}
 		else {
-			if(role === 'rha') {
+			if(role === 'checker') {
 				request.checked = null;
 				request.checkedDate = null;
 				request.needsCheck = true;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router';
 import Avatar from 'material-ui/Avatar';
 import Paper from 'material-ui/Paper'
@@ -8,6 +8,8 @@ import CardMedia from 'material-ui/Card/CardMedia'
 import CardText from 'material-ui/Card/CardText'
 import Divider from 'material-ui/Divider'
 import FlatButton from 'material-ui/FlatButton'
+import IconButton from 'material-ui/IconButton';
+import FontIcon from 'material-ui/FontIcon';
 import Table from 'material-ui/Table'
 import TableHeader from 'material-ui/Table/TableHeader'
 import TableRow from 'material-ui/Table/TableRow'
@@ -16,7 +18,19 @@ import { ActionAssignment, ActionAssignmentTurnedIn, ActionAssignmentInd } from 
 import { green200, red200, amber200, deepPurple200 } from 'material-ui/styles/colors';
 import getDate from '../../utils/getDate'; 
 
-const ContentRow = React.createClass({
+
+class ContentRow extends Component {
+	constructor(props) {
+		super(props)
+
+		this.state = {limit: 20};
+
+		this.renderAction = this.renderAction.bind(this);
+		this.renderAvatar = this.renderAvatar.bind(this);
+		this.renderDescription = this.renderDescription.bind(this);
+		this.renderRow = this.renderRow.bind(this);
+	}
+
 	renderAction (action, id, i) {
 		let disabled = (id === 'x' ? true : false);
 		if(action.type == 'route') {
@@ -51,7 +65,7 @@ const ContentRow = React.createClass({
 				/>
 			)
 		}
-	},
+	}
 
 	renderAvatar(checked, reviewed, approved, evaluated) {
 		let color;
@@ -74,7 +88,7 @@ const ContentRow = React.createClass({
 				backgroundColor={color}
 			/>
 		)
-	  },
+	  }
 
 	renderDescription (description, _id) {
 		if(description && description.length > 120) {
@@ -88,10 +102,9 @@ const ContentRow = React.createClass({
 		else {
 			return description
 		}
-	},
+	}
 
 	renderRow (row, i) {
-		// console.log(row)
 		let{ checked, reviewed, approved, evaluated, submittedDate } = row;
 		let { searchId, title } = row; 
 		return (
@@ -121,11 +134,40 @@ const ContentRow = React.createClass({
 				<Divider />
 			</div>
 		)
-	},
+	}
+
+	limitRender() {
+		let workorders = this.props.data.slice(0, this.state.limit);
+		return (
+			workorders.map(this.renderRow)
+		)
+	}
+
+	renderLoadMore() {
+		if(this.props.data.length > this.state.limit) {
+			return(
+				<div>
+					<br />
+					<Divider />
+					<center>
+						<br />
+						Showing {this.state.limit} of {this.props.data.length}
+						<br />
+						<FlatButton label='Load More' onClick={this.handleLoadMore.bind(this)} />
+						<br />
+					</center>
+				</div>
+			)
+		}
+	}
+
+	handleLoadMore() {
+		this.setState({limit: this.state.limit += 20})
+	}
 
 	render () {
 		return (
-			<div>
+			<div ref='table'>
 				<Table>
 					<TableHeader displaySelectAll={false} adjustForCheckbox={false}>
 						<TableRow>
@@ -138,11 +180,12 @@ const ContentRow = React.createClass({
 					</TableHeader>
 				</Table>
 				<div>
-					{this.props.data.map(this.renderRow)}
+					{this.limitRender()}
+					{this.renderLoadMore()}
 				</div>
 			</div>
 		)
 	}
-});
+}
 
 export default ContentRow;

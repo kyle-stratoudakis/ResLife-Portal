@@ -84,7 +84,7 @@ const notification_middleware = function(req, res, next) {
 						}
 					});
 				}
-			})
+			});
 		}
 		else if(req.email === 'funding_approved') {
 			var email = fundingApproval(wo);
@@ -102,7 +102,7 @@ const notification_middleware = function(req, res, next) {
 						fields.type = fields.cardType;
 						if(!fields.checkedDate) fields.checkedDate = '';
 						if(!fields.funding) fields.funding = 'No Funding';
-						
+
 						mailOptions.attachments = [{ filename: 'P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 					}
 					catch(ex) {
@@ -115,14 +115,15 @@ const notification_middleware = function(req, res, next) {
 							console.log(err)
 						}
 						else {
-							mailOptions.to = 'thibaultk1@southernct.edu';
+							mailOptions.to = 'stratoudakk1@southernct.edu';
+							// mailOptions.to = 'thibaultk1@southernct.edu';
 							mailOptions.html = inlined;
 							mailer(mailOptions);
 							console.log('mailed pcard for '+ wo.searchId +' to ' + mailOptions.to);
 						}
 					});
 				}
-			})
+			});
 		}
 
 		// Inline CSS for HTML mail and send email
@@ -181,7 +182,7 @@ const notification_middleware = function(req, res, next) {
 			registerTempNotif(req.decodedUser._id+'_denied', 'reviewer denied', wo);
 		}
 		else if(req.notif === 'approver_denied') {
-			registerTempNotif(req.decodedUser._id+'_denied', 'approver denied', wo)
+			registerTempNotif(req.decodedUser._id+'_denied', 'approver denied', wo);
 		}
 		else if(req.notif === 'delete_notif') {
 			deleteNotif(wo._id);
@@ -237,33 +238,33 @@ function deleteNotif(id) {
 
 function getHD(hall) {
 	var email = 'stratoudakk1@southernct.edu'
-	if(hall === 'Schwartz') {
-		email = 'gleifertn1@southernct.edu';
-	}
-	else if(hall === 'West') {
-		email = 'dishiane1@southernct.edu';
-	}
-	else if(hall === 'Brownell') {
-		email = 'rizkj1@southernct.edu';
-	}
-	else if(hall === 'Chase') {
-		email = 'eppsjrw1@southernct.edu';
-	}
-	else if(hall === 'Farnham') {
-		email = 'vargasc1@southernct.edu';
-	}
-	else if(hall === 'Hickerson') {
-		email = 'codyk2@southernct.edu';
-	}
-	else if(hall === 'Neff') {
-		email = 'johnsonj103@southernct.edu';
-	}
-	else if(hall === 'North') {
-		email = 'boneta1@southernct.edu';
-	}
-	else if(hall === 'Wilkinson') {
-		email = 'hoffmannk1@southernct.edu';
-	}
+	// if(hall === 'Schwartz') {
+	// 	email = 'gleifertn1@southernct.edu';
+	// }
+	// else if(hall === 'West') {
+	// 	email = 'dishiane1@southernct.edu';
+	// }
+	// else if(hall === 'Brownell') {
+	// 	email = 'rizkj1@southernct.edu';
+	// }
+	// else if(hall === 'Chase') {
+	// 	email = 'eppsjrw1@southernct.edu';
+	// }
+	// else if(hall === 'Farnham') {
+	// 	email = 'vargasc1@southernct.edu';
+	// }
+	// else if(hall === 'Hickerson') {
+	// 	email = 'codyk2@southernct.edu';
+	// }
+	// else if(hall === 'Neff') {
+	// 	email = 'johnsonj103@southernct.edu';
+	// }
+	// else if(hall === 'North') {
+	// 	email = 'boneta1@southernct.edu';
+	// }
+	// else if(hall === 'Wilkinson') {
+	// 	email = 'hoffmannk1@southernct.edu';
+	// }
 
 	return email;
 }
