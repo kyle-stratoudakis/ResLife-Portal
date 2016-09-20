@@ -7,6 +7,7 @@ const m_role = require('../middleware/role');
 const m_pCardQueries = require('../middleware/pCardQueries');
 const getSearchId = require('../utils/getSearchId');
 const bodyParser = require('body-parser');
+const generatePcard = require('../services/email/emailTemplates/pcardAuthForm');
 const jsonParser = bodyParser.json();
 
 route.get('/get/workorders', m_role, m_pCardQueries, function(req, res) {
@@ -215,6 +216,26 @@ route.put('/put/return', jsonParser, m_role, function(req, res, next) {
 });
 route.put('/put/return', m_notif);
 
+route.put('/put/delete', jsonParser, function(req, res, next) {
+    var id = req.body.id;
+    pCardModel.findOne({ _id : id })
+    .exec(function(err, program) {
+        if(!err) {
+            res.status(200).json({status: 'return'});
+            req.email = 'deleted';
+            req.notif = 'delete_notif';
+            req.workorder = program;
+            next();
+        }
+        else {
+            res.status(500).send(err);
+            console.log(err);
+        }
+        pCardModel.remove({ _id : id }).exec();
+    });
+});
+route.put('/put/delete', m_notif);
+
 route.get('/get/details', function(req, res) {
 	if(req.query.jwt) {
 		var id = req.query.id;
@@ -237,7 +258,6 @@ route.get('/get/details', function(req, res) {
 	}
 });
 
-const generatePcard = require('../services/email/emailTemplates/pcardAuthForm');
 route.get('/download', function(req, res) {
 	if(req.query.id) {
 		pCardModel.findOne({ _id: req.query.id })

@@ -6,6 +6,7 @@ var pCardModel = require('../../model/pCardRequest');
 var userModel = require('../../model/user');
 var confirmNew = require('./emailTemplates/confirmNew');
 var statusNotif = require('./emailTemplates/statusNotif');
+var deleted = require('./emailTemplates/deleted');
 var fundingApproval = require('./emailTemplates/fundingApproval');
 var pcardAuthForm = require('./emailTemplates/pcardAuthForm');
 
@@ -50,6 +51,9 @@ const notification_middleware = function(req, res, next) {
 		}
 		else if(req.email === 'denied') {
 			template = statusNotif('denied', wo);
+		}
+		else if(req.email === 'deleted') {
+			template = deleted(wo);
 		}
 		else if(req.email === 'approved') {
 			var email = fundingApproval(wo);

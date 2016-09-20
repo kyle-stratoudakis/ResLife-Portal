@@ -272,6 +272,23 @@ export function emailUser(wo) {
 	}
 }
 
+export function deleteWorkorder(wo) {
+	return function (dispatch) {
+		let json = JSON.stringify({id: wo._id})
+		return fetch(host + "/api/" + wo.application + "/put/delete", {
+			method: 'put',
+			headers: {
+				'Accept': 'application/json, text/plain, */*',
+				'Content-Type': 'application/json'
+			},
+			body: json
+		})
+		.then(handleErrors)
+		.then(() => dispatch(push('/job/' + wo.application)))
+		.catch(err => console.log('fetchDetails', err))
+	}
+}
+
 export function snackbarAlert(endpoint) {
 	return {
 		type: 'SNACKBAR_ALERT',

@@ -1,10 +1,12 @@
 import hoistStatics from 'hoist-non-react-statics';
-import Paper from 'material-ui/Paper'
-import IconMenu from 'material-ui/IconMenu'
-import MenuItem from 'material-ui/MenuItem'
-import FontIcon from 'material-ui/FontIcon'
-import IconButton from 'material-ui/IconButton'
-import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz'
+import Paper from 'material-ui/Paper';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import FontIcon from 'material-ui/FontIcon';
+import IconButton from 'material-ui/IconButton';
+import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 
 export default function factory(React, empty) {
 	const { Component } = React
@@ -14,10 +16,35 @@ export default function factory(React, empty) {
 		class FormWrapper extends Component {
 			constructor(props) {
 				super(props)
+
+				this.state = {
+					open: false,
+					label: " Work order",
+					action: "New"
+				};
 			}
 
 			componentWillMount() {
-				// console.log('Form Wrapper Mount');
+				let location = this.props.params['_job'];
+				let action = this.props.location.pathname.split('/')[3];
+				let label = ' Work order';
+
+				if(location === 'Programs') {
+					label = ' Program';
+				}
+				else if(location === 'Funding') {
+					label = ' Funding Request';
+				}
+				else if(location === 'TechSupport') {
+					label = ' Tech Request';
+				}
+
+				this.setState({
+					open: false,
+					label: label,
+					action: action
+				});
+
 				if(this.props.params['_id']) {
 					let id = this.props.params['_id'];
 					let jwt = this.props.token.jwt;
@@ -25,6 +52,7 @@ export default function factory(React, empty) {
 					this.props.fetchDetails(location, '?jwt='+jwt+'&id='+id)
 				}
 			}
+
 
 			onSubmit(formData) {
 				// console.log(formData)
@@ -39,22 +67,40 @@ export default function factory(React, empty) {
 				}
 			}
 
-			getTitle() {
-				let location = this.props.params['_job'];
-				let action = this.props.location.pathname.split('/')[3];
-				let title = '';
+			renderDeleteDialog(){
+				console.log(this.state.open)
+				const actions = [
+					<FlatButton
+						label="Cancel"
+						primary={true}
+						onClick={this.handleClose.bind(this)}
+					/>,
+					<FlatButton
+						label="Delete"
+						primary={true}
+						onClick={this.props.deleteWorkorder.bind(this, this.props.details)}
+					/>,
+				]
+				return (
+					<Dialog
+						title={"Delete" + this.state.label}
+						actions={actions}
+						modal={false}
+						open={this.state.open}
+						onRequestClose={this.handleClose.bind(this)}
+					>
+						{'Are you sure you want to delete this' + this.state.label + '? It cannot be undone.'}
+					</Dialog>
+				)
+			}
 
-				if(location === 'Programs') {
-					title += action + ' Program';
-				}
-				else if(location === 'Funding') {
-					title += action + ' Funding Request';
-				}
-				else if(location === 'TechSupport') {
-					title += action + ' Tech Request';
-				}
+			handleOpen() {
+				console.log('open')
+				this.setState({open: true});
+			}
 
-				return title
+			handleClose() {
+				this.setState({open: false});
 			}
 
 			render() {
@@ -72,15 +118,20 @@ export default function factory(React, empty) {
 						<Paper style={ {'padding': '0 1rem 3rem 2rem' } } zDepth={2}>
 							<div className="row" style={{ margin: 'auto' }}>
 								<div className="col-sm-11">
-									<h2>{this.getTitle()}</h2>
+									<h2>{this.state.action + this.state.label}</h2>
 								</div>
+								{this.renderDeleteDialog()}
 								<div className="col-sm-1">
 									<IconMenu
 										iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}
 										anchorOrigin={{horizontal: 'right', vertical: 'top'}}
 										targetOrigin={{horizontal: 'right', vertical: 'top'}}
 									>
-										<MenuItem primaryText="Disable Notification" disabled={true}/>
+										<MenuItem 
+											primaryText={"Delete" + this.state.label}
+											disabled={(this.props.details._id ? false : true)}
+											onClick={this.handleOpen.bind(this)}
+										/>
 										<MenuItem
 											primaryText="Email User"
 											disabled={(this.props.details.email ? false : true)}

@@ -85,10 +85,10 @@ class Program extends Component {
 				listStyle: {
 					// marginLeft: '1em',
 					// marginRight: '1em',
-					paddingLeft: '1em'
+					padding: '1em'
 				},
 				listPaperStyle: {
-					// marginBottom: '1em'
+					marginBottom: '1em'
 				},
 				actionStyle: {
 					marginTop: '1em',
@@ -570,6 +570,7 @@ class Program extends Component {
 						/>
 						<FormsyText
 							name='evalSuggestions'
+							fullWidth={true}
 							multiLine={true}
 							hintText='What could improve this program for if done again?'
 							floatingLabelText='Suggestions for Improvement'
