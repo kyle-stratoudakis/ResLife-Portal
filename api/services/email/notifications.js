@@ -69,7 +69,7 @@ const notification_middleware = function(req, res, next) {
 					if(!fields.funding) fields.funding = 'No Funding';
 
 					try {
-						console.log('notifs' + __dirname)
+						// console.log('notifs' + __dirname)
 						mailOptions.attachments = [{ filename: 'ID-'+wo.searchId+' P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 					}
 					catch(ex) {
@@ -212,7 +212,7 @@ function registerNotif(role, event, workorder) {
 				event: event,
 				title: workorder.title,
 				searchId: workorder.searchId,
-				location: workorder.location
+				application: workorder.application
 			});
 			newNotif.save();
 		}

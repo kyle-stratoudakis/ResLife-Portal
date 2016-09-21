@@ -108,6 +108,7 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 		request.outcomes = data.outcomes;
 		request.travelAuthorization = data.travelAuthorization;
 
+		if((data.cardType === 'rha' || data.cardType === 'farnham') && (!request.checked)) request.needsCheck = true;
 		if(data.items) request.items = JSON.stringify(data.items);
 		if(data.staff) request.staff = JSON.stringify(data.staff);
 		if(data.funding) request.funding = data.funding;
@@ -132,7 +133,7 @@ route.put('/put/update', m_notif);
 route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 	var decodedUser = req.decodedUser;
 	var userId = decodedUser._id;
-	var id = req.body.id
+	var id = req.body.id;
 	var role = decodedUser.role;
 
 	pCardModel.findOne({ _id: id }, function(err, request) {

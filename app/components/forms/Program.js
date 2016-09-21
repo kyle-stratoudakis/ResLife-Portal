@@ -436,7 +436,6 @@ class Program extends Component {
 								name='councilMotioned'
 								required
 								fullWidth={true}
-								multiLine={true}
 								hintText='Who initiated this resolution'
 								floatingLabelText='Motioned By'
 								value={this.state.councilMotioned}
@@ -445,7 +444,6 @@ class Program extends Component {
 								name='councilSeconded'
 								required
 								fullWidth={true}
-								multiLine={true}
 								hintText='Who seconded this resolution'
 								floatingLabelText='Seconded By'
 								value={this.state.councilSeconded}
@@ -453,6 +451,7 @@ class Program extends Component {
 							<FormsyText
 								name='councilFavor'
 								required
+								fullWidth={true}
 								validation='isNumeric'
 								validationError='Please use only numbers'
 								hintText='Number of members in Favor'
@@ -462,6 +461,7 @@ class Program extends Component {
 							<FormsyText
 								name='councilOpposed'
 								required
+								fullWidth={true}
 								validation='isNumeric'
 								validationError='Please use only numbers'
 								hintText='Number of members opposed'
@@ -471,6 +471,7 @@ class Program extends Component {
 							<FormsyText
 								name='councilAbstained'
 								required
+								fullWidth={true}
 								validation='isNumeric'
 								validationError='Please use only numbers'
 								hintText='Number of members abstained'

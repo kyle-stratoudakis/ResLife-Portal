@@ -1,4 +1,14 @@
 const deleted = function(wo) {
+	var title;
+	var message;
+	if(wo.application === 'Programs') {
+		title = 'Your Program has been deleted';
+		message = `Your Program <strong><i>`+wo.title+` </i></strong> has been deleted. If you believe there was a mistake, please contact your hall director.`;
+	}
+	else if(wo.application === 'Funding') {
+		title = 'Your Funding Request has been deleted';
+		message = `Your Funding Request <strong><i>`+wo.title+` </i></strong> has been deleted. If you believe there was a mistake, please contact the office of Residence Life.`;
+	}
 	return (
 		`<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
 		<html xmlns='http://www.w3.org/1999/xhtml'>
@@ -58,7 +68,7 @@ const deleted = function(wo) {
 							  <tbody>
 								<tr>
 								  <td>
-									<h2>Program Status Update</h2>
+									<h2>`+title+`</h2>
 								  </td>
 								</tr>
 								<tr>
@@ -68,7 +78,7 @@ const deleted = function(wo) {
 								</tr>
 								<tr>
 								  <td>
-									Your program <strong><i>`+wo.title+` </i></strong> has been deleted. If you believe this to be an error please contact your hall director.
+									`+message+`
 								  </td>
 								</tr>
 								<tr>

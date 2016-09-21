@@ -224,7 +224,7 @@ class pCardRequest extends Component{
 					floatingLabelText='Item cost'
 					style={listStyle}
 					value={item.cost}
-					disabled={(this.state.reviewed ? true : false)}
+					disabled={(this.state.checked || this.state.reviewed ? true : false)}
 				/>
 				<FlatButton
 					label='Remove'
@@ -509,7 +509,7 @@ class pCardRequest extends Component{
 							type='button'
 							label='Add Item'
 							onClick={this.addJSONItem.bind(this)}
-							disabled={(this.state.reviewed ? true : false)}
+							disabled={(this.state.checked || this.state.reviewed ? true : false)}
 						/>
 						{this.renderCostTotal()}
 					</div>

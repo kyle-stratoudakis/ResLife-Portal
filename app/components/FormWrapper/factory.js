@@ -67,17 +67,15 @@ export default function factory(React, empty) {
 				}
 			}
 
-			renderDeleteDialog(){
-				console.log(this.state.open)
+			renderDeleteDialog() {
 				const actions = [
 					<FlatButton
 						label="Cancel"
-						primary={true}
 						onClick={this.handleClose.bind(this)}
 					/>,
 					<FlatButton
 						label="Delete"
-						primary={true}
+						hoverColor='#ef5350'
 						onClick={this.props.deleteWorkorder.bind(this, this.props.details)}
 					/>,
 				]
@@ -89,7 +87,14 @@ export default function factory(React, empty) {
 						open={this.state.open}
 						onRequestClose={this.handleClose.bind(this)}
 					>
-						{'Are you sure you want to delete this' + this.state.label + '? It cannot be undone.'}
+						<center>
+							{'Are you sure you want to delete this' + this.state.label + '?'}
+							<br />
+							<br />
+							<p style={{color: '#f44336'}}>
+								{'Deletion cannot be undone.'}
+							</p>
+						</center>
 					</Dialog>
 				)
 			}

@@ -39,10 +39,19 @@ const TrackFunding = React.createClass({
 			);
 		}
 
-		if(workorder.checked){
+		if(workorder.needsCheck === true) {
 			steps.push(
 				<Step>
-					<StepLabel icon={(workorder.checked ? approved : pending)}>
+					<StepLabel icon={pending}>
+						RHA
+					</StepLabel>
+				</Step>
+			);
+		}
+		else if(workorder.checked){
+			steps.push(
+				<Step>
+					<StepLabel icon={approved}>
 						RHA
 						<br />
 						{workorder.checked.name}

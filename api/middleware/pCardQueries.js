@@ -5,6 +5,11 @@ const pCardQueries = function(req, res, next) {
 	var status = req.query.status;
 	var query = {};
 
+	// Check for cardType filter
+	if(req.query.cardType) {
+		query.cardType = { $in: req.query.cardType };
+	}
+
 	if(role === 'submitter') {
 		query.user = userId;
 
@@ -16,12 +21,9 @@ const pCardQueries = function(req, res, next) {
 			query.approved = { $ne: null };
 		}
 	}
-	else if(role === 'rha') {
-		query.cardType = 'rha';
-
+	else if(role === 'checker') {
 		if(status === 'pending') {
-			query.checked = null;
-			query.reviewed = null;
+			query.needsCheck = true;
 		}
 		else if(status === 'approved') {
 			query.checked = userId;
@@ -47,7 +49,6 @@ const pCardQueries = function(req, res, next) {
 	}
 
 	if(query) {
-		// console.log(role, status, query)
 		req.query = query;
 
 		req.projection = {

@@ -143,9 +143,9 @@ const pcardAuthForm = function(program) {
 	doc.fontSize(8);
 	doc.moveDown(2.5);
 	doc.fillColor('black');
-	doc.text('Pick up Signiture ___________________________________________________________________ Date ___________________');
+	doc.text('Pick up Signature __________________________________________________________________ Date ___________________');
 	doc.moveDown(3);
-	doc.text('Return and Reciept Signiture _________________________________________________________ Date ___________________');
+	doc.text('Return and Receipt Signature ________________________________________________________ Date ___________________');
 	doc.fontSize(7);
 	doc.fillColor('grey');
 	doc.moveDown(1);

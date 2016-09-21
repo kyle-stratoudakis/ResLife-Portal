@@ -126,7 +126,7 @@ function generateTable(notifs) {
 					>
 					  <tr>
 						<td>
-							<a href="`+host+`/job/`+notif.location+`/View/`+notif.location+`/`+notif.workorder+`">View</a>
+							<a href="`+host+`/job/`+notif.application+`/View/`+notif.application+`/`+notif.workorder+`">View</a>
 						</td>
 					  </tr>
 					</table>

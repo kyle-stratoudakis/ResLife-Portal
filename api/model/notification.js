@@ -11,7 +11,7 @@ var user = db.model('user', userSchema);
 var notifSchema = new mongoose.Schema({
 	workorder: { type: Schema.Types.ObjectId, ref: 'user' },
 	sent: [{ type: Schema.Types.ObjectId, ref: 'user' }],
-	location: String,
+	application: String,
 	role: String,
 	event: String,
 	title: String,
