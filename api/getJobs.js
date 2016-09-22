@@ -8,6 +8,7 @@ route.get('/', function(req, res) {
 	var decodedUser = jwt.decode(token, accessConfig.secret);
 	var jobs = decodedUser.jobs;
 	jobModel.find({ _id: { $in: jobs } })
+	.sort({ order: 1 })
 	.populate({
 		path: 'card_actions dash_actions endpoints',
 		populate: {

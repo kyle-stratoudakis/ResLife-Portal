@@ -83,8 +83,6 @@ class Program extends Component {
 					width: '50%'
 				},
 				listStyle: {
-					// marginLeft: '1em',
-					// marginRight: '1em',
 					padding: '1em'
 				},
 				listPaperStyle: {
@@ -256,7 +254,6 @@ class Program extends Component {
 					name={'items['+i+'][description]'}
 					hintText='Include name and quantity'
 					floatingLabelText='Item Description'
-					// multiLine={true}
 					style={listStyle}
 					value={item.description}
 				/>
@@ -275,6 +272,7 @@ class Program extends Component {
 				<FlatButton
 					label='Remove'
 					hoverColor={red500}
+					disabled={(this.state.reviewed ? true : false)}
 					onClick={this.removeJSONItem.bind(this, i)}
 					style={centerStyle}
 				/>

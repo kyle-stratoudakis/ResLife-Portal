@@ -19,6 +19,7 @@ var jobSchema = new mongoose.Schema({
 	subtitle: String,
 	link: String,
 	note: String,
+	order: Number,
 	card_actions: [{ type: Schema.Types.ObjectId, ref: 'action'}],
 	dash_actions: [{ type: Schema.Types.ObjectId, ref: 'action'}],
 	endpoints: [{ type: Schema.Types.ObjectId, ref: 'endpoint'}]

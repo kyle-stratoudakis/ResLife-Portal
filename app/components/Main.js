@@ -15,6 +15,7 @@ import MenuItem from 'material-ui/MenuItem'
 import Paper from 'material-ui/Paper'
 import Snackbar from 'material-ui/Snackbar'
 import Subheader from 'material-ui/Subheader'
+import Dialog from 'material-ui/Dialog';
 import { NavigationMoreVert } from 'material-ui/svg-icons';
 
 // const muiTheme = getMuiTheme({
@@ -85,9 +86,7 @@ const Main = React.createClass({
 									</Card>
 								</Link>
 							</div>
-							
 							{this.props.jobs.map(this.renderJob)}
-
 						</Drawer>
 					</nav>
 					<br /><br /><br />
@@ -99,6 +98,15 @@ const Main = React.createClass({
 						onRequestClose={this.props.snackBarClose}
 					/>*/}
 					<br /><br /><br />
+					<Dialog
+						title={this.props.dialog.title}
+						actions={this.props.dialog.actions}
+						modal={this.props.dialog.modal}
+						open={this.props.dialog.open}
+						onRequestClose={this.props.closeDialog}
+					>
+						{this.props.dialog.content}
+					</Dialog>
 				</div>
 			</MuiThemeProvider>
 		)

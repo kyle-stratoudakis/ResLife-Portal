@@ -289,6 +289,22 @@ export function deleteWorkorder(wo) {
 	}
 }
 
+export function openDialog(title, content, actions) {
+	return {
+		type: 'OPEN_DIALOG',
+		title: title,
+		content: content,
+		actions: actions,
+		modal: false
+	}
+}
+
+export function closeDialog() {
+	return {
+		type: 'CLOSE_DIALOG'
+	}
+}
+
 export function snackbarAlert(endpoint) {
 	return {
 		type: 'SNACKBAR_ALERT',

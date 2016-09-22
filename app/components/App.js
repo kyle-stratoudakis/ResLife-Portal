@@ -13,7 +13,8 @@ function mapStateToProps (state) {
 		drawer: state.drawer,
 		snackbar: state.snackbar,
 		loginMessage: state.loginMessage,
-		selectedTab: state.selectedTab
+		selectedTab: state.selectedTab,
+		dialog: state.dialog
 	}
 }
 

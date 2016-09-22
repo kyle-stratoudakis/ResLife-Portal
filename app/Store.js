@@ -12,6 +12,7 @@ import jobs from './data/jobs';
 import appbar from './data/appbar';
 import drawer from './data/drawer';
 import snackbar from './data/snackbar';
+import dialog from './data/dialog';
 
 // create an object for the default data
 const defaultState = {
@@ -19,7 +20,8 @@ const defaultState = {
 	jobs,
 	appbar,
 	drawer,
-	snackbar
+	snackbar,
+	dialog
 };
 
 // const enhancer = compose(

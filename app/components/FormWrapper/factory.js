@@ -5,7 +5,6 @@ import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
-import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
 export default function factory(React, empty) {
@@ -67,47 +66,6 @@ export default function factory(React, empty) {
 				}
 			}
 
-			renderDeleteDialog() {
-				const actions = [
-					<FlatButton
-						label="Cancel"
-						onClick={this.handleClose.bind(this)}
-					/>,
-					<FlatButton
-						label="Delete"
-						hoverColor='#ef5350'
-						onClick={this.props.deleteWorkorder.bind(this, this.props.details)}
-					/>,
-				]
-				return (
-					<Dialog
-						title={"Delete" + this.state.label}
-						actions={actions}
-						modal={false}
-						open={this.state.open}
-						onRequestClose={this.handleClose.bind(this)}
-					>
-						<center>
-							{'Are you sure you want to delete this' + this.state.label + '?'}
-							<br />
-							<br />
-							<p style={{color: '#f44336'}}>
-								{'Deletion cannot be undone.'}
-							</p>
-						</center>
-					</Dialog>
-				)
-			}
-
-			handleOpen() {
-				console.log('open')
-				this.setState({open: true});
-			}
-
-			handleClose() {
-				this.setState({open: false});
-			}
-
 			render() {
 				const center = { 
 					marginTop: '1em',
@@ -117,6 +75,31 @@ export default function factory(React, empty) {
 					width: '65%'
 				}
 
+				const title = "Delete" + this.state.label;
+
+				const actions = [
+					<FlatButton
+						label="Cancel"
+						onClick={this.props.closeDialog.bind(this)}
+					/>,
+					<FlatButton
+						label="Delete"
+						hoverColor='#ef5350'
+						onClick={this.props.deleteWorkorder.bind(this, this.props.details)}
+					/>,
+				]
+
+				const content = [
+					<center>
+						{'Are you sure you want to delete this' + this.state.label + '?'}
+						<br />
+						<br />
+						<p style={{color: '#f44336'}}>
+							{'Deletion cannot be undone.'}
+						</p>
+					</center>
+				]
+
 				return (
 					<div className="container">
 						<br/>
@@ -125,7 +108,6 @@ export default function factory(React, empty) {
 								<div className="col-sm-11">
 									<h2>{this.state.action + this.state.label}</h2>
 								</div>
-								{this.renderDeleteDialog()}
 								<div className="col-sm-1">
 									<IconMenu
 										iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}
@@ -135,7 +117,7 @@ export default function factory(React, empty) {
 										<MenuItem 
 											primaryText={"Delete" + this.state.label}
 											disabled={(this.props.details._id ? false : true)}
-											onClick={this.handleOpen.bind(this)}
+											onClick={this.props.openDialog.bind(this, title, content, actions)}
 										/>
 										<MenuItem
 											primaryText="Email User"

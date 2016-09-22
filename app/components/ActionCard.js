@@ -9,7 +9,6 @@ import CardText from 'material-ui/Card/CardText';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import Paper from 'material-ui/Paper';
-	
 
 const ActionCard = React.createClass({
 	render () {
