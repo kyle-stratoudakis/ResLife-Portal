@@ -49,8 +49,10 @@ const notification_middleware = function(req, res, next) {
 		else if(req.email === 'reviewer_approved') {
 			template = statusNotif('reviewer approved', wo);
 		}
-		else if(req.email === 'denied') {
-			template = statusNotif('denied', wo);
+		else if(req.email === 'deny') {
+			wo.comment = req.body.comment;
+			wo.who = req.decodedUser.name;
+			template = statusNotif('deny', wo);
 		}
 		else if(req.email === 'deleted') {
 			template = deleted(wo);
@@ -178,18 +180,6 @@ const notification_middleware = function(req, res, next) {
 		}
 		else if(req.notif === 'funding_reviewed') {
 			registerNotif('approver', 'funding', wo);
-		}
-		else if(req.notif === 'deny_checked') {
-			registerTempNotif(req.decodedUser._id+'_denied', 'hall director denied', wo);
-		}
-		else if(req.notif === 'deny_reviewed') {
-			registerTempNotif(req.decodedUser._id+'_denied', 'reviewer denied', wo);
-		}
-		else if(req.notif === 'deny_reviewer_approved') {
-			registerTempNotif(req.decodedUser._id+'_denied', 'reviewer denied', wo);
-		}
-		else if(req.notif === 'approver_denied') {
-			registerTempNotif(req.decodedUser._id+'_denied', 'approver denied', wo);
 		}
 		else if(req.notif === 'delete_notif') {
 			deleteNotif(wo._id);

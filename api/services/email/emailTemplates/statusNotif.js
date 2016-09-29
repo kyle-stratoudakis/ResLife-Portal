@@ -3,8 +3,15 @@ const statusNotif = function(status, wo) {
 	var host = config.PROTOCOL + config.HOST;
 	var message = 'processed';
 	var title = 'Program Status Update';
-	var location = 'Programs';
-	var label = 'Program'
+
+	var label;
+	if(wo.application === 'Programs') {
+		label = 'Program';
+	}
+	else if(wo.application === 'Funding') {
+		label = 'Request'
+	}
+
 	if(status === 'checked') {
 		title = 'Hall Director Approved';
 		message = 'approved by your hall director.';
@@ -26,19 +33,15 @@ const statusNotif = function(status, wo) {
 	}
 	else if(status === 'deny') {
 		title = label+' Denied'
-		message = `denied by ${wo.who} for the following reason:</br></br>${wo.comment}</br></br>`;
+		message = `denied by ${wo.who} for the following reason:<br><br><i>${wo.comment}</i><br><br>`;
 	}
 	else if(status === 'rha_checked') {
 		title = 'Request Status Update';
 		message = 'checked by RHA board member.';
-		location = 'Funding';
-		label = 'Request';
 	}
 	else if(status === 'funding_reviewed') {
 		title = 'Request Status Update';
 		message = 'approved by an associate director.';
-		location = 'Funding';
-		label = 'Request';
 	}
 
 	return (
@@ -100,17 +103,17 @@ const statusNotif = function(status, wo) {
 							  <tbody>
 								<tr>
 								  <td>
-									<h2>`+title+`</h2>
+									<h2>${title}</h2>
 								  </td>
 								</tr>
 								<tr>
 								  <td class="mui--divider-top">
-									`+wo.name+`,
+									${wo.name},
 								  </td>
 								</tr>
 								<tr>
 								  <td>
-									Your `+label.toLowerCase()+` <strong><i>`+wo.title+` </i></strong> has been `+message+` You can view the status of this `+label.toLowerCase()+` by logging into the portal or by clicking the button below.
+									Your ${label.toLowerCase()} <strong><i>${wo.title} </i></strong> has been ${message} You can view the status of this ${label.toLowerCase()} by logging into the portal or by clicking the button below.
 								  </td>
 								</tr>
 								<tr>
@@ -123,7 +126,7 @@ const statusNotif = function(status, wo) {
 									>
 									  <tr>
 										<td>
-										  <a href="`+host+`/job/`+location+`/View/`+location+`/`+wo._id+`">Access `+label+`</a>
+										  <a href="${host}/job/${wo.application}/View/${wo.application}/${wo._id}">Access ${label}</a>
 										</td>
 									  </tr>
 									</table>

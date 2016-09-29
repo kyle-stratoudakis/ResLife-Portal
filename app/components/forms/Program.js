@@ -35,7 +35,9 @@ class Program extends Component {
 		this.renderTypeContent = this.renderTypeContent.bind(this);
 		this.renderEvaluation = this.renderEvaluation.bind(this);
 		this.renderQuote = this.renderQuote.bind(this);
-		this.handleToggle = this.handleToggle.bind(this);
+		this.handleSelection = this.handleSelection.bind(this);
+		this.renderDenyDialog = this.renderDenyDialog.bind(this);
+		this.handleDeny = this.handleDeny.bind(this);
 		this.renderAddComment = this.renderAddComment.bind(this);
 
 		this.state = {
@@ -83,6 +85,8 @@ class Program extends Component {
 					width: '50%'
 				},
 				listStyle: {
+					marginTop: '0em',
+					paddingTop: '0em',
 					paddingLeft: '1em'
 				},
 				listPaperStyle: {
@@ -156,10 +160,28 @@ class Program extends Component {
 		return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
 	}
 
-	handleToggle(e, value) {
+	handleSelection(e, value) {
 		let data = {};
 		data[e.target.name] = value;
 		this.setState(data);
+	}
+
+	renderDenyDialog() {
+
+	}
+
+	handleDeny() {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let comment = (this.refs.denyComment ? this.refs.denyComment.getValue() : '');
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt,
+			comment: comment
+		}
+		this.props.workorderAction('programs/put/deny', data, 'Programs');
 	}
 
 	getActionButtons() {
@@ -178,7 +200,7 @@ class Program extends Component {
 		let title = 'Deny Program';
 		let content = [
 			<center>
-				<p>Are you sure you want to deny this program?</p>
+				<p>Please enter a reason which will be included in an email sent to the submitter.</p>
 				<Formsy.Form
 					ref='denyForm'
 				>
@@ -228,7 +250,7 @@ class Program extends Component {
 						label='Deny'
 						backgroundColor='#ef9a9a'
 						hoverColor='#ef5350'
-						disabled={!disabled}
+						disabled={disabled}
 						onClick={this.props.openDialog.bind(this, title, content, actions)}
 					/>
 					<FlatButton
@@ -281,28 +303,28 @@ class Program extends Component {
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Item '+(i+1)}</Subheader>
 				<div style={listStyle}>
-				<FormsyText
-					required
-					name={'items['+i+'][description]'}
-					hintText='Include name and quantity'
-					floatingLabelText='Item Description'
-					multiLine={true}
-					style={{padding: '0px'}}
-					value={item.description}
-				/>
+					<FormsyText
+						required
+						name={'items['+i+'][description]'}
+						hintText='Include name and quantity'
+						floatingLabelText='Item Description'
+						multiLine={true}
+						style={{paddingLeft: '0em'}}
+						value={item.description}
+					/>
+					<br />
+					<FormsyText
+						required
+						name={'items['+i+'][cost]'}
+						validation='isNumeric'
+						validationError='Please use only numbers'
+						hintText='Total item cost'
+						floatingLabelText='Item cost'
+						style={{paddingLeft: '0em'}}
+						value={item.cost}
+						disabled={(this.state.reviewed ? true : false)}
+					/>
 				</div>
-				<br />
-				<FormsyText
-					required
-					name={'items['+i+'][cost]'}
-					validation='isNumeric'
-					validationError='Please use only numbers'
-					hintText='Total item cost'
-					floatingLabelText='Item cost'
-					style={listStyle}
-					value={item.cost}
-					disabled={(this.state.reviewed ? true : false)}
-				/>
 				<FlatButton
 					label='Remove'
 					hoverColor={red500}
@@ -333,7 +355,7 @@ class Program extends Component {
 								required
 								name='fundingType'
 								valueSelected={this.state.fundingType}
-								onChange={this.handleToggle} 
+								onChange={this.handleSelection} 
 							>
 								<FormsyRadio
 									value='pcard'
@@ -372,7 +394,7 @@ class Program extends Component {
 						required
 						name='chartwellsQuote'
 						valueSelected={this.state.chartwellsQuote}
-						onChange={this.handleToggle} 
+						onChange={this.handleSelection} 
 					>
 						<FormsyRadio
 							value='notRequired'
@@ -412,15 +434,15 @@ class Program extends Component {
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Staff '+(i+1)}</Subheader>
 				<div style={listStyle}>
-				<FormsyText
-					name={'staff['+i+'][name]'}
-					required
-					hintText='Additional Staff'
-					floatingLabelText='Staff Name'
-					multiLine={true}
-					style={{padding: '0px'}}
-					value={staff.name}
-				/>
+					<FormsyText
+						name={'staff['+i+'][name]'}
+						required
+						hintText='Additional Staff'
+						floatingLabelText='Staff Name'
+						multiLine={true}
+						style={{paddingLeft: '0em'}}
+						value={staff.name}
+					/>
 				</div>
 				<FlatButton
 					label='Remove'
@@ -450,7 +472,7 @@ class Program extends Component {
 		let { centerStyle } = this.state.styles;
 		if(this.refs.form) {
 			let type = this.refs.form.getModel().type;
-			if(type === 'Hall Council') {
+			if(type === 'Hall Council' || type === 'Social') {
 				return (
 					<div>
 						<Divider />
@@ -517,7 +539,7 @@ class Program extends Component {
 								required
 								name='councilApproval'
 								valueSelected={this.state.councilApproval}
-								onChange={this.handleToggle} 
+								onChange={this.handleSelection} 
 							>
 								<FormsyRadio
 									value='approved'
@@ -568,7 +590,7 @@ class Program extends Component {
 						<FormsyRadioGroup
 							name='evalCardReturn'
 							valueSelected={this.state.evalCardReturn}
-							onChange={this.handleToggle} 
+							onChange={this.handleSelection} 
 						>
 							<FormsyRadio
 								value='no'
@@ -745,7 +767,7 @@ class Program extends Component {
 							required
 							name='travelAuthorization'
 							valueSelected={this.state.travelAuthorization}
-							onChange={this.handleToggle} 
+							onChange={this.handleSelection} 
 						>
 							<FormsyRadio
 								value='onCampus'

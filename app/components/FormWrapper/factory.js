@@ -77,6 +77,17 @@ export default function factory(React, empty) {
 
 				const title = "Delete" + this.state.label;
 
+				const content = [
+					<center>
+						{'Are you sure you want to delete this' + this.state.label + '?'}
+						<br />
+						<br />
+						<p style={{color: '#f44336'}}>
+							{'Deletion cannot be undone.'}
+						</p>
+					</center>
+				]
+
 				const actions = [
 					<FlatButton
 						label="Cancel"
@@ -87,17 +98,6 @@ export default function factory(React, empty) {
 						hoverColor='#ef5350'
 						onClick={this.props.deleteWorkorder.bind(this, this.props.details)}
 					/>,
-				]
-
-				const content = [
-					<center>
-						{'Are you sure you want to delete this' + this.state.label + '?'}
-						<br />
-						<br />
-						<p style={{color: '#f44336'}}>
-							{'Deletion cannot be undone.'}
-						</p>
-					</center>
 				]
 
 				return (
