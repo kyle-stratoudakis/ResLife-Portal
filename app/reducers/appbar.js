@@ -14,21 +14,22 @@ function appbar(state = {}, action) {
 		if(state.title !== job) {
 			return {
 				...state,
-				title: job.replace(/([a-z])([A-Z])/g, '$1 $2'), // Split PascalCase titles with spaces
-				color: state[job]
+				//title: job.replace(/([a-z])([A-Z])/g, '$1 $2'), // Split PascalCase titles with spaces
+				title: state[job].title,
+				color: state[job].color
 			}
 		}
 		else {
 			return state;
 		}
 	case 'RECEIVE_JOBS':
-		let palette = {};
+		let jobs = {};
 		for(let i in action.jobs) {
-			palette[action.jobs[i].link] = action.jobs[i].color;
+			jobs[action.jobs[i].link] = {title: action.jobs[i].title, color: action.jobs[i].color};
 		}
 		return {
 			...state,
-			...palette
+			...jobs
 		}
 	default:
 		return state;

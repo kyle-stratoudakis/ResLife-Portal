@@ -58,6 +58,7 @@ var programSchema = new mongoose.Schema({
 	evalOther: String,
 	travelAuthorization: String,
 	chartwellsQuote: String,
+	denied: Boolean,
 	comments: [commentSchema]
 });
 

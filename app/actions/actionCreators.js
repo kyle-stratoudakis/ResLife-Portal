@@ -220,6 +220,7 @@ export function modifyAction(endpoint, data, update) {
 
 export function workorderAction(endpoint, data, route) {
 	return function (dispatch) {
+		console.log(data);
 		var json = JSON.stringify(data);
 		return fetch(host + "/api/" + endpoint, {
 			method: 'put',

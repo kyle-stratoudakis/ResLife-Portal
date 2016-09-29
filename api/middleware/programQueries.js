@@ -5,12 +5,21 @@ const programQueries = function(req, res, next) {
 	var role = req.decodedUser.role;
 	var status = req.query.status;
 	var halls = (req.query.hall ? req.query.hall : null);
+	var override = (req.query.override ? req.query.override : null);
+	var type = (req.query.type ? req.query.type : null);
 	var query = {};
 
 	if(halls) {
 		query.hall = { $in: halls };
 	}
-	// console.log('halls', halls)
+
+	if(override) {
+		role = override;
+	}
+
+	if(type) {
+		query.type = type;
+	}
 
 	if(role === 'submitter') {
 		query.user = userId;
@@ -22,7 +31,7 @@ const programQueries = function(req, res, next) {
 			query.checked = { $ne: null };
 			query.reviewed = { $ne: null };
 			query.approved = { $ne: null };
-			query.evaluated = null ;
+			query.evaluated = null;
 		}
 		else if(status === 'completed') {
 			query.checked = { $ne: null };
@@ -32,9 +41,12 @@ const programQueries = function(req, res, next) {
 		}
 	}
 	else if(role === 'hall_director') {
-		query.hall = userHall;
+		if(!halls) {
+			query.hall = userHall;
+		}
 
 		if(status === 'pending') {
+			// query.denied = false;
 			query.checked = null;
 		}
 		else if(status === 'approved') {
