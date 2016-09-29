@@ -4,6 +4,8 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
 import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -92,7 +94,7 @@ export default function factory(React, empty) {
 							<br />
 							<br />
 							<p style={{color: '#f44336'}}>
-								{'Deletion cannot be undone.'}
+								{<b>Deletion cannot be undone.</b>}
 							</p>
 						</center>
 					</Dialog>

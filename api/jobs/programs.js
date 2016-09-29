@@ -327,6 +327,73 @@ route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
 });
 route.put('/put/comment', m_notif);
 
+route.put('/put/deny', jsonParser, m_role, function(req, res, next) {
+	var decodedUser = req.decodedUser;
+	var id = req.body.id
+	var comment = req.body.comment;
+	var role = decodedUser.role;
+
+	programModel.findOne({ _id: id }, function(err, program) {
+		//program.comments.push({user: decodedUser._id, message: message, date: new Date()});
+		req.email = 'denied';
+		req.notif = 'denied';
+
+		if(err) {
+			console.log(err);
+		}
+		else {
+			if(role === 'hall_director') {
+				program.checked = null;
+				program.checkedDate = null;
+				req.email = 'return_checked';
+				req.notif = 'return_checked';
+			}
+			else if(role === 'reviewer') {
+				program.reviewed = null;
+				program.reviewedDate = null;
+				req.email = 'deny_reviewed';
+				req.notif = 'deny_reviewed';
+				if(!program.funding) {
+					program.approved = null;
+					program.approvedDate = null;
+					req.email = 'deny_reviewer_approved';
+					req.notif = 'deny_reviewer_approved';
+				}
+			}
+			else if(role === 'approver') {
+				program.approved = null;
+				program.approvedDate = null;
+				req.email = 'deny_approved';
+				req.notif = 'deny_approved';
+			}
+			program.save(function(err, saved) {
+				if(!err) {
+					res.status(200).json({status: 'return'});
+					req.workorder = saved;
+					next();
+				}
+				else {
+					res.status(500).send(err);
+					console.log(err)
+				}
+			});
+		}
+
+		/*program.save(function(err, saved) {
+			if(!err) {
+				res.status(200).json({status: 'deny'});
+				req.workorder = saved;
+				next();
+			}
+			else {
+				res.status(500).send(err);
+				console.log(err)
+			}
+		});*/
+	});
+});
+route.put('/put/deny', m_notif);
+
 route.put('/put/delete', jsonParser, function(req, res, next) {
     var id = req.body.id;
     programModel.findOne({ _id : id })

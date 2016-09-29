@@ -49,9 +49,9 @@ const notification_middleware = function(req, res, next) {
 		else if(req.email === 'reviewer_approved') {
 			template = statusNotif('reviewer approved', wo);
 		}
-		else if(req.email === 'denied') {
-			template = statusNotif('denied', wo);
-		}
+		/*else if(req.email === 'denied') {
+			template = denied(wo);
+		}*/
 		else if(req.email === 'deleted') {
 			template = deleted(wo);
 		}
@@ -176,6 +176,8 @@ const notification_middleware = function(req, res, next) {
 		else if(req.notif === 'funding_reviewed') {
 			registerNotif('approver', 'funding', wo);
 		}
+
+		
 		else if(req.notif === 'deny_checked') {
 			registerTempNotif(req.decodedUser._id+'_denied', 'hall director denied', wo);
 		}

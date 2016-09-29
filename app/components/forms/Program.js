@@ -5,9 +5,11 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
+import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon'
+import TextField from 'material-ui/TextField';
 import { red500 } from 'material-ui/styles/colors';
 import FormsyText from './Formsy/FormsyText';
 import FormsyDate from './Formsy/FormsyDate';
@@ -37,6 +39,10 @@ class Program extends Component {
 		this.renderQuote = this.renderQuote.bind(this);
 		this.handleToggle = this.handleToggle.bind(this);
 		this.renderAddComment = this.renderAddComment.bind(this);
+		this.renderDenyDialog = this.renderDenyDialog.bind(this);
+		this.handleOpen = this.handleOpen.bind(this); 
+		this.handleClose = this.handleClose.bind(this);
+		this.getComment = this.getComment.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -74,6 +80,8 @@ class Program extends Component {
 			evalSuggestions: '',
 			evalOther: '',
 			travelAuthorization: 'onCampus',
+			open: false,
+			action: "New",
 			chartwellsQuote: '',
 			styles: {
 				centerStyle: {
@@ -199,8 +207,10 @@ class Program extends Component {
 						label='Deny'
 						backgroundColor='#ef9a9a'
 						hoverColor='#ef5350'
-						disabled={!disabled}
-						onClick={this.props.workorderAction.bind(this, 'programs/put/return', data, 'Programs')}
+						//disabled={disabled}
+						//onClick={this.props.workorderAction.bind(this, 'programs/put/deny', data, 'Programs')}
+						//onClick={this.props.renderDenyDialog.bind(this, 'programs/put/deny', data, 'Programs')}
+						onClick={this.handleOpen.bind(this)}
 					/>
 					<FlatButton
 						style={actionStyle}
@@ -222,6 +232,73 @@ class Program extends Component {
 				/>
 			)
 		}
+	}
+
+	renderDenyDialog() {
+		console.log(this.refs)
+
+		const actions = [
+			<FlatButton
+				label="Cancel"
+				onClick={this.handleClose.bind(this)}
+			/>,
+			<FlatButton
+				label="Deny"
+				hoverColor='#ef5350'
+				onClick={this.getComment.bind(this)}
+			/>,
+		]
+
+		return (
+			<div>
+			<Dialog
+				title={"Deny"}
+				actions={actions}
+				modal={true}
+				open={this.state.open}
+				onRequestClose={this.handleClose.bind(this)}
+			>
+			<TextField
+				ref='comment'
+				hintText={"Please enter the reason for denying this program."}
+				fullWidth={true}
+			/>
+				<center>
+					{'Are you sure you want to deny this program?'}
+					<br />
+					<br />
+					<p style={{color: '#f44336'}}>
+						{<b>Deny cannot be undone.</b>}
+					</p>
+				</center>
+			</Dialog>
+			</div>
+		)
+	}
+
+	getComment()
+	{
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let comment = this.refs.comment.getValue();
+		console.log(comment)
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt,
+			comment: this.refs.comment.getValue()
+		}
+		this.props.denyWorkorder(data, 'Programs');
+	}
+
+	handleOpen() {
+		console.log('open')
+		this.setState({open: true});
+	}
+
+	handleClose() {
+		this.setState({open: false});
 	}
 
 	submitForm(data) {
@@ -797,6 +874,7 @@ class Program extends Component {
 						{this.getActionButtons()}
 					</div>
 				</Formsy.Form>
+				{this.renderDenyDialog()}
 			</div>
 		);
 	}

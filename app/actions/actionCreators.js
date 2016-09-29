@@ -272,6 +272,24 @@ export function emailUser(wo) {
 	}
 }
 
+export function denyWorkorder(data, location) {
+	return function (dispatch) {
+		let json = JSON.stringify(data)
+		console.log(data.comment);
+		return fetch(host + "/api/" + location + "/put/deny", {
+			method: 'put',
+			headers: {
+				'Accept': 'application/json, text/plain, */*',
+				'Content-Type': 'application/json'
+			},
+			body: json
+		})
+		.then(handleErrors)
+		.then(() => dispatch(push('/job/' + location)))
+		.catch(err => console.log('fetchDetails', err))
+	}
+}
+
 export function deleteWorkorder(wo) {
 	return function (dispatch) {
 		let json = JSON.stringify({id: wo._id})
