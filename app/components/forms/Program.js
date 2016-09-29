@@ -91,9 +91,7 @@ class Program extends Component {
 					width: '50%'
 				},
 				listStyle: {
-					// marginLeft: '1em',
-					// marginRight: '1em',
-					padding: '1em'
+					paddingLeft: '1em'
 				},
 				listPaperStyle: {
 					marginBottom: '1em'
@@ -185,6 +183,37 @@ class Program extends Component {
 			jwt: this.props.token.jwt
 		}
 		let disabled;
+		let title = 'Deny Program';
+		let content = [
+			<center>
+				<p>Are you sure you want to deny this program?</p>
+				<Formsy.Form
+					ref='denyForm'
+				>
+					<FormsyText
+						ref='denyComment'
+						name='denyComment'
+						floatingLabelText='Deny Reason'
+						multiLine={true}
+						style={{textAlign: 'left'}}
+					/>
+				</Formsy.Form>
+			</center>
+		];
+		const actions = [
+			<FlatButton
+				label='Cancel'
+				key='cancel'
+				onClick={this.props.closeDialog.bind(this)}
+			/>,
+			<FlatButton
+				label='Deny'
+				key='deny'
+				hoverColor='#ef5350'
+				onClick={this.handleDeny.bind()}
+			/>,
+		];
+
 		if(!(role === 'submitter') && this.props.details._id) {
 			if(role === 'hall_director'){
 				disabled = (checked ? true : false);
@@ -207,10 +236,8 @@ class Program extends Component {
 						label='Deny'
 						backgroundColor='#ef9a9a'
 						hoverColor='#ef5350'
-						//disabled={disabled}
-						//onClick={this.props.workorderAction.bind(this, 'programs/put/deny', data, 'Programs')}
-						//onClick={this.props.renderDenyDialog.bind(this, 'programs/put/deny', data, 'Programs')}
-						onClick={this.handleOpen.bind(this)}
+						disabled={!disabled}
+						onClick={this.props.openDialog.bind(this, title, content, actions)}
 					/>
 					<FlatButton
 						style={actionStyle}
@@ -328,15 +355,17 @@ class Program extends Component {
 		return (
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Item '+(i+1)}</Subheader>
+				<div style={listStyle}>
 				<FormsyText
 					required
 					name={'items['+i+'][description]'}
 					hintText='Include name and quantity'
 					floatingLabelText='Item Description'
-					// multiLine={true}
-					style={listStyle}
+					multiLine={true}
+					style={{padding: '0px'}}
 					value={item.description}
 				/>
+				</div>
 				<br />
 				<FormsyText
 					required
@@ -456,15 +485,17 @@ class Program extends Component {
 		return (
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Staff '+(i+1)}</Subheader>
+				<div style={listStyle}>
 				<FormsyText
 					name={'staff['+i+'][name]'}
 					required
 					hintText='Additional Staff'
 					floatingLabelText='Staff Name'
 					multiLine={true}
-					style={listStyle}
+					style={{padding: '0px'}}
 					value={staff.name}
 				/>
+				</div>
 				<FlatButton
 					label='Remove'
 					hoverColor={red500}
