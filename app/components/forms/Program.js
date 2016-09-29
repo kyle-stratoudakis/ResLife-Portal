@@ -85,7 +85,9 @@ class Program extends Component {
 					width: '50%'
 				},
 				listStyle: {
-					padding: '1em'
+					marginTop: '0em',
+					paddingTop: '0em',
+					paddingLeft: '1em'
 				},
 				listPaperStyle: {
 					marginBottom: '1em'
@@ -198,7 +200,7 @@ class Program extends Component {
 		let title = 'Deny Program';
 		let content = [
 			<center>
-				<p>Are you sure you want to deny this program?</p>
+				<p>Please enter a reason which will be included in an email sent to the submitter.</p>
 				<Formsy.Form
 					ref='denyForm'
 				>
@@ -206,6 +208,8 @@ class Program extends Component {
 						ref='denyComment'
 						name='denyComment'
 						floatingLabelText='Deny Reason'
+						multiLine={true}
+						style={{textAlign: 'left'}}
 					/>
 				</Formsy.Form>
 			</center>
@@ -298,26 +302,29 @@ class Program extends Component {
 		return (
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Item '+(i+1)}</Subheader>
-				<FormsyText
-					required
-					name={'items['+i+'][description]'}
-					hintText='Include name and quantity'
-					floatingLabelText='Item Description'
-					style={listStyle}
-					value={item.description}
-				/>
-				<br />
-				<FormsyText
-					required
-					name={'items['+i+'][cost]'}
-					validation='isNumeric'
-					validationError='Please use only numbers'
-					hintText='Total item cost'
-					floatingLabelText='Item cost'
-					style={listStyle}
-					value={item.cost}
-					disabled={(this.state.reviewed ? true : false)}
-				/>
+				<div style={listStyle}>
+					<FormsyText
+						required
+						name={'items['+i+'][description]'}
+						hintText='Include name and quantity'
+						floatingLabelText='Item Description'
+						multiLine={true}
+						style={{paddingLeft: '0em'}}
+						value={item.description}
+					/>
+					<br />
+					<FormsyText
+						required
+						name={'items['+i+'][cost]'}
+						validation='isNumeric'
+						validationError='Please use only numbers'
+						hintText='Total item cost'
+						floatingLabelText='Item cost'
+						style={{paddingLeft: '0em'}}
+						value={item.cost}
+						disabled={(this.state.reviewed ? true : false)}
+					/>
+				</div>
 				<FlatButton
 					label='Remove'
 					hoverColor={red500}
@@ -426,15 +433,17 @@ class Program extends Component {
 		return (
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Staff '+(i+1)}</Subheader>
-				<FormsyText
-					name={'staff['+i+'][name]'}
-					required
-					hintText='Additional Staff'
-					floatingLabelText='Staff Name'
-					multiLine={true}
-					style={listStyle}
-					value={staff.name}
-				/>
+				<div style={listStyle}>
+					<FormsyText
+						name={'staff['+i+'][name]'}
+						required
+						hintText='Additional Staff'
+						floatingLabelText='Staff Name'
+						multiLine={true}
+						style={{paddingLeft: '0em'}}
+						value={staff.name}
+					/>
+				</div>
 				<FlatButton
 					label='Remove'
 					hoverColor={red500}

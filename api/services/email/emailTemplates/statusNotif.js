@@ -33,7 +33,7 @@ const statusNotif = function(status, wo) {
 	}
 	else if(status === 'deny') {
 		title = label+' Denied'
-		message = `denied by ${wo.who} for the following reason: ${wo.comment}.<br>`;
+		message = `denied by ${wo.who} for the following reason:<br><br><i>${wo.comment}</i><br><br>`;
 	}
 	else if(status === 'rha_checked') {
 		title = 'Request Status Update';

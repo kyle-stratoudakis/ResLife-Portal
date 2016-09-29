@@ -185,7 +185,10 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 			req.email = 'evaluated';
 			req.notif = 'evaluated';
 		}
-		if(data.evalTime) program.evalTime = data.evalTime;
+		if(data.evalTime) {
+			program.evalTime = data.evalTime;
+			console.log(program._id, data.evalTime);
+		}
 		if(data.evalAttendance) program.evalAttendance = data.evalAttendance;
 		if(data.evalCost) program.evalCost = data.evalCost;
 		if(data.evalCardReturn) program.evalCardReturn = data.evalCardReturn;

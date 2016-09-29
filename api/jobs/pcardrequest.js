@@ -177,6 +177,77 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 })
 route.put('/put/approve', m_notif);
 
+route.put('/put/deny', jsonParser, m_role, function(req, res, next){
+	var decodedUser = req.decodedUser;
+	var id = req.body.id
+	var role = decodedUser.role;
+
+	pCardModel.findOne({ _id: id }, function(err, request) {
+		if(err) {
+			console.log(err);
+		}
+		else {
+			if(role === 'checker') {
+				request.denied = true;
+				request.checked = null;
+				request.checkedDate = null;
+				request.reviewed = null;
+				request.reviewedDate = null;
+				request.approved = null;
+				request.approvedDate = null;
+				req.email = 'deny';
+				req.notif = 'delete_notif';
+			}
+			else if(role === 'reviewer') {
+				request.checked = null;
+				request.checkedDate = null;
+				request.reviewed = null;
+				request.reviewedDate = null;
+				request.approved = null;
+				request.approvedDate = null;
+
+				if((data.cardType === 'rha')) {
+						request.needsCheck = true;
+						req.email = 'deny';
+						req.notif = 'rha_new';
+				}
+				else {
+				req.email = 'deny';
+				req.notif = 'delete_notif';	
+				}
+			}
+			else if(role === 'approver') {
+				request.reviewed = null;
+				request.reviewedDate = null;
+				request.approved = null;
+				request.approvedDate = null;
+
+				if((data.cardType === 'rha')) {
+						request.needsCheck = true;
+						req.email = 'deny';
+						req.notif = 'rha_checked';
+				}
+				else {
+				req.email = 'deny';
+				req.notif = 'pcard_new';	
+				}
+			}
+			request.save(function(err, saved) {
+				if(!err) {
+					res.status(200).json({status: 'deny'});
+					req.workorder = saved;
+					next();
+				}
+				else {
+					res.status(500).send(err);
+					console.log(err)
+				}
+			});
+		}
+	});
+});
+route.put('/put/deny', m_notif);
+
 route.put('/put/return', jsonParser, m_role, function(req, res, next) {
 	var decodedUser = req.decodedUser;
 	var id = req.body.id
@@ -220,12 +291,12 @@ route.put('/put/return', m_notif);
 route.put('/put/delete', jsonParser, function(req, res, next) {
     var id = req.body.id;
     pCardModel.findOne({ _id : id })
-    .exec(function(err, program) {
+    .exec(function(err, request) {
         if(!err) {
             res.status(200).json({status: 'return'});
             req.email = 'deleted';
             req.notif = 'delete_notif';
-            req.workorder = program;
+            req.workorder = request;
             next();
         }
         else {

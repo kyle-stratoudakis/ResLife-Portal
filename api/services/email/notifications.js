@@ -151,6 +151,9 @@ const notification_middleware = function(req, res, next) {
 		if(req.notif === 'new') {
 			registerNotif(wo.hall+'_new', 'new', wo);
 		}
+		else if(req.notif === 'pcard_new') {
+			registerNotif('pcard_new', 'newpcard', wo);
+		}
 		else if(req.notif === 'checked') {
 			registerNotif(wo.hall+'_reviewer', 'checked', wo);
 		}
@@ -165,9 +168,6 @@ const notification_middleware = function(req, res, next) {
 		else if(req.notif === 'edited') {
 			console.log('notif - edited')
 			registerTempNotif(wo.hall+'_edited', 'edited', wo);
-		}
-		else if(req.notif == 'hall_council') {
-			registerNotif('hall_council', 'new', wo);
 		}
 		else if(req.notif === 'funding_new') {
 			registerNotif('funding_new', 'new', wo);
