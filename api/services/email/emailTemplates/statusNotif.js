@@ -24,8 +24,9 @@ const statusNotif = function(status, wo) {
 	else if(status === 'reviewer approved') {
 		message = 'approved by an assoicate director.';
 	}
-	else if(status === 'denied') {
-		message = 'denied';
+	else if(status === 'deny') {
+		title = label+' Denied'
+		message = `denied by ${wo.who} for the following reason:</br></br>${wo.comment}</br></br>`;
 	}
 	else if(status === 'rha_checked') {
 		title = 'Request Status Update';

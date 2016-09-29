@@ -119,7 +119,7 @@ const notification_middleware = function(req, res, next) {
 							console.log(err)
 						}
 						else {
-							mailOptions.to = 'stratoudakk1@southernct.edu';
+							mailOptions.to = 'basinie2@southernct.edu';
 							// mailOptions.to = 'thibaultk1@southernct.edu';
 							mailOptions.html = inlined;
 							mailer(mailOptions);
@@ -148,6 +148,9 @@ const notification_middleware = function(req, res, next) {
 	if(req.notif) {
 		if(req.notif === 'new') {
 			registerNotif(wo.hall+'_new', 'new', wo);
+		}
+		else if(req.notif === 'pcard_new') {
+			registerNotif('pcard_new', 'newpcard', wo);
 		}
 		else if(req.notif === 'checked') {
 			registerNotif(wo.hall+'_reviewer', 'checked', wo);
@@ -241,7 +244,7 @@ function deleteNotif(id) {
 }
 
 function getHD(hall) {
-	var email = 'stratoudakk1@southernct.edu'
+	var email = 'basinie2@southernct.edu'
 	// if(hall === 'Schwartz') {
 	// 	email = 'gleifertn1@southernct.edu';
 	// }
