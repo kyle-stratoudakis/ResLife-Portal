@@ -34,6 +34,9 @@ export default function factory(React, empty) {
 				else if(location === 'Funding') {
 					label = ' Funding Request';
 				}
+				else if(location === 'Graphics') {
+					label = ' Graphics Request';
+				}
 				else if(location === 'TechSupport') {
 					label = ' Tech Request';
 				}
