@@ -12,6 +12,7 @@ injectTapEventPlugin();
 import App from './components/App';
 import Login from './components/Login';
 import Program from './components/forms/Program';
+import Graphics from './components/forms/Graphics';
 import PCardRequest from './components/forms/PCardRequest';
 import CardGrid from './components/CardGrid';
 import JobContent from './components/JobContent';
@@ -37,7 +38,7 @@ const router = (
 					<Route path="View/Programs/:_id" component={Auth(Program)} />
 					<Route path="Edit/Programs/:_id" component={Auth(Program)} />
 					<Route path="Evaluate/Programs/:_id" component={Auth(Program)} />
-				{/* Funding Requests Routes */}
+					{/* Funding Requests Routes */}
 					<Route path="New/Funding" component={Auth(PCardRequest)} />
 					<Route path="View/Funding/:_id" component={Auth(PCardRequest)} />
 					<Route path="Edit/Funding/:_id" component={Auth(PCardRequest)} />
@@ -45,6 +46,10 @@ const router = (
 					<Route path="New/TechRequest" component={Auth(TechRequest)} />
 					<Route path="View/TechSupport/:_id" component={Auth(TechRequest)} />
 					<Route path="Edit/TechSupport/:_id" component={Auth(TechRequest)} />
+					{/* Graphics Routes */}
+					<Route path="New/Graphics" component={Auth(Graphics)} />
+					<Route path="View/Graphics/:_id" component={Auth(Graphics)} />
+					<Route path="Edit/Graphics/:_id" component={Auth(Graphics)} />
 					{/* HallCouncil Routes */}
 					<Route path="New/HallCouncil" component={Auth(Program)} />
 					<Route path="View/HallCouncil/:_id" component={Auth(Program)} />
