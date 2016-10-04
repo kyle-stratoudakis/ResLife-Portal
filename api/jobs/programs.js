@@ -73,7 +73,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 	if(data.councilAbstained) program.councilAbstained = data.councilAbstained;
 	if(data.councilApproval) program.councilApproval = data.councilApproval;
 
-	if(data.evalTime) program.evalTime = data.evalTime;
+	if(data.evalTime && data.evalTime != {}) program.evalTime = data.evalTime;
 	if(data.evalAttendance) program.evalAttendance = data.evalAttendance;
 	if(data.evalCost) program.evalCost = data.evalCost;
 	if(data.evalCardReturn) program.evalCardReturn = data.evalCardReturn;
@@ -474,7 +474,7 @@ route.get('/get/tableData', function(req, res) {
 	var fs = require('fs');
 	var getDate = require('../../utils/getDate');
 	var getTime = require('../../utils/getTime');
-	var getDateTime = require('../../utils/getDateTime'); // determine final path
+	var getDateTime = require('../../utils/getDateTime');
 	if(req.query.hall) {
 		console.log(req.query.hall)
 		programModel.find({ hall: { $in: req.query.hall }, approved: { $ne: null } }) 

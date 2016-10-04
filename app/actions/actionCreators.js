@@ -236,6 +236,26 @@ export function workorderAction(endpoint, data, route) {
 	}
 }
 
+export function downloadLink(route) {
+	var link = document.createElement('a');
+	link.setAttribute('href', host + "/api/" + route);
+	link.setAttribute('download', 'Download Link');
+
+	if (document.createEvent) {
+		var event = document.createEvent('MouseEvents');
+		event.initEvent('click', true, true);
+		link.dispatchEvent(event);
+	}
+	else {
+		link.click();
+	}
+	
+	return {
+		type: 'DOWNLOAD_LINK',
+		route
+	}
+}
+
 export function downloadPdf(wo, location) {
 	var link = document.createElement('a');
 	link.setAttribute('href', host + "/api/" + location + "/download?id=" + wo._id);
@@ -251,7 +271,9 @@ export function downloadPdf(wo, location) {
 	}
 	
 	return {
-		type: 'DOWNLOAD_PDF'
+		type: 'DOWNLOAD_PDF',
+		wo,
+		location
 	}
 }
 

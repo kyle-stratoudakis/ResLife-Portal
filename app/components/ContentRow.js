@@ -167,22 +167,22 @@ class ContentRow extends Component {
 
 	render () {
 		return (
-			<div ref='table'>
-				<Table>
-					<TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-						<TableRow>
-							<TableHeaderColumn className="col-sm-4">Title</TableHeaderColumn>
-							<TableHeaderColumn className="col-sm-4">Description</TableHeaderColumn>
-							<TableHeaderColumn className="col-sm-2">Date Submitted</TableHeaderColumn>
-							<TableHeaderColumn className="col-sm-2">Actions</TableHeaderColumn>
-							<Divider />
-						</TableRow>
-					</TableHeader>
-				</Table>
-				<div>
+			<div className="container row">
+				<div className="col-sm-4">
+					<FlatButton label='Title' disabled={true}></FlatButton>
+				</div>
+				<div className="col-sm-4">
+					<FlatButton label='Description' disabled={true}></FlatButton>
+				</div>
+				<div className="col-sm-2">
+					<FlatButton label='Date' disabled={true}></FlatButton>
+				</div>
+				<div className="col-sm-2">
+					<FlatButton label='Actions' disabled={true}></FlatButton>
+				</div>
+				<Divider />
 					{this.limitRender()}
 					{this.renderLoadMore()}
-				</div>
 			</div>
 		)
 	}

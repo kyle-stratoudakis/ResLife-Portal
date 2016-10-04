@@ -14,7 +14,6 @@ function appbar(state = {}, action) {
 		if(state.title !== job) {
 			return {
 				...state,
-				//title: job.replace(/([a-z])([A-Z])/g, '$1 $2'), // Split PascalCase titles with spaces
 				title: state[job].title,
 				color: state[job].color
 			}
@@ -23,7 +22,8 @@ function appbar(state = {}, action) {
 			return state;
 		}
 	case 'RECEIVE_JOBS':
-		let jobs = {};
+		// populate array with Home and Login since format changed since launch
+		let jobs = {Home: {title: 'Home', color: '#2196F3'}, Login: {title: 'Login', color: '#1A237E'}};
 		for(let i in action.jobs) {
 			jobs[action.jobs[i].link] = {title: action.jobs[i].title, color: action.jobs[i].color};
 		}

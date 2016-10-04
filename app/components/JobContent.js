@@ -3,14 +3,8 @@ import ContentRow from './ContentRow';
 import ActionCard from './ActionCard';
 import {grey500} from 'material-ui/styles/colors';
 import Paper from 'material-ui/Paper';
-import Card from 'material-ui/Card';
-import CardActions from 'material-ui/Card/CardActions';
-import CardMedia from 'material-ui/Card/CardMedia';
-import CardTitle from 'material-ui/Card/CardTitle';
-import FlatButton from 'material-ui/FlatButton';
 import Tabs from 'material-ui/Tabs';
 import Tab from 'material-ui/Tabs/Tab';
-import FontIcon from 'material-ui/FontIcon';
 
 let JobContent = React.createClass({
 	componentWillMount () {
@@ -57,7 +51,9 @@ let JobContent = React.createClass({
 				<ActionCard
 					location={this.props.params['_job']}
 					performRoute={this.props.performRoute}
+					downloadLink={this.props.downloadLink}
 					title={action.title}
+					type={action.type}
 					route={action.route}
 					color={action.color}
 					icon={action.icon}
@@ -82,7 +78,6 @@ let JobContent = React.createClass({
 				<div className="container">
 					<Paper zDepth={2}>
 						<Tabs
-							// initialSelectedIndex={0}
 							value={this.props.selectedTab}
 							onChange={(value) => this.props.changeTab(value)}>
 							{endpoints.map(this.renderTab)}

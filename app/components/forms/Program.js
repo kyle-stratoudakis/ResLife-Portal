@@ -250,7 +250,6 @@ class Program extends Component {
 						label='Deny'
 						backgroundColor='#ef9a9a'
 						hoverColor='#ef5350'
-						disabled={disabled}
 						onClick={this.props.openDialog.bind(this, title, content, actions)}
 					/>
 					<FlatButton

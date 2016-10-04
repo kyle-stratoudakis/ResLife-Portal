@@ -46,7 +46,6 @@ const programQueries = function(req, res, next) {
 		}
 
 		if(status === 'pending') {
-			// query.denied = false;
 			query.checked = null;
 		}
 		else if(status === 'approved') {

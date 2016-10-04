@@ -11,6 +11,15 @@ import FontIcon from 'material-ui/FontIcon';
 import Paper from 'material-ui/Paper';
 
 const ActionCard = React.createClass({
+	handleClick() {
+		if(this.props.type === 'route') {
+			this.props.performRoute("/job/"+this.props.location+"/"+this.props.route);
+		}
+		else if(this.props.type === 'download') {
+			this.props.downloadLink(this.props.route);
+		}
+	},
+
 	render () {
 		const color = {
 			background: this.props.color,
@@ -34,7 +43,7 @@ const ActionCard = React.createClass({
 						<FlatButton 
 							label={this.props.title} 
 							icon={<FontIcon className="material-icons">{this.props.icon}</FontIcon>} 
-							onClick={this.props.performRoute.bind(null, "/job/"+this.props.location+"/"+this.props.route)}
+							onClick={this.handleClick}
 						/>
 					</CardActions>
 				</Card>
