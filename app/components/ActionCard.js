@@ -16,7 +16,7 @@ const ActionCard = React.createClass({
 			this.props.performRoute("/job/"+this.props.location+"/"+this.props.route);
 		}
 		else if(this.props.type === 'download') {
-			this.props.downloadLink(this.props.route);
+			this.props.downloadLink(this.props.route, this.props.jwt, this.props.jobId);
 		}
 	},
 
@@ -33,12 +33,12 @@ const ActionCard = React.createClass({
 		return (
 			<div>
 				<Card zDepth={2} style={style}>
-					<Link to={"/job/"+this.props.location+"/"+this.props.route}>
+					<a style={{cursor: 'pointer'}} onClick={this.handleClick}>
 						<Paper zDepth={1}>
 							<CardTitle title={this.props.title} style={{background: this.props.color}} />
 							<div style={color} />
 						</Paper>
-					</Link>
+					</a>
 					<CardActions>
 						<FlatButton 
 							label={this.props.title} 

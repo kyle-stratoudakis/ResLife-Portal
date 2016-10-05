@@ -33,12 +33,8 @@ const role = function(req, res, next) {
 				else {
 					if(roleDoc) {
 						req.decodedUser.role = roleDoc.role;
+						next();
 					}
-					else {
-						// Currently unused in any subsequent data query
-						req.decodedUser.role = 'none';
-					}
-					next();
 				}
 			});
 		}

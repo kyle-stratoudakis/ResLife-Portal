@@ -138,8 +138,6 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 	var data = req.body.data;
 	var formId = req.body.formId;
 
-	console.log(data);
-
 	programModel.findOne({_id: formId}, function(err, program) {
 		program.title = data.title;
 		program.date = data.date;
@@ -185,10 +183,7 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 			req.email = 'evaluated';
 			req.notif = 'evaluated';
 		}
-		if(data.evalTime) {
-			program.evalTime = data.evalTime;
-			console.log(program._id, data.evalTime);
-		}
+		if(data.evalTime && data.evalTime != {}) program.evalTime = data.evalTime;
 		if(data.evalAttendance) program.evalAttendance = data.evalAttendance;
 		if(data.evalCost) program.evalCost = data.evalCost;
 		if(data.evalCardReturn) program.evalCardReturn = data.evalCardReturn;
@@ -470,59 +465,54 @@ route.get('/download', function(req, res) {
 	}
 });
 
-route.get('/get/tableData', function(req, res) {
+route.get('/get/tableData', m_role, m_programQuery, function(req, res) {
 	var fs = require('fs');
 	var getDate = require('../../utils/getDate');
 	var getTime = require('../../utils/getTime');
 	var getDateTime = require('../../utils/getDateTime');
-	if(req.query.hall) {
-		console.log(req.query.hall)
-		programModel.find({ hall: { $in: req.query.hall }, approved: { $ne: null } }) 
-		.select('approved approvedDate checked checkedDate date description email evaluated hall location name outcomes primary_contact reviewed reviewedDate searchId submittedDate time title type user')
-		.populate({
-			path: 'user checked reviewed approved evaluated',
-			select: 'name -_id',
-			model: userModel
-		})
-		.lean()
-		.exec(function(err, programs) {
-			if(programs && programs.length > 0) {
-				var cell;
-				var keys = Object.keys(programs[0]);
-				res.set('Content-Disposition', 'attachment; filename=Programs.csv');
-				res.write(keys.join(',') + '\n');
-				for(var i = 0; i < programs.length; i++) {
-					for(var k = 0; k < keys.length; k++) {
-						
-						cell = programs[i][keys[k]];
-						
-						if(keys[k] === 'date') cell = getDate(new Date(cell));
-						if(keys[k] === 'time') cell = getTime(new Date(cell));
-						if(keys[k] === 'submittedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if(keys[k] === 'checkedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if(keys[k] === 'reviewedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if(keys[k] === 'approvedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if(keys[k] === 'evaluatedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if((keys[k] === 'user' || keys[k] === 'checked' || keys[k] === 'reviewed' || keys[k] === 'approved' || keys[k] === 'evaluated') && cell) {
-							cell = cell.name;
-						}
-						if(keys[k] === 'description' || keys[k] === 'outcomes') {
-							cell = cell.replace(/\"/g, `""`);
-							cell = cell.replace(/,/g, `\,`);
-							cell = cell.replace(/–/g, '\-');
-							cell = `"${cell}"`;
-						}
-
-						if(cell === undefined || cell === null) cell = '';
-
-						res.write(cell.toString().trim() + ',');
+	var query = req.programQuery;
+	programModel.find(query) 
+	.select('approved approvedDate checked checkedDate date description email evaluated hall location name outcomes primary_contact reviewed reviewedDate searchId submittedDate time title type user')
+	.populate({
+		path: 'user checked reviewed approved evaluated',
+		select: 'name -_id',
+		model: userModel
+	})
+	.lean()
+	.exec(function(err, programs) {
+		if(programs && programs.length > 0) {
+			var cell;
+			var date;
+			var keys = Object.keys(programs[0]);
+			res.set('Content-Disposition', 'attachment; filename=Programs.csv');
+			res.write(keys.join(',') + '\n');
+			for(var i = 0; i < programs.length; i++) {
+				for(var k = 0; k < keys.length; k++) {
+					
+					cell = programs[i][keys[k]];
+					
+					if(cell && keys[k].match(/date|time$/ig)) {
+						date = new Date(cell);
+						if(keys[k] === 'date') cell = getDate(date);
+						else if(keys[k] === 'time') cell = getTime(date);
+						else cell = getDateTime(date, date);
 					}
-					res.write('\n');
+					if(cell && cell.name) {
+						cell = cell.name;
+					}
+					if(cell === undefined || cell === null) cell = '';
+
+					res.write(`"${cell.toString().trim().replace(/\"|\-/g, '')}"` + ',');
 				}
-				res.status(200).end();
+				res.write('\n');
 			}
-		});
-	}
+			res.status(200).end();
+		}
+		else {
+			res.set('Content-Disposition', 'attachment; filename=No_Programs.txt');
+			res.status(200).send('No Programs were returned using the query provided likely because you do not have access to any programs.');
+		}
+	});
 });
 
 module.exports = route;

@@ -22,7 +22,7 @@ export function login(data, redirect) {
 		var json = JSON.stringify({
 			...data
 		});
-		return fetch(host + "/login", {
+		return fetch(host + '/login', {
 			method: 'post',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -73,8 +73,8 @@ export function logOut() {
 export function fetchJobs(jwt) {
 	return function (dispatch) {
 		dispatch(getJobs())
-		// console.log('getJobs', host + "/api/getJobs?jwt=" + jwt)
-		return fetch(host + "/api/getJobs?jwt=" + jwt)
+		// console.log('getJobs', host + '/api/getJobs?jwt=' + jwt)
+		return fetch(host + '/api/getJobs?jwt=' + jwt)
 		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => dispatch(receiveJobs(json)))
@@ -92,8 +92,8 @@ export function receiveJobs(jobs) {
 export function fetchWorkorders(query) {
 	return function (dispatch) {
 		dispatch(getWorkorders())
-		// console.log(host + "/api/" + query)
-		return fetch(host + "/api/" + query)
+		// console.log(host + '/api/' + query)
+		return fetch(host + '/api/' + query)
 		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => dispatch(receiveWorkorders(json)))
@@ -112,8 +112,8 @@ export function receiveWorkorders(workOrders) {
 export function fetchDetails(location, query) {
 	return function (dispatch) {
 		dispatch(getDetails())
-		// console.log(host + "/api/" + location + "/get/details" + query)
-		return fetch(host + "/api/" + location + "/get/details" + query)
+		// console.log(host + '/api/' + location + '/get/details' + query)
+		return fetch(host + '/api/' + location + '/get/details' + query)
 		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => dispatch(receiveDetails(json)))
@@ -136,7 +136,7 @@ export function submitForm(jwt, location, jobId, data) {
 				jobId,
 				data
 			});
-		return fetch(host + "/api/" + location + "/post/create", {
+		return fetch(host + '/api/' + location + '/post/create', {
 			method: 'post',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -160,7 +160,7 @@ export function updateForm(jwt, location, formId, jobId, data) {
 				jobId,
 				data
 			});
-		return fetch(host + "/api/" + location + "/put/update", {
+		return fetch(host + '/api/' + location + '/put/update', {
 			method: 'put',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -184,7 +184,7 @@ export function comment(jwt, location, formId, jobId, data) {
 				jobId,
 				data
 			});
-		return fetch(host + "/api/" + location + "/put/comment", {
+		return fetch(host + '/api/' + location + '/put/comment', {
 			method: 'put',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -203,7 +203,7 @@ export function comment(jwt, location, formId, jobId, data) {
 export function modifyAction(endpoint, data, update) {
 	return function (dispatch) {
 		var json = JSON.stringify(data);
-		return fetch(host + "/api/" + endpoint, {
+		return fetch(host + '/api/' + endpoint, {
 			method: 'put',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -222,7 +222,7 @@ export function workorderAction(endpoint, data, route) {
 	return function (dispatch) {
 		console.log(data);
 		var json = JSON.stringify(data);
-		return fetch(host + "/api/" + endpoint, {
+		return fetch(host + '/api/' + endpoint, {
 			method: 'put',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -236,9 +236,10 @@ export function workorderAction(endpoint, data, route) {
 	}
 }
 
-export function downloadLink(route) {
+export function downloadLink(route, jwt, jobId) {
+	console.log(jobId);
 	var link = document.createElement('a');
-	link.setAttribute('href', host + "/api/" + route);
+	link.setAttribute('href', `${host}/api/${route}&jwt=${jwt}&job=${jobId}`);
 	link.setAttribute('download', 'Download Link');
 
 	if (document.createEvent) {
@@ -258,7 +259,7 @@ export function downloadLink(route) {
 
 export function downloadPdf(wo, location) {
 	var link = document.createElement('a');
-	link.setAttribute('href', host + "/api/" + location + "/download?id=" + wo._id);
+	link.setAttribute('href', host + '/api/' + location + '/download?id=' + wo._id);
 	link.setAttribute('download', 'P-Card Auth Form-'+wo.searchId);
 
 	if (document.createEvent) {
@@ -291,14 +292,15 @@ export function emailUser(wo) {
 	}
 	
 	return {
-		type: 'EMAIL_USER'
+		type: 'EMAIL_USER',
+		wo
 	}
 }
 
 export function deleteWorkorder(wo) {
 	return function (dispatch) {
 		let json = JSON.stringify({id: wo._id})
-		return fetch(host + "/api/" + wo.application + "/put/delete", {
+		return fetch(host + '/api/' + wo.application + '/put/delete', {
 			method: 'put',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -384,7 +386,6 @@ export function toggleNav() {
 
 function handleErrors(response) {
 	if(!response.ok) {
-		console.log('errResponse', response)
 		throw Error(response.statusText);
 	}
 	return response;

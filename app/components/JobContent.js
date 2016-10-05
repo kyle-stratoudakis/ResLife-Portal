@@ -46,12 +46,17 @@ let JobContent = React.createClass({
 	},
 
 	renderCard (action) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
 		return (
 			<div key={action._id} className="col-sm-3">
 				<ActionCard
 					location={this.props.params['_job']}
 					performRoute={this.props.performRoute}
 					downloadLink={this.props.downloadLink}
+					jwt={this.props.token.jwt}
+					jobId={jobId}
 					title={action.title}
 					type={action.type}
 					route={action.route}
