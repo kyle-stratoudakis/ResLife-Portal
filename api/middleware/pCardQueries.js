@@ -4,10 +4,16 @@ const pCardQueries = function(req, res, next) {
 	var role = req.decodedUser.role;
 	var status = req.query.status;
 	var query = {};
+	var sort = {'_id': 1};
 
 	// Check for cardType filter
-	if(req.query.cardType) {
-		query.cardType = { $in: req.query.cardType };
+	if(req.query.cardType) query.cardType = { $in: req.query.cardType };
+
+	if(req.query.sort) {
+		let split = req.query.sort.split('_');
+		let data = {};
+		data[split[0]] = (split[1] === 'asc' ? 1 : -1);
+		sort = data;
 	}
 
 	if(role === 'submitter') {
@@ -50,22 +56,17 @@ const pCardQueries = function(req, res, next) {
 
 	if(query) {
 		req.query = query;
+		req.sort = sort;
 
 		req.projection = {
 			searchId: 1,
 			title: 1,
 			name: 1,
 			description: 1,
-			submittedDate: 1,
+			date: 1,
 			checked: 1,
 			reviewed: 1,
 			approved: 1
-		};
-
-		req.sort = {
-			sort: {
-				'_id': 1
-			}
 		};
 		
 		next()

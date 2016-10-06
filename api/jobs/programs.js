@@ -11,12 +11,13 @@ const generatePcard = require('../services/email/emailTemplates/pcardAuthForm');
 const jsonParser = bodyParser.json();
 
 route.get('/get/workorders', m_role, m_programQuery, function(req, res) {
-	var query = req.programQuery;
-	var projection = req.programProjection;
-	var sort = req.programSort;
-	var empty = [{'_id': 'x','title': 'No Programs','description': 'No Programs Found', 'submittedDate': new Date()}]
-
-	programModel.find(query, projection, sort)
+	var query = req.query;
+	var projection = req.projection;
+	var sort = req.sort;
+	var empty = [{'_id': 'x','title': 'No Programs','description': 'No Programs Found', 'date': new Date()}];
+	
+	programModel.find(query, projection)
+	.sort(sort)
 	.lean()
 	.exec(function(err, programs) {
 		if(err) {

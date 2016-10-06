@@ -4,21 +4,20 @@ const programQueries = function(req, res, next) {
 	var userHall = decodedUser.hall;
 	var role = req.decodedUser.role;
 	var status = req.query.status;
-	var halls = (req.query.hall ? req.query.hall : null);
-	var override = (req.query.override ? req.query.override : null);
-	var type = (req.query.type ? req.query.type : null);
 	var query = {};
+	var sort = {'_id': 1};
 
-	if(halls) {
-		query.hall = { $in: halls };
-	}
+	if(req.query.hall) query.hall = { $in: req.query.hall };
 
-	if(override) {
-		role = override;
-	}
+	if(req.query.override) role = req.query.override;
 
-	if(type) {
-		query.type = type;
+	if(req.query.type) query.type = req.query.type;
+
+	if(req.query.sort) {
+		let split = req.query.sort.split('_');
+		let data = {};
+		data[split[0]] = (split[1] === 'asc' ? 1 : -1);
+		sort = data;
 	}
 
 	if(role === 'submitter') {
@@ -87,26 +86,21 @@ const programQueries = function(req, res, next) {
 	}
 
 	if(query) {
-		req.programQuery = query;
+		req.query = query;
+		req.sort = sort;
 
-		req.programProjection = {
+		req.projection = {
 			searchId: 1,
 			title: 1,
 			name: 1,
 			type: 1,
 			description: 1,
-			submittedDate: 1,
+			date: 1,
 			checked: 1,
 			reviewed: 1,
 			approved: 1,
 			evaluated: 1
-		};
-
-		req.programSort = {
-			sort: {
-				'_id': 1
-			}
-		};
+		}; 
 		
 		next()
 	}

@@ -14,9 +14,10 @@ route.get('/get/workorders', m_role, m_pCardQueries, function(req, res) {
 	var query = req.query;
 	var projection = req.projection;
 	var sort = req.sort;
-	var empty = [{'_id': 'x','title': 'No Requests','description': 'No Funding Requests Found', 'submittedDate': new Date()}]
+	var empty = [{'_id': 'x','title': 'No Requests','description': 'No Funding Requests Found', 'date': new Date()}]
 
-	pCardModel.find(query, projection, sort)
+	pCardModel.find(query, projection)
+	.sort(sort)
 	.lean()
 	.exec(function(err, requests) {
 		if(err) {

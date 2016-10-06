@@ -73,7 +73,6 @@ export function logOut() {
 export function fetchJobs(jwt) {
 	return function (dispatch) {
 		dispatch(getJobs())
-		// console.log('getJobs', host + '/api/getJobs?jwt=' + jwt)
 		return fetch(host + '/api/getJobs?jwt=' + jwt)
 		.then(handleErrors)
 		.then(response => response.json())
@@ -92,7 +91,6 @@ export function receiveJobs(jobs) {
 export function fetchWorkorders(query) {
 	return function (dispatch) {
 		dispatch(getWorkorders())
-		// console.log(host + '/api/' + query)
 		return fetch(host + '/api/' + query)
 		.then(handleErrors)
 		.then(response => response.json())
@@ -112,7 +110,6 @@ export function receiveWorkorders(workOrders) {
 export function fetchDetails(location, query) {
 	return function (dispatch) {
 		dispatch(getDetails())
-		// console.log(host + '/api/' + location + '/get/details' + query)
 		return fetch(host + '/api/' + location + '/get/details' + query)
 		.then(handleErrors)
 		.then(response => response.json())
@@ -129,7 +126,6 @@ export function receiveDetails(details) {
 }
 
 export function submitForm(jwt, location, jobId, data) {
-	// console.log('submitForm', data);
 	return function (dispatch) {
 		var json = JSON.stringify({
 				jwt,
@@ -220,7 +216,6 @@ export function modifyAction(endpoint, data, update) {
 
 export function workorderAction(endpoint, data, route) {
 	return function (dispatch) {
-		console.log(data);
 		var json = JSON.stringify(data);
 		return fetch(host + '/api/' + endpoint, {
 			method: 'put',
@@ -237,7 +232,6 @@ export function workorderAction(endpoint, data, route) {
 }
 
 export function downloadLink(route, jwt, jobId) {
-	console.log(jobId);
 	var link = document.createElement('a');
 	link.setAttribute('href', `${host}/api/${route}&jwt=${jwt}&job=${jobId}`);
 	link.setAttribute('download', 'Download Link');

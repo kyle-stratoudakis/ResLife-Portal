@@ -17,7 +17,14 @@ let JobContent = React.createClass({
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
-		this.props.fetchWorkorders(location + '/' + endpoint + "&jwt=" + this.props.token.jwt + "&job=" + jobId);
+		this.props.fetchWorkorders(location+'/'+endpoint+'&jwt='+this.props.token.jwt+'&job='+jobId);
+	},
+
+	handleSort(endpoint, sort) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		this.props.fetchWorkorders(location+'/'+endpoint+'&jwt='+this.props.token.jwt+'&job='+jobId+'&sort='+sort);
 	},
 
 	renderTab (endpoint, i) {
@@ -32,6 +39,7 @@ let JobContent = React.createClass({
 				style={{background: grey500}}
 				onActive={this.handleEndpoint.bind(null, endpoint.route)}>
 				<ContentRow
+					handleSort={this.handleSort}
 					parentEndpoint={endpoint.route}
 					location={this.props.params['_job']}
 					jwt={this.props.token.jwt}
@@ -50,7 +58,7 @@ let JobContent = React.createClass({
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
 		return (
-			<div key={action._id} className="col-sm-3">
+			<div key={action._id} className='col-sm-3'>
 				<ActionCard
 					location={this.props.params['_job']}
 					performRoute={this.props.performRoute}
@@ -76,11 +84,11 @@ let JobContent = React.createClass({
 		return (
 			<div>
 				<br />
-				<div className="container">
+				<div className='container'>
 					{dashActions.map(this.renderCard)}
 				</div>
 				<br />
-				<div className="container">
+				<div className='container'>
 					<Paper zDepth={2}>
 						<Tabs
 							value={this.props.selectedTab}

@@ -471,7 +471,7 @@ class Program extends Component {
 		let { centerStyle } = this.state.styles;
 		if(this.refs.form) {
 			let type = this.refs.form.getModel().type;
-			if(type === 'Hall Council' || type === 'Social') {
+			if(type === 'Hall Council') {
 				return (
 					<div>
 						<Divider />
