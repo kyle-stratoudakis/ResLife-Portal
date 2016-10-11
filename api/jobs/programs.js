@@ -14,8 +14,8 @@ route.get('/get/workorders', m_role, m_programQuery, function(req, res) {
 	var query = req.query;
 	var projection = req.projection;
 	var sort = req.sort;
-	var empty = [{'_id': 'x','title': 'No Programs','description': 'No Programs Found', 'date': new Date()}];
-	
+	var empty = [{_id: 'x', title: 'No Programs', description: 'No Programs Found', date: new Date()}];
+
 	programModel.find(query, projection)
 	.sort(sort)
 	.lean()

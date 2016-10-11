@@ -341,6 +341,7 @@ route.get('/download', function(req, res) {
 		})
 		.exec(function(err, fields) {
 			if(!err && fields) {
+				fields.type = fields.cardType;
 				try {
 					generatePcard(fields);
 				}

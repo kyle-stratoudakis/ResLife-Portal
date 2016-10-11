@@ -1,5 +1,7 @@
 const pdfkit = require('pdfkit');
 const fs = require('fs');
+const getDate = require('../../../../utils/getDate');
+const getDateTime = require('../../../../utils/getDateTime');
 
 const pcardAuthForm = function(program) {
 	// console.log(program)
@@ -181,26 +183,6 @@ function padRight(str, num) {
 		str += ' ';
 	}
 	return str;
-}
-
-function getDateTime(date, time) {
-	var t = new Date(time);
-	var hr = t.getHours();
-	var mn = t.getMinutes();
-	var tod = (hr >= 12 ? ' pm' : ' am');
-	if(hr > 12) {
-		hr = hr - 12;
-		tod = ' pm';
-	}
-	if(mn < 10) {
-		mn = '0'+ mn;
-	}
-	return getDate(date) +', '+ hr +':'+ mn + tod;
-}
-
-function getDate(date) {
-	var d = new Date(date);
-	return (d.getMonth()+1) +'/'+ d.getDate() +'/'+ d.getFullYear();
 }
 
 module.exports = pcardAuthForm;

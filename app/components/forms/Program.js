@@ -39,6 +39,7 @@ class Program extends Component {
 		this.renderDenyDialog = this.renderDenyDialog.bind(this);
 		this.handleDeny = this.handleDeny.bind(this);
 		this.renderAddComment = this.renderAddComment.bind(this);
+		this.renderEvalContent = this.renderEvalContent.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -77,6 +78,7 @@ class Program extends Component {
 			evalOther: '',
 			travelAuthorization: 'onCampus',
 			chartwellsQuote: '',
+			performEval: false,
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
@@ -556,90 +558,105 @@ class Program extends Component {
 		}
 	}
 
+	renderEvalContent() {
+		if(!this.state.evaluated && this.state.performEval === false) {
+			return (
+				<FlatButton onClick={this.setState.bind(this, {performEval: true, label: 'Submit'})} label='Perform Evaluation'/>
+			)
+		}
+		else {
+			return (
+				<div>
+					<FormsyTime
+						name='evalTime'
+						fullWidth={true}
+						hintText='When did the event end?'
+						floatingLabelText='End Time'
+						value={this.state.evalTime}
+					/>
+					<FormsyText
+						name='evalAttendance'
+						fullWidth={true}
+						hintText='How many students attended?'
+						floatingLabelText='Attendance'
+						value={this.state.evalAttendance}
+					/>
+					<FormsyText
+						name='evalCost'
+						fullWidth={true}
+						hintText='How much did you actually spend?'
+						floatingLabelText='Actual Cost'
+						value={this.state.evalCost}
+					/>
+					<Subheader>P-card and Reciepts Returned</Subheader>
+					<FormsyRadioGroup
+						name='evalCardReturn'
+						valueSelected={this.state.evalCardReturn}
+						onChange={this.handleSelection} 
+					>
+						<FormsyRadio
+							value='no'
+							label='No'
+						/>
+						<FormsyRadio
+							value='yes'
+							label='Yes'
+						/>
+					</FormsyRadioGroup>
+					<FormsyText
+						name='evalOutcomes'
+						fullWidth={true}
+						multiLine={true}
+						hintText='What learning outcomes were achieved?'
+						floatingLabelText='Achieved Outcomes'
+						value={this.state.evalOutcomes}
+					/>
+					<FormsyText
+						name='evalStrengths'
+						fullWidth={true}
+						multiLine={true}
+						hintText='What were the programs strengths?'
+						floatingLabelText='Strengths'
+						value={this.state.evalStrengths}
+					/>
+					<FormsyText
+						name='evalWeaknesses'
+						fullWidth={true}
+						multiLine={true}
+						hintText='What were the programs weaknesses?'
+						floatingLabelText='Weaknesses'
+						value={this.state.evalWeaknesses}
+					/>
+					<FormsyText
+						name='evalSuggestions'
+						fullWidth={true}
+						multiLine={true}
+						hintText='What could improve this program for if done again?'
+						floatingLabelText='Suggestions for Improvement'
+						value={this.state.evalSuggestions}
+					/>
+					<FormsyText
+						name='evalOther'
+						fullWidth={true}
+						multiLine={true}
+						hintText='Other Comments or Concerns?'
+						floatingLabelText='Other Comments or Concerns (0ptional)'
+						value={this.state.evalOther}
+					/>
+				</div>
+			)
+		}
+	}
+
 	renderEvaluation () {
 		let { centerStyle } = this.state.styles;
-		if(this.refs.form && (this.state.approved || this.state.evaluated)) {
+		if(this.state.evaluated || this.state.approved) {
 			return (
 				<div>
 					<Divider />
 					<Subheader>Program Evaluation</Subheader>
 					<div style={centerStyle}>
-						<FormsyTime
-							name='evalTime'
-							fullWidth={true}
-							hintText='When did the event end?'
-							floatingLabelText='End Time'
-							value={this.state.evalTime}
-						/>
-						<FormsyText
-							name='evalAttendance'
-							fullWidth={true}
-							hintText='How many students attended?'
-							floatingLabelText='Attendance'
-							value={this.state.evalAttendance}
-						/>
-						<FormsyText
-							name='evalCost'
-							fullWidth={true}
-							hintText='How much did you actually spend?'
-							floatingLabelText='Actual Cost'
-							value={this.state.evalCost}
-						/>
-						<Subheader>P-card and Reciepts Returned</Subheader>
-						<FormsyRadioGroup
-							name='evalCardReturn'
-							valueSelected={this.state.evalCardReturn}
-							onChange={this.handleSelection} 
-						>
-							<FormsyRadio
-								value='no'
-								label='No'
-							/>
-							<FormsyRadio
-								value='yes'
-								label='Yes'
-							/>
-						</FormsyRadioGroup>
-						<FormsyText
-							name='evalOutcomes'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What learning outcomes were achieved?'
-							floatingLabelText='Achieved Outcomes'
-							value={this.state.evalOutcomes}
-						/>
-						<FormsyText
-							name='evalStrengths'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What were the programs strengths?'
-							floatingLabelText='Strengths'
-							value={this.state.evalStrengths}
-						/>
-						<FormsyText
-							name='evalWeaknesses'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What were the programs weaknesses?'
-							floatingLabelText='Weaknesses'
-							value={this.state.evalWeaknesses}
-						/>
-						<FormsyText
-							name='evalSuggestions'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What could improve this program for if done again?'
-							floatingLabelText='Suggestions for Improvement'
-							value={this.state.evalSuggestions}
-						/>
-						<FormsyText
-							name='evalOther'
-							fullWidth={true}
-							multiLine={true}
-							hintText='Other Comments or Concerns?'
-							floatingLabelText='Other Comments or Concerns (0ptional)'
-							value={this.state.evalOther}
-						/>
+						{this.renderEvalContent()}
 					</div>
 				</div>
 			)
