@@ -10,8 +10,8 @@ const pCardQueries = function(req, res, next) {
 	if(req.query.cardType) query.cardType = { $in: req.query.cardType };
 
 	if(req.query.sort) {
-		let split = req.query.sort.split('_');
-		let data = {};
+		var split = req.query.sort.split('_');
+		var data = {};
 		data[split[0]] = (split[1] === 'asc' ? 1 : -1);
 		sort = data;
 	}
