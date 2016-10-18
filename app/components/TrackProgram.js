@@ -18,7 +18,7 @@ const TrackProgram = React.createClass({
 		
 		if(workorder._id) {
 			steps.push(
-				<Step>
+				<Step key={'user'}>
 					<StepLabel icon={(workorder._id ? <ActionAssignment color={lightGreen500} /> : pending)}>
 						Submission
 						<br />
@@ -31,7 +31,7 @@ const TrackProgram = React.createClass({
 		}
 		else {
 			steps.push(
-				<Step>
+				<Step key={'user'}>
 					<StepLabel icon={pending}>
 						Submission
 					</StepLabel>
@@ -41,7 +41,7 @@ const TrackProgram = React.createClass({
 
 		if(workorder.checked){
 			steps.push(
-				<Step>
+				<Step key={'checked'}>
 					<StepLabel icon={(workorder.checked ? approved : pending)}>
 						Hall Director
 						<br />
@@ -54,7 +54,7 @@ const TrackProgram = React.createClass({
 		}
 		else {
 			steps.push(
-				<Step>
+				<Step key={'checked'}>
 					<StepLabel icon={pending}>
 						Hall Director
 					</StepLabel>
@@ -64,7 +64,7 @@ const TrackProgram = React.createClass({
 
 		if(workorder.reviewed){
 			steps.push(
-				<Step>
+				<Step key={'reviewed'}>
 					<StepLabel icon={approved}>
 						Reviewed
 						<br />
@@ -77,7 +77,7 @@ const TrackProgram = React.createClass({
 		}
 		else {
 			steps.push(
-				<Step>
+				<Step key={'reviewed'}>
 					<StepLabel icon={pending}>
 						Reviewed
 					</StepLabel>
@@ -87,7 +87,7 @@ const TrackProgram = React.createClass({
 
 		if(workorder.approved){
 			steps.push(
-				<Step>
+				<Step key={'approved'}>
 					<StepLabel icon={approved}>
 						Approved
 						<br />
@@ -100,21 +100,44 @@ const TrackProgram = React.createClass({
 		}
 		else {
 			steps.push(
-				<Step>
+				<Step key={'approved'}>
 					<StepLabel icon={pending}>
 						Approved
 					</StepLabel>
 				</Step>
 			);
 		}
+
+		if(workorder.evaluated){
+			steps.push(
+				<Step key={'evaluated'}>
+					<StepLabel icon={<ActionAssignment color={lightGreen500} />}>
+						Evaluated
+						<br />
+						{workorder.evaluated.name}
+						<br />
+						{workorder.evaluatedDate ? this.getDate(workorder.evaluatedDate) : ''}
+					</StepLabel>
+				</Step>
+			);
+		}
+
 		return steps
 	},
 
 	render () {
 		let linear = (this.props.size > 500 ? true : false);
 		let orientation = (this.props.size > 500 ? 'horizontal' : 'vertical');
+		let padding = 0;
+		if(linear) {
+			padding = 15;
+			let {user, checked, reviewed, approved, evaluated} = this.props.workOrder;
+			let status = [];
+			status.push(user, checked, reviewed, approved, evaluated);
+			status.map((item) => { if(item) padding = padding.toFixed(1) - 5 });
+		}
 		return(
-			<div style={ {'paddingRight': '1em' } }>
+			<div style={ {paddingRight: padding+'em', paddingLeft: padding+'em', paddingBottom: '1em'} }>
 				<Stepper linear={linear} orientation={orientation}>
 					{this.renderSteps()}
 				</Stepper>

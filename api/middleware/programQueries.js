@@ -40,7 +40,7 @@ const programQueries = function(req, res, next) {
 		}
 	}
 	else if(role === 'hall_director') {
-		if(!halls) {
+		if(!query.hall) {
 			query.hall = userHall;
 		}
 

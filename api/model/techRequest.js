@@ -10,14 +10,17 @@ var user = db.model('user', userSchema);
 var techRequestSchema = new mongoose.Schema({
 	user: { type: Schema.Types.ObjectId, ref: 'user' },
 	closed: { type: Schema.Types.ObjectId, ref: 'user' },
-	submittedDate: Date,
+	date: Date,
+	closedDate: Date,
 	title: String,
 	name: String,
 	email: String,
 	primary_contact: String,
 	hall: String,
 	type: String,
-	description: String
+	description: String,
+	application: String,
+	comments: String
 });
 
 module.exports = db.model('techRequest', techRequestSchema);

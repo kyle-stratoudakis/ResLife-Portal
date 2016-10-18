@@ -103,7 +103,7 @@ export function receiveWorkorders(workOrders) {
 	return {
 		type: 'RECEIVE_WORKORDERS',
 		workOrders,
-		received: Date().now
+		received: new Date()
 	}
 }
 
@@ -172,14 +172,9 @@ export function updateForm(jwt, location, formId, jobId, data) {
 	}
 }
 
-export function comment(jwt, location, formId, jobId, data) {
+export function comment(data, location) {
 	return function (dispatch) {
-		var json = JSON.stringify({
-				jwt,
-				formId,
-				jobId,
-				data
-			});
+		var json = JSON.stringify(data);
 		return fetch(host + '/api/' + location + '/put/comment', {
 			method: 'put',
 			headers: {
@@ -190,8 +185,7 @@ export function comment(jwt, location, formId, jobId, data) {
 		})
 		.then(handleErrors)
 		.then(response => response.json())
-		.then(json => dispatch(fetchDetails(location, '?jwt='+jwt+'&id='+json)))
-		.then(dispatch(snackbarAlert(location + '/put/comment')))
+		.then(json => dispatch(fetchDetails(location, '?jwt='+data.jwt+'&id='+data.id)))
 		.catch(err => console.log('comment', err))
 	}
 }

@@ -40,6 +40,7 @@ class Program extends Component {
 		this.handleDeny = this.handleDeny.bind(this);
 		this.renderAddComment = this.renderAddComment.bind(this);
 		this.renderEvalContent = this.renderEvalContent.bind(this);
+		this.renderEvalUser = this.renderEvalUser.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -67,6 +68,7 @@ class Program extends Component {
 			councilOpposed: '',
 			councilAbstained: '',
 			councilApproval: '',
+			evaluatedDate: {},
 			evalTime: {},
 			evalAttendance: '',
 			evalCost: '',
@@ -130,6 +132,7 @@ class Program extends Component {
 				councilOpposed: wo.councilOpposed || '',
 				councilAbstained: wo.councilAbstained || '',
 				councilApproval: wo.councilApproval || '',
+				evaluatedDate: (wo.evaluatedDate ? new Date(wo.evaluatedDate) : {}),
 				evalTime: (wo.evalTime ? new Date(wo.evalTime) : {}),
 				evalAttendance: wo.evalAttendance || '',
 				evalCost: wo.evalCost || '',
@@ -558,6 +561,30 @@ class Program extends Component {
 		}
 	}
 
+	renderEvalUser() {
+		if(this.state.evaluated && this.state.evaluatedDate) {
+			return (
+				<div>
+					<FormsyText
+						name='evalName'
+						fullWidth={true}
+						disabled={true}
+						floatingLabelText='Evaluated By'
+						value={this.state.evaluated.name}
+					/>
+					<FormsyDate
+						name='evalDate'
+						fullWidth={true}
+						disabled={true}
+						formatDate={(date) => this.formatDate(date)}
+						floatingLabelText='Date Evaluated'
+						value={this.state.evaluatedDate}
+					/>
+				</div>
+			)
+		}
+	}
+
 	renderEvalContent() {
 		if(!this.state.evaluated && this.state.performEval === false) {
 			return (
@@ -567,6 +594,7 @@ class Program extends Component {
 		else {
 			return (
 				<div>
+					{this.renderEvalUser()}
 					<FormsyTime
 						name='evalTime'
 						fullWidth={true}
@@ -694,9 +722,9 @@ class Program extends Component {
 				<br />
 				<Divider />
 				<Subheader>Program Tracker</Subheader>
-				<div style={centerStyle}>
+				<center>
 					<TrackProgram workOrder={this.props.details} size={screen.width}/>
-				</div>
+				</center>
 				<Formsy.Form
 					ref='form'
 					onValid={this.enableButton}

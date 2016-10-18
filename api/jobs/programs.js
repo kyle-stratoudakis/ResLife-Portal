@@ -123,7 +123,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		if(!err) {
 			res.json(saved._id);
 			req.workorder = saved;
-			req.email = 'new';
+			req.email = 'new_submission';
 			next();
 		}
 		else {
@@ -165,11 +165,11 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 
 		if(data.travelAuthorization) program.travelAuthorization = data.travelAuthorization;
 		if(data.chartwellsQuote) program.chartwellsQuote = data.chartwellsQuote;
- 		
- 		if(data.councilDate || data.councilMotioned || data.councilSeconded || data.councilFavor || data.councilOpposed || data.councilAbstained || data.councilApproval) {
- 			req.email = 'hall_council';
- 			req.notif = 'hall_council';
- 		}
+		
+		if(data.councilDate || data.councilMotioned || data.councilSeconded || data.councilFavor || data.councilOpposed || data.councilAbstained || data.councilApproval) {
+			req.email = 'hall_council';
+			req.notif = 'hall_council';
+		}
 		if(data.councilDate) program.councilDate = data.councilDate;
 		if(data.councilMotioned) program.councilMotioned = data.councilMotioned;
 		if(data.councilSeconded) program.councilSeconded = data.councilSeconded;
@@ -236,7 +236,6 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 					program.approvedDate = new Date();
 					req.email = 'approved';
 					req.notif = 'delete_notif';
-					console.log('program approved ' + program.searchId);
 				}
 			}
 			else if(role === 'approver') {
@@ -244,7 +243,6 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 				program.approvedDate = new Date();
 				req.email = 'approved';
 				req.notif = 'delete_notif';
-				console.log('program approved ' + program.searchId);
 			}
 
 			program.save(function(err, saved) {
@@ -368,49 +366,50 @@ route.put('/put/return', jsonParser, m_role, function(req, res, next){
 });
 route.put('/put/return', m_notif);
 
-route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
-	var decodedUser = req.decodedUser;
-	var id = req.body.id
-	var message = req.body.message;
-	var role = decodedUser.role;
+// Update logic to pattern in techsupport
+// route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
+// 	var decodedUser = req.decodedUser;
+// 	var id = req.body.id
+// 	var message = req.body.message;
+// 	var role = decodedUser.role;
 
-	programModel.findOne({ _id: id }, function(err, program) {
-		program.comments.push({user: decodedUser._id, message: message, date: new Date()});
-		req.email = 'comment';
-		req.notif = 'comment';
+// 	programModel.findOne({ _id: id }, function(err, program) {
+// 		program.comments.push({user: decodedUser._id, message: message, date: new Date()});
+// 		req.email = 'comment';
+// 		req.notif = 'comment';
 
-		program.save(function(err, saved) {
-			if(!err) {
-				res.status(200).json({status: 'return'});
-				req.workorder = saved;
-				next();
-			}
-			else {
-				res.status(500).send(err);
-				console.log(err)
-			}
-		});
-	});
-});
-route.put('/put/comment', m_notif);
+// 		program.save(function(err, saved) {
+// 			if(!err) {
+// 				res.status(200).json({status: 'return'});
+// 				req.workorder = saved;
+// 				next();
+// 			}
+// 			else {
+// 				res.status(500).send(err);
+// 				console.log(err)
+// 			}
+// 		});
+// 	});
+// });
+// route.put('/put/comment', m_notif);
 
 route.put('/put/delete', jsonParser, function(req, res, next) {
-    var id = req.body.id;
-    programModel.findOne({ _id : id })
-    .exec(function(err, program) {
-        if(!err) {
-            res.status(200).json({status: 'return'});
-            req.email = 'deleted';
-            req.notif = 'delete_notif';
-            req.workorder = program;
-            next();
-        }
-        else {
-            res.status(500).send(err);
-            console.log(err);
-        }
-        programModel.remove({ _id : id }).exec();
-    });
+	var id = req.body.id;
+	programModel.findOne({ _id : id })
+	.exec(function(err, program) {
+		if(!err) {
+			res.status(200).json({status: 'return'});
+			req.email = 'deleted';
+			req.notif = 'delete_notif';
+			req.workorder = program;
+			next();
+		}
+		else {
+			res.status(500).send(err);
+			console.log(err);
+		}
+		programModel.remove({ _id : id }).exec();
+	});
 });
 route.put('/put/delete', m_notif);
 

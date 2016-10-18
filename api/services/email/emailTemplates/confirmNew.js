@@ -1,15 +1,20 @@
 var config = require('../../../../../config');
-const confirmNew = function(wo, type) {
+const confirmNew = function(wo) {
 	var host = config.PROTOCOL + config.HOST;
 	var message;
 	var link;
-	if(type === 'program') {
+	var application = wo.application;
+	if(application === 'Programs') {
 		message = `Your program <strong><i>`+wo.title+`</i></strong> has been submitted. You can view the status or edit this program by logging into the portal and navigating to RA Programs or by clicking the button below.`;
 		link = `<a href="`+host+`/job/Programs/View/Programs/`+wo._id+`">Access Program</a>`;
 	}
-	else if(type === 'pcard'){
+	else if(application === 'Funding'){
 		message = `Your funding request <strong><i>`+wo.title+`</i></strong> has been submitted. You can view the status or edit this request by logging into the portal and navigating to Funding or by clicking the button below.`;
 		link = `<a href="`+host+`/job/Funding/View/Funding/`+wo._id+`">Access Request</a>`;
+	}
+	else if(application === 'TechSupport'){
+		message = `Your tech request <strong><i>`+wo.title+`</i></strong> has been submitted. You can view the status or edit this request by logging into the portal and navigating to Funding or by clicking the button below.`;
+		link = `<a href="`+host+`/job/Funding/View/TechSupport/`+wo._id+`">Access Request</a>`;
 	}
 	return (
 		`<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>

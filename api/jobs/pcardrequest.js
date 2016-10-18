@@ -84,7 +84,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		if(!err) {
 			res.json(saved._id);
 			req.workorder = saved;
-			req.email = 'pcard_new';
+			req.email = 'new_submission';
 			next();
 		}
 		else {

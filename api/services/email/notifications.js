@@ -23,11 +23,8 @@ const notification_middleware = function(req, res, next) {
 	// Check email type and set template
 	if(req.email) {
 		mailOptions.event = req.email;
-		if(req.email === 'new') {
-			template = confirmNew(wo, 'program');
-		}
-		else if(req.email === 'pcard_new') {
-			template = confirmNew(wo, 'pcard');
+		if(req.email === 'new_submission') {
+			template = confirmNew(wo);
 		}
 		else if(req.email === 'checked') {
 			template = statusNotif('checked', wo);
@@ -49,10 +46,11 @@ const notification_middleware = function(req, res, next) {
 		else if(req.email === 'reviewer_approved') {
 			template = statusNotif('reviewer approved', wo);
 		}
-		else if(req.email === 'deny') {
+		else if(req.email === 'deny' || req.email === 'closed' || req.email === 'comment') {
+			console.log(req.email)
 			wo.comment = req.body.comment;
 			wo.who = req.decodedUser.name;
-			template = statusNotif('deny', wo);
+			template = statusNotif(req.email, wo);
 		}
 		else if(req.email === 'deleted') {
 			template = deleted(wo);
@@ -154,6 +152,15 @@ const notification_middleware = function(req, res, next) {
 		else if(req.notif === 'pcard_new') {
 			registerNotif('pcard_new', 'newpcard', wo);
 		}
+		else if(req.notif === 'funding_new') {
+			registerNotif('funding_new', 'new', wo);
+		}
+		else if(req.notif === 'rha_new') {
+			registerNotif('rha_new', 'RHA new', wo);
+		}
+		else if(req.notif === 'tech_new') {
+			registerNotif('tech_new', 'new', wo);
+		}
 		else if(req.notif === 'checked') {
 			registerNotif(wo.hall+'_reviewer', 'checked', wo);
 		}
@@ -168,12 +175,6 @@ const notification_middleware = function(req, res, next) {
 		else if(req.notif === 'edited') {
 			console.log('notif - edited')
 			registerTempNotif(wo.hall+'_edited', 'edited', wo);
-		}
-		else if(req.notif === 'funding_new') {
-			registerNotif('funding_new', 'new', wo);
-		}
-		else if(req.notif === 'rha_new') {
-			registerNotif('rha_new', 'RHA new', wo);
 		}
 		else if(req.notif === 'rha_checked') {
 			registerNotif('funding_new', 'RHA checked', wo);

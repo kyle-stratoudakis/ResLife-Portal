@@ -18,8 +18,8 @@ export default function factory(React, empty) {
 
 				this.state = {
 					open: false,
-					label: " Work order",
-					action: "New"
+					label: ' Work order',
+					action: 'New'
 				};
 			}
 
@@ -78,7 +78,7 @@ export default function factory(React, empty) {
 					width: '65%'
 				}
 
-				const title = "Delete" + this.state.label;
+				const title = 'Delete' + this.state.label;
 
 				const content = [
 					<center>
@@ -93,42 +93,44 @@ export default function factory(React, empty) {
 
 				const actions = [
 					<FlatButton
-						label="Cancel"
+						key='cancel'
+						label='Cancel'
 						onClick={this.props.closeDialog.bind(this)}
 					/>,
 					<FlatButton
-						label="Delete"
+						key='delete'
+						label='Delete'
 						hoverColor='#ef5350'
 						onClick={this.props.deleteWorkorder.bind(this, this.props.details)}
 					/>,
 				]
 
 				return (
-					<div className="container">
+					<div className='container'>
 						<br/>
 						<Paper style={ {'padding': '0 1rem 3rem 2rem' } } zDepth={2}>
-							<div className="row" style={{ margin: 'auto' }}>
-								<div className="col-sm-11">
+							<div className='row' style={{ margin: 'auto' }}>
+								<div className='col-sm-11'>
 									<h2>{this.state.action + this.state.label}</h2>
 								</div>
-								<div className="col-sm-1">
+								<div className='col-sm-1'>
 									<IconMenu
 										iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}
 										anchorOrigin={{horizontal: 'right', vertical: 'top'}}
 										targetOrigin={{horizontal: 'right', vertical: 'top'}}
 									>
-										<MenuItem 
-											primaryText={"Delete" + this.state.label}
+										<MenuItem
+											primaryText={'Delete' + this.state.label}
 											disabled={(this.props.details._id ? false : true)}
 											onClick={this.props.openDialog.bind(this, title, content, actions)}
 										/>
 										<MenuItem
-											primaryText="Email User"
+											primaryText='Email User'
 											disabled={(this.props.details.email ? false : true)}
 											onClick={this.props.emailUser.bind(this, this.props.details)}
 										/>
-										<MenuItem 
-											primaryText="Download Form"
+										<MenuItem
+											primaryText='Download Form'
 											disabled={this.props.details.approved ? false : true}
 											onClick={this.props.downloadPdf.bind(this, this.props.details, this.props.details.application)}
 										/>
