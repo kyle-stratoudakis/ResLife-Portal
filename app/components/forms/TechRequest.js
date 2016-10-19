@@ -8,12 +8,14 @@ import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon'
 import { red500 } from 'material-ui/styles/colors';
-import FormsyText from './Formsy/FormsyText';
-import FormsyDate from './Formsy/FormsyDate';
-import FormsyTime from './Formsy/FormsyTime';
+import FormsyText from './formComponents/FormsyText';
+import FormsyDate from './formComponents/FormsyDate';
+import FormsyTime from './formComponents/FormsyTime';
 import { FormsySelect } from 'formsy-material-ui/lib';
-import { FormWrapper } from '../FormWrapper/';
-import TrackTech from '../TrackTech' ;
+import { FormWrapper } from './formWrapper/';
+import TrackTech from './formComponents/TrackTech' ;
+import CommentSection from './formComponents/CommentSection';
+import formatDate from '../../../utils/formatDate';
 
 class TechRequest extends Component{
 	constructor(props) {
@@ -25,8 +27,6 @@ class TechRequest extends Component{
 		this.getActionButtons = this.getActionButtons.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 		this.handleComment = this.handleComment.bind(this);
-		this.renderComments = this.renderComments.bind(this);
-		this.formatDate = this.formatDate.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -45,7 +45,8 @@ class TechRequest extends Component{
 				listStyle: {
 					marginTop: '0em',
 					paddingTop: '0em',
-					paddingLeft: '1em'
+					paddingLeft: '1em',
+					paddingRight: '1em'
 				},
 				listPaperStyle: {
 					marginBottom: '1em'
@@ -65,7 +66,7 @@ class TechRequest extends Component{
 				title: workOrder.title || '',
 				type: workOrder.type || '',
 				description: workOrder.description || '',
-				comments: (workOrder.comments ? JSON.parse(workOrder.comments) : []),
+				comments: workOrder.comments || [],
 				label: (workOrder._id ? 'Edit' : 'Submit')
 			});
 		}
@@ -178,58 +179,17 @@ class TechRequest extends Component{
 		this.props.workorderAction('techsupport/put/close', data, 'TechSupport');
 	}
 
-	handleComment() {
+	handleComment(comment) {
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
-		let comment = (this.refs.comment ? this.refs.comment.getValue() : '');
 		let data = {
 			id: this.props.details._id,
 			jobId: jobId,
 			jwt: this.props.token.jwt,
 			comment: comment
 		}
-		this.refs.comment.setValue('');
 		if(comment > '') this.props.comment(data, 'TechSupport');
-	}
-
-	renderComments(comment, i) {
-		let { listStyle, listPaperStyle } = this.state.styles;
-		return (
-			<Paper style={listPaperStyle} key={i}>
-				<Subheader>{'Comment '+(i+1)}</Subheader>
-				<div style={listStyle}>
-					<FormsyText
-						name={'comments['+i+'][date]'}
-						floatingLabelText='Date'
-						style={{paddingLeft: '0em'}}
-						value={this.formatDate(new Date(comment.date))}
-						disabled={true}
-					/>
-					<br />
-					<FormsyText
-						name={'comments['+i+'][name]'}
-						floatingLabelText='Name'
-						style={{paddingLeft: '0em'}}
-						value={comment.name}
-						disabled={true}
-					/>
-					<br />
-					<FormsyText
-						name={'comments['+i+'][message]'}
-						floatingLabelText='Message'
-						style={{paddingLeft: '0em'}}
-						value={comment.comment}
-						multiLine={true}
-						disabled={true}
-					/>
-				</div>
-			</Paper>
-		)
-	}
-
-	formatDate(d) {
-		return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
 	}
 
 	render() {
@@ -255,8 +215,8 @@ class TechRequest extends Component{
 
 					<div style={centerStyle}>
 						<FormsyText
-							name='title'
 							required
+							name='title'
 							fullWidth={true}
 							hintText='Descriptive Request title?'
 							floatingLabelText='Title'
@@ -264,8 +224,8 @@ class TechRequest extends Component{
 						/>
 
 						<FormsySelect
-							name='type'
 							required
+							name='type'
 							fullWidth={true}
 							floatingLabelText='Type'
 							value={this.state.type}
@@ -279,8 +239,8 @@ class TechRequest extends Component{
 
 					<div style={centerStyle}>
 						<FormsyText
-							name='description'
 							required
+							name='description'
 							fullWidth={true}
 							hintText='Please provide as much detail as possible'
 							floatingLabelText='Description'
@@ -289,21 +249,12 @@ class TechRequest extends Component{
 						/>
 					</div>
 
-					<Divider />
-					<Subheader>Comments</Subheader>
-					<div style={centerStyle}>
-						{this.state.comments.map(this.renderComments)}
-						<FormsyText
-							ref='comment'
-							name='comment'
-							fullWidth={true}
-							hintText='Enter message for comment'
-							floatingLabelText='Comment'
-							multiLine={true}
-							defaultValue={''}
-						/>
-						<FlatButton label='Add Comment' onClick={this.handleComment.bind(this)} />
-					</div>
+					<CommentSection 
+						enable={(this.props.details._id ? true : false)}
+						comments={this.state.comments} 
+						handleComment={this.handleComment}
+						styles={this.state.styles}
+					/>
 
 					<Divider />
 					<Subheader>Actions</Subheader>

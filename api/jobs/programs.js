@@ -366,32 +366,32 @@ route.put('/put/return', jsonParser, m_role, function(req, res, next){
 });
 route.put('/put/return', m_notif);
 
-// Update logic to pattern in techsupport
-// route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
-// 	var decodedUser = req.decodedUser;
-// 	var id = req.body.id
-// 	var message = req.body.message;
-// 	var role = decodedUser.role;
+route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
+	var decodedUser = req.decodedUser;
+	var userId = decodedUser._id;
+	var id = req.body.id
+	var comment = req.body.comment;
 
-// 	programModel.findOne({ _id: id }, function(err, program) {
-// 		program.comments.push({user: decodedUser._id, message: message, date: new Date()});
-// 		req.email = 'comment';
-// 		req.notif = 'comment';
+	programModel.findOne({ _id: id }, function(err, program) {
 
-// 		program.save(function(err, saved) {
-// 			if(!err) {
-// 				res.status(200).json({status: 'return'});
-// 				req.workorder = saved;
-// 				next();
-// 			}
-// 			else {
-// 				res.status(500).send(err);
-// 				console.log(err)
-// 			}
-// 		});
-// 	});
-// });
-// route.put('/put/comment', m_notif);
+		program.comments.push({id: userId, name: decodedUser.name, comment: comment, date: new Date()});
+
+		program.save(function(err, saved) {
+			if(!err) {
+				res.status(200).json({status: 'comment'});
+				req.workorder = saved;
+				if(saved.user != userId) req.email = 'comment';
+				req.notif = 'comment';
+				next();
+			}
+			else {
+				res.status(500).send(err);
+				console.log(err)
+			}
+		});
+	});
+});
+route.put('/put/comment', m_notif);
 
 route.put('/put/delete', jsonParser, function(req, res, next) {
 	var id = req.body.id;

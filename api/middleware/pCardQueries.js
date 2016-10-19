@@ -6,8 +6,9 @@ const pCardQueries = function(req, res, next) {
 	var query = {};
 	var sort = {'_id': 1};
 
-	// Check for cardType filter
 	if(req.query.cardType) query.cardType = { $in: req.query.cardType };
+
+	if(req.query.override) role = req.query.override;
 
 	if(req.query.sort) {
 		var split = req.query.sort.split('_');

@@ -1,6 +1,6 @@
 import React from 'react';
 import Formsy from 'formsy-react';
-import FormsyText from './forms/Formsy/FormsyText';
+import FormsyText from './forms/formComponents/FormsyText';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MenuItem from 'material-ui/MenuItem';

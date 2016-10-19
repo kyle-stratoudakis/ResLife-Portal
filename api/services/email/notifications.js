@@ -47,7 +47,6 @@ const notification_middleware = function(req, res, next) {
 			template = statusNotif('reviewer approved', wo);
 		}
 		else if(req.email === 'deny' || req.email === 'closed' || req.email === 'comment') {
-			console.log(req.email)
 			wo.comment = req.body.comment;
 			wo.who = req.decodedUser.name;
 			template = statusNotif(req.email, wo);
@@ -73,8 +72,7 @@ const notification_middleware = function(req, res, next) {
 						mailOptions.attachments = [{ filename: 'ID-'+wo.searchId+' P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 					}
 					catch(ex) {
-						console.log('pcard auth attachment error, wo._id: ' + wo._id);
-						console.log(ex);
+						console.log('pcard auth attachment error, wo._id: ' + wo._id, ex);
 					}
 
 					juice.juiceResources(email, {}, function(err, inlined) {
@@ -110,8 +108,7 @@ const notification_middleware = function(req, res, next) {
 						mailOptions.attachments = [{ filename: 'P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
 					}
 					catch(ex) {
-						console.log('pcard attachment error, wo._id: ' + wo._id);
-						console.log(ex);
+						console.log('pcard attachment error, wo._id: ' + wo._id, ex);
 					}
 
 					juice.juiceResources(email, {}, function(err, inlined) {
@@ -119,8 +116,7 @@ const notification_middleware = function(req, res, next) {
 							console.log(err)
 						}
 						else {
-							mailOptions.to = 'stratoudakk1@southernct.edu';
-							// mailOptions.to = 'thibaultk1@southernct.edu';
+							mailOptions.to = getHD('Central_Office');
 							mailOptions.html = inlined;
 							mailer(mailOptions);
 							console.log('mailed pcard for '+ wo.searchId +' to ' + mailOptions.to);
@@ -262,6 +258,9 @@ function getHD(hall) {
 	// }
 	// else if(hall === 'Wilkinson') {
 	// 	email = 'hoffmannk1@southernct.edu';
+	// }
+	// 	else if(hall === 'Central_Office') {
+	// 	email = 'thibaultk1@southernct.edu';
 	// }
 
 	return email;

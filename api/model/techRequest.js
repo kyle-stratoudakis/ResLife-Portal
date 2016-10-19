@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 var userSchema = require('./schema/user');
-var Schema = mongoose.Schema;
 var config = require('../../../config')
+var Schema = mongoose.Schema;
+var commentSchema = require('./schema/comment');
 
 var db = mongoose.createConnection(config.mongodb+'/workorders/techrequests');
 
@@ -20,7 +21,7 @@ var techRequestSchema = new mongoose.Schema({
 	type: String,
 	description: String,
 	application: String,
-	comments: String
+	comments: [commentSchema]
 });
 
 module.exports = db.model('techRequest', techRequestSchema);

@@ -2,14 +2,9 @@ import React from 'react'
 import { Stepper, Step, StepLabel, StepButton, StepContent } from 'material-ui'
 import { ActionAssignment, ActionAssignmentTurnedIn, ActionAssignmentInd } from 'material-ui/svg-icons';
 import { grey500, lightGreen500 } from 'material-ui/styles/colors';
+import getDate from '../../../../utils/getDate';
 
-const TrackTech = React.createClass({
-	getDate(date) {
-		let d = new Date(date)
-		let formattted = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-		return formattted;
-	},
-
+const TrackFunding = React.createClass({
 	renderSteps() {
 		let workorder = this.props.workOrder;
 		const approved = <ActionAssignmentTurnedIn color={lightGreen500} />;
@@ -24,14 +19,14 @@ const TrackTech = React.createClass({
 						<br />
 						{workorder.user.name}
 						<br />
-						{workorder.date ? this.getDate(workorder.date) : ''}
+						{workorder.submittedDate ? getDate(workorder.submittedDate) : ''}
 					</StepLabel>
 				</Step>
 			);
 		}
 		else {
 			steps.push(
-				<Step key={2}>
+				<Step key={1}>
 					<StepLabel icon={pending}>
 						Submission
 					</StepLabel>
@@ -39,15 +34,61 @@ const TrackTech = React.createClass({
 			);
 		}
 
-		if(workorder.closed){
+		if(workorder.needsCheck === true) {
+			steps.push(
+				<Step key={2}>
+					<StepLabel icon={pending}>
+						RHA
+					</StepLabel>
+				</Step>
+			);
+		}
+		else if(workorder.checked) {
+			steps.push(
+				<Step key={2}>
+					<StepLabel icon={approved}>
+						RHA
+						<br />
+						{workorder.checked.name}
+						<br />
+						{workorder.checkedDate ? getDate(workorder.checkedDate) : ''}
+					</StepLabel>
+				</Step>
+			);
+		}
+
+		if(workorder.reviewed) {
 			steps.push(
 				<Step key={3}>
 					<StepLabel icon={approved}>
-						Closed
+						Reviewed
 						<br />
-						{workorder.closed.name}
+						{workorder.reviewed.name}
 						<br />
-						{this.getDate(workorder.closedDate)}
+						{getDate(workorder.reviewedDate)}
+					</StepLabel>
+				</Step>
+			);
+		}
+		else {
+			steps.push(
+				<Step key={3}>
+					<StepLabel icon={pending}>
+						Reviewed
+					</StepLabel>
+				</Step>
+			);
+		}
+
+		if(workorder.approved) {
+			steps.push(
+				<Step key={4}>
+					<StepLabel icon={approved}>
+						Approved
+						<br />
+						{workorder.approved.name}
+						<br />
+						{workorder.approvedDate ? getDate(workorder.approvedDate) : ''}
 					</StepLabel>
 				</Step>
 			);
@@ -56,7 +97,7 @@ const TrackTech = React.createClass({
 			steps.push(
 				<Step key={4}>
 					<StepLabel icon={pending}>
-						Closed
+						Approved
 					</StepLabel>
 				</Step>
 			);
@@ -77,4 +118,4 @@ const TrackTech = React.createClass({
 	}
 });
 
-export default TrackTech;
+export default TrackFunding;

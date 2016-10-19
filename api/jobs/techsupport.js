@@ -48,8 +48,8 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 
 	techRequest.save(function(err) {
 		if(!err) {
-			res.email = 'new_tech';
-			res.notif = 'new_tech';
+			res.email = 'new_submission';
+			res.notif = 'tech_new';
 			res.json(techRequest._id);
 			next();
 		}
@@ -108,9 +108,10 @@ route.put('/put/close', jsonParser, m_role, function(req, res, next){
 			req.notif = 'delete_notif';
 			req.comment = comment;
 		}
-		request.save(function(){
+		request.save(function(err, saved){
 			if(!err){
 				res.json(request._id);
+				req.workorder = saved;
 				next();
 			}
 			else {
@@ -146,7 +147,11 @@ route.get('/get/details', function(req, res) {
 	if(req.query.jwt) {
 		var id = req.query.id;
 		techRequestModel.findOne({'_id': id})
-		.populate({path: 'user closed', model: userModel})
+		.populate({
+			path: 'user closed',
+			select: 'name -_id',
+			model: userModel
+		})
 		.exec(function(err, techRequest) {
 			if(!err){
 				res.json(techRequest);
@@ -166,16 +171,14 @@ route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
 	var comment = req.body.comment;
 
 	techRequestModel.findOne({ _id: id }, function(err, request) {
-		let comments = (request.comments ? JSON.parse(request.comments) : []);
-		comments.push({id: userId, name: decodedUser.name, comment: comment, date: new Date()});
-		request.comments = JSON.stringify(comments);
+
+		request.comments.push({id: userId, name: decodedUser.name, comment: comment, date: new Date()});
 
 		request.save(function(err, saved) {
 			if(!err) {
-				res.status(200).json({status: 'return'});
+				res.status(200).json({status: 'comment'});
 				req.workorder = saved;
-				// if(saved.user !== userId) req.email = 'comment';
-				req.email = 'comment';
+				if(saved.user != userId) req.email = 'comment';
 				req.notif = 'comment';
 				next();
 			}

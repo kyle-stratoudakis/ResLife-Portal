@@ -2,14 +2,9 @@ import React from 'react'
 import { Stepper, Step, StepLabel, StepButton, StepContent } from 'material-ui'
 import { ActionAssignment, ActionAssignmentTurnedIn, ActionAssignmentInd } from 'material-ui/svg-icons';
 import { grey500, lightGreen500 } from 'material-ui/styles/colors';
+import getDate from '../../../../utils/getDate';
 
 const TrackGraphics = React.createClass({
-	getDate(date) {
-		let d = new Date(date)
-		let formated = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-		return formated;
-	},
-
 	/*
 		So, this should have the following statuses: new, assigned, completed.
 		User obviously sumbits and the assigned SWK graphic designer obviously completes,
@@ -36,7 +31,7 @@ const TrackGraphics = React.createClass({
 						<br />
 						{workorder.user.name}
 						<br />
-						{workorder.submittedDate ? this.getDate(workorder.submittedDate) : ''}
+						{workorder.submittedDate ? getDate(workorder.submittedDate) : ''}
 					</StepLabel>
 				</Step>
 			);
@@ -59,7 +54,7 @@ const TrackGraphics = React.createClass({
 						<br />
 						{workorder.checked.name}
 						<br />
-						{workorder.checkedDate ? this.getDate(workorder.checkedDate) : ''}
+						{workorder.checkedDate ? getDate(workorder.checkedDate) : ''}
 					</StepLabel>
 				</Step>
 			);
@@ -82,7 +77,7 @@ const TrackGraphics = React.createClass({
 						<br />
 						{workorder.reviewed.name}
 						<br />
-						{this.getDate(workorder.reviewedDate)}
+						{getDate(workorder.reviewedDate)}
 					</StepLabel>
 				</Step>
 			);
@@ -105,7 +100,7 @@ const TrackGraphics = React.createClass({
 						<br />
 						{workorder.approved.name}
 						<br />
-						{workorder.approvedDate ? this.getDate(workorder.approvedDate) : ''}
+						{workorder.approvedDate ? getDate(workorder.approvedDate) : ''}
 					</StepLabel>
 				</Step>
 			);

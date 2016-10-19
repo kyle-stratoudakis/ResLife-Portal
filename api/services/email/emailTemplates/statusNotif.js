@@ -1,6 +1,5 @@
 var config = require('../../../../../config');
 const statusNotif = function(status, wo) {
-	console.log(status);
 	var host = config.PROTOCOL + config.HOST;
 	var message = 'processed';
 	var title = 'Program Status Update';

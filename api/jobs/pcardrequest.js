@@ -331,6 +331,33 @@ route.get('/get/details', function(req, res) {
 	}
 });
 
+route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
+	var decodedUser = req.decodedUser;
+	var userId = decodedUser._id;
+	var id = req.body.id
+	var comment = req.body.comment;
+
+	pCardModel.findOne({ _id: id }, function(err, request) {
+
+		request.comments.push({id: userId, name: decodedUser.name, comment: comment, date: new Date()});
+
+		request.save(function(err, saved) {
+			if(!err) {
+				res.status(200).json({status: 'comment'});
+				req.workorder = saved;
+				if(saved.user != userId) req.email = 'comment';
+				req.notif = 'comment';
+				next();
+			}
+			else {
+				res.status(500).send(err);
+				console.log(err)
+			}
+		});
+	});
+});
+route.put('/put/comment', m_notif);
+
 route.get('/download', function(req, res) {
 	if(req.query.id) {
 		pCardModel.findOne({ _id: req.query.id })

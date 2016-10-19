@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormWrapper } from '../FormWrapper/';
+import { FormWrapper } from './formWrapper/';
 import Formsy from 'formsy-react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -9,10 +9,12 @@ import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon'
 import { red500 } from 'material-ui/styles/colors';
-import FormsyText from './Formsy/FormsyText';
-import FormsyDate from './Formsy/FormsyDate';
-import FormsyTime from './Formsy/FormsyTime';
-import TrackProgram from '../TrackProgram' ;
+import FormsyText from './formComponents/FormsyText';
+import FormsyDate from './formComponents/FormsyDate';
+import FormsyTime from './formComponents/FormsyTime';
+import TrackProgram from './formComponents/TrackProgram' ;
+import CommentSection from './formComponents/CommentSection';
+import formatDate from '../../../utils/formatDate';
 import {
 	FormsyRadioGroup,
 	FormsyRadio,
@@ -31,14 +33,12 @@ class Program extends Component {
 		this.renderCostTotal = this.renderCostTotal.bind(this);
 		this.getActionButtons = this.getActionButtons.bind(this);
 		this.renderSearchId = this.renderSearchId.bind(this);
-		this.formatDate = this.formatDate.bind(this);
 		this.renderTypeContent = this.renderTypeContent.bind(this);
 		this.renderEvaluation = this.renderEvaluation.bind(this);
 		this.renderQuote = this.renderQuote.bind(this);
 		this.handleSelection = this.handleSelection.bind(this);
-		this.renderDenyDialog = this.renderDenyDialog.bind(this);
 		this.handleDeny = this.handleDeny.bind(this);
-		this.renderAddComment = this.renderAddComment.bind(this);
+		this.handleComment = this.handleComment.bind(this);
 		this.renderEvalContent = this.renderEvalContent.bind(this);
 		this.renderEvalUser = this.renderEvalUser.bind(this);
 
@@ -55,6 +55,7 @@ class Program extends Component {
 			department: '',
 			items: [],
 			staff: [],
+			comments: [],
 			date: {},
 			time: {},
 			checked: null,
@@ -91,7 +92,8 @@ class Program extends Component {
 				listStyle: {
 					marginTop: '0em',
 					paddingTop: '0em',
-					paddingLeft: '1em'
+					paddingLeft: '1em',
+					paddingRight: '1em'
 				},
 				listPaperStyle: {
 					marginBottom: '1em'
@@ -121,6 +123,7 @@ class Program extends Component {
 				fundingType: wo.fundingType || 'pcard',
 				items: (wo.items ? JSON.parse(wo.items) : []),
 				staff: (wo.staff ? JSON.parse(wo.staff) : []),
+				comments: wo.comments || [],
 				checked: wo.checked,
 				reviewed: wo.reviewed,
 				approved: wo.approved,
@@ -161,18 +164,10 @@ class Program extends Component {
 		});
 	}
 
-	formatDate(d) {
-		return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-	}
-
 	handleSelection(e, value) {
 		let data = {};
 		data[e.target.name] = value;
 		this.setState(data);
-	}
-
-	renderDenyDialog() {
-
 	}
 
 	handleDeny() {
@@ -187,6 +182,19 @@ class Program extends Component {
 			comment: comment
 		}
 		this.props.workorderAction('programs/put/deny', data, 'Programs');
+	}
+
+	handleComment(comment) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt,
+			comment: comment
+		}
+		if(comment > '') this.props.comment(data, 'Programs');
 	}
 
 	getActionButtons() {
@@ -312,6 +320,7 @@ class Program extends Component {
 						name={'items['+i+'][description]'}
 						hintText='Include name and quantity'
 						floatingLabelText='Item Description'
+						fullWidth={true}
 						multiLine={true}
 						style={{paddingLeft: '0em'}}
 						value={item.description}
@@ -319,6 +328,7 @@ class Program extends Component {
 					<br />
 					<FormsyText
 						required
+						fullWidth={true}
 						name={'items['+i+'][cost]'}
 						validation='isNumeric'
 						validationError='Please use only numbers'
@@ -439,10 +449,11 @@ class Program extends Component {
 				<Subheader>{'Staff '+(i+1)}</Subheader>
 				<div style={listStyle}>
 					<FormsyText
-						name={'staff['+i+'][name]'}
 						required
+						name={'staff['+i+'][name]'}
 						hintText='Additional Staff'
 						floatingLabelText='Staff Name'
+						fullWidth={true}
 						multiLine={true}
 						style={{paddingLeft: '0em'}}
 						value={staff.name}
@@ -487,7 +498,7 @@ class Program extends Component {
 								required
 								fullWidth={true}
 								firstDayOfWeek={0}
-								formatDate={(date) => this.formatDate(date)}
+								formatDate={(date) => formatDate(date)}
 								hintText='Date of council meeting'
 								floatingLabelText='Date Of Meeting'
 								value={this.state.councilDate}
@@ -576,7 +587,7 @@ class Program extends Component {
 						name='evalDate'
 						fullWidth={true}
 						disabled={true}
-						formatDate={(date) => this.formatDate(date)}
+						formatDate={(date) => formatDate(date)}
 						floatingLabelText='Date Evaluated'
 						value={this.state.evaluatedDate}
 					/>
@@ -691,26 +702,75 @@ class Program extends Component {
 		}
 	}
 
-	renderAddComment() {
-		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
+	handleComment(comment) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt,
+			comment: comment
+		}
+		if(comment > '') this.props.comment(data, 'Programs');
+	}
+
+	renderCommentSection() {
+		if(this.props.details._id) {
+			let { centerStyle } = this.state.styles;
+			return (
+				<div>
+					<Divider />
+					<Subheader>Comments</Subheader>
+					<div style={centerStyle}>
+						{this.state.comments.map(this.renderComments)}
+						<FormsyText
+							ref='comment'
+							name='comment'
+							fullWidth={true}
+							hintText='Enter message for comment'
+							floatingLabelText='Comment'
+							multiLine={true}
+							defaultValue=''
+						/>
+						<FlatButton label='Add Comment' onClick={this.handleComment.bind(this)} />
+					</div>
+				</div>
+			)
+		}
+	}
+
+	renderComments(comment, i) {
+		let { listStyle, listPaperStyle } = this.state.styles;
 		return (
-			<Paper style={listPaperStyle}>
-				<Formsy.Form
-					ref='form'
-					onValid={this.enableButton}
-					onInvalid={this.disableButton}
-					//onValidSubmit={this.submitComment.bind(this)}
-					onValidSubmit={this.submitForm}
-					onInvalidSubmit={this.notifyFormError}
-				>
+			<Paper style={listPaperStyle} key={i}>
+				<Subheader>{'Comment '+(i+1)}</Subheader>
+				<div style={listStyle}>
 					<FormsyText
-						name={'message'}
-						required
-						floatingLabelText='Add Comment'
-						multiLine={true}
-						// style={listStyle}
+						name={'comments['+i+'][date]'}
+						floatingLabelText='Date'
+						style={{paddingLeft: '0em'}}
+						value={formatDate(new Date(comment.date))}
+						disabled={true}
 					/>
-				</Formsy.Form>
+					<br />
+					<FormsyText
+						name={'comments['+i+'][name]'}
+						floatingLabelText='Name'
+						style={{paddingLeft: '0em'}}
+						value={comment.name}
+						disabled={true}
+					/>
+					<br />
+					<FormsyText
+						name={'comments['+i+'][message]'}
+						floatingLabelText='Message'
+						style={{paddingLeft: '0em'}}
+						value={comment.comment}
+						multiLine={true}
+						disabled={true}
+					/>
+				</div>
 			</Paper>
 		)
 	}
@@ -752,7 +812,7 @@ class Program extends Component {
 							fullWidth={true}
 							firstDayOfWeek={0}
 							minDate={new Date()}
-							formatDate={(date) => this.formatDate(date)}
+							formatDate={(date) => formatDate(date)}
 							hintText='Program date?'
 							floatingLabelText='Date'
 							value={this.state.date}
@@ -880,16 +940,14 @@ class Program extends Component {
 						/>
 					</div>
 
-					{this.renderEvaluation()}
+					<CommentSection 
+						enable={(this.props.details._id ? true : false)}
+						comments={this.state.comments} 
+						handleComment={this.handleComment}
+						styles={this.state.styles}
+					/>
 
-					{/*
-					Add Comment Box
-					<Divider />
-					<Subheader>Comments</Subheader>
-					<div style={centerStyle}>
-						{this.renderAddComment()}
-					</div>
-					*/}
+					{this.renderEvaluation()}
 
 					<Divider />
 					<Subheader>Actions</Subheader>

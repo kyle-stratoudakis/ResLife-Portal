@@ -4,7 +4,8 @@ var userSchema = require('./user');
 
 var commentSchema = new mongoose.Schema({
 	user: { type: Schema.Types.ObjectId, ref: 'user' },
-	message: String,
+	name: String,
+	comment: String,
 	date: Date
 });
 
