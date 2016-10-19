@@ -339,13 +339,15 @@ class Program extends Component {
 						disabled={(this.state.reviewed ? true : false)}
 					/>
 				</div>
-				<FlatButton
-					label='Remove'
-					hoverColor={red500}
-					disabled={(this.state.reviewed ? true : false)}
-					onClick={this.removeJSONItem.bind(this, i)}
-					style={centerStyle}
-				/>
+				<center>
+					<FlatButton
+						label='Remove'
+						hoverColor={red500}
+						disabled={(this.state.reviewed ? true : false)}
+						onClick={this.removeJSONItem.bind(this, i)}
+						style={centerStyle}
+					/>
+				</center>
 			</Paper>
 		)
 	}
@@ -459,12 +461,14 @@ class Program extends Component {
 						value={staff.name}
 					/>
 				</div>
-				<FlatButton
-					label='Remove'
-					hoverColor={red500}
-					onClick={this.removeJSONStaff.bind(this, i)}
-					style={centerStyle}
-				/>
+				<center>
+					<FlatButton
+						label='Remove'
+						hoverColor={red500}
+						onClick={this.removeJSONStaff.bind(this, i)}
+						style={centerStyle}
+					/>
+				</center>
 			</Paper>
 		)
 	}
@@ -715,66 +719,6 @@ class Program extends Component {
 		if(comment > '') this.props.comment(data, 'Programs');
 	}
 
-	renderCommentSection() {
-		if(this.props.details._id) {
-			let { centerStyle } = this.state.styles;
-			return (
-				<div>
-					<Divider />
-					<Subheader>Comments</Subheader>
-					<div style={centerStyle}>
-						{this.state.comments.map(this.renderComments)}
-						<FormsyText
-							ref='comment'
-							name='comment'
-							fullWidth={true}
-							hintText='Enter message for comment'
-							floatingLabelText='Comment'
-							multiLine={true}
-							defaultValue=''
-						/>
-						<FlatButton label='Add Comment' onClick={this.handleComment.bind(this)} />
-					</div>
-				</div>
-			)
-		}
-	}
-
-	renderComments(comment, i) {
-		let { listStyle, listPaperStyle } = this.state.styles;
-		return (
-			<Paper style={listPaperStyle} key={i}>
-				<Subheader>{'Comment '+(i+1)}</Subheader>
-				<div style={listStyle}>
-					<FormsyText
-						name={'comments['+i+'][date]'}
-						floatingLabelText='Date'
-						style={{paddingLeft: '0em'}}
-						value={formatDate(new Date(comment.date))}
-						disabled={true}
-					/>
-					<br />
-					<FormsyText
-						name={'comments['+i+'][name]'}
-						floatingLabelText='Name'
-						style={{paddingLeft: '0em'}}
-						value={comment.name}
-						disabled={true}
-					/>
-					<br />
-					<FormsyText
-						name={'comments['+i+'][message]'}
-						floatingLabelText='Message'
-						style={{paddingLeft: '0em'}}
-						value={comment.comment}
-						multiLine={true}
-						disabled={true}
-					/>
-				</div>
-			</Paper>
-		)
-	}
-
 	render() {
 		let { centerStyle } = this.state.styles;
 		return (
@@ -943,6 +887,7 @@ class Program extends Component {
 					<CommentSection 
 						enable={(this.props.details._id ? true : false)}
 						comments={this.state.comments} 
+						userId={this.props.token.user._id}
 						handleComment={this.handleComment}
 						styles={this.state.styles}
 					/>

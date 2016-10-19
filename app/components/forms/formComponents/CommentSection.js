@@ -12,12 +12,12 @@ class CommentSection extends Component {
 	constructor(props) {
 		super(props)
 
-		this.sendComment = this.sendComment.bind(this);
+		this.saveComment = this.saveComment.bind(this);
 		this.renderCommentSection = this.renderCommentSection.bind(this);
 		this.renderComments = this.renderComments.bind(this);
 	}
 
-	sendComment() {
+	saveComment() {
 		let comment = (this.refs.comment ? this.refs.comment.getValue() : '');
 		this.props.handleComment(comment);
 		this.refs.comment.state.value = '';
@@ -43,7 +43,7 @@ class CommentSection extends Component {
 						/>
 						<FlatButton
 							label='Add Comment'
-							onClick={this.sendComment.bind(this)}
+							onClick={this.saveComment.bind(this)}
 							icon={<FontIcon className='material-icons'>{'add'}</FontIcon>}
 						/>
 					</div>
@@ -54,8 +54,20 @@ class CommentSection extends Component {
 
 	renderComments(comment, i) {
 		let { listStyle, listPaperStyle } = this.props.styles;
+		let actions = [];
+		if(comment.user == this.props.userId) {
+			actions.push(
+				<FlatButton
+					key={'remove'}
+					label='Remove'
+					hoverColor={red500}
+					style={{marginBottom: '0.5em'}}
+					onClick={this.props.handleComment.bind(this, {remove: comment._id})}
+				/>
+			)
+		}
 		return (
-			<Paper style={listPaperStyle} key={i}>
+			<Paper style={listPaperStyle} key={comment._id}>
 				<Subheader>{'Comment '+(i+1)}</Subheader>
 				<div style={listStyle}>
 					<FormsyText
@@ -85,6 +97,10 @@ class CommentSection extends Component {
 						multiLine={true}
 						disabled={true}
 					/>
+					<br />
+					<center>
+						{actions}
+					</center>
 				</div>
 			</Paper>
 		)

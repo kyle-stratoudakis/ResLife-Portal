@@ -1,5 +1,5 @@
 const route = require('express').Router();
-const fs = require('fs');
+const mongoose = require('mongoose');
 const programModel= require('../model/program');
 const userModel= require('../model/user');
 const m_notif = require('../services/email/notifications');
@@ -373,15 +373,20 @@ route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
 	var comment = req.body.comment;
 
 	programModel.findOne({ _id: id }, function(err, program) {
-
-		program.comments.push({id: userId, name: decodedUser.name, comment: comment, date: new Date()});
+		if(comment.remove) {
+			var _id = mongoose.Types.ObjectId(comment.remove);
+			program.comments.id(_id).remove();
+		}
+		else {
+			program.comments.push({user: userId, name: decodedUser.name, comment: comment, date: new Date()});
+			if(program.user != userId) req.email = 'comment';
+			req.notif = 'comment';
+		}
 
 		program.save(function(err, saved) {
 			if(!err) {
 				res.status(200).json({status: 'comment'});
 				req.workorder = saved;
-				if(saved.user != userId) req.email = 'comment';
-				req.notif = 'comment';
 				next();
 			}
 			else {
@@ -466,7 +471,6 @@ route.get('/download', function(req, res) {
 });
 
 route.get('/get/tableData', m_role, m_programQuery, function(req, res) {
-	var fs = require('fs');
 	var getDate = require('../../utils/getDate');
 	var getTime = require('../../utils/getTime');
 	var getDateTime = require('../../utils/getDateTime');

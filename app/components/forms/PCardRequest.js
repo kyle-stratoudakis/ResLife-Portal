@@ -234,13 +234,15 @@ class pCardRequest extends Component{
 						disabled={(this.state.reviewed ? true : false)}
 					/>
 				</div>
-				<FlatButton
-					label='Remove'
-					hoverColor={red500}
-					disabled={(this.state.reviewed ? true : false)}
-					onClick={this.removeJSONItem.bind(this, i)}
-					style={centerStyle}
-				/>
+				<center>
+					<FlatButton
+						label='Remove'
+						hoverColor={red500}
+						disabled={(this.state.reviewed ? true : false)}
+						onClick={this.removeJSONItem.bind(this, i)}
+						style={centerStyle}
+					/>
+				</center>
 			</Paper>
 		)
 	}
@@ -553,6 +555,7 @@ class pCardRequest extends Component{
 						enable={(this.props.details._id ? true : false)}
 						comments={this.state.comments} 
 						handleComment={this.handleComment}
+						userId={this.props.token.user._id}
 						styles={this.state.styles}
 					/>
 

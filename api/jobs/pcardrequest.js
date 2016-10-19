@@ -1,5 +1,5 @@
 const route = require('express').Router();
-
+const mongoose = require('mongoose');
 const pCardModel= require('../model/pCardRequest');
 const userModel= require('../model/user');
 const m_notif = require('../services/email/notifications');
@@ -339,14 +339,20 @@ route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
 
 	pCardModel.findOne({ _id: id }, function(err, request) {
 
-		request.comments.push({id: userId, name: decodedUser.name, comment: comment, date: new Date()});
+		if(comment.remove) {
+			var _id = mongoose.Types.ObjectId(comment.remove);
+			request.comments.id(_id).remove();
+		}
+		else {
+			request.comments.push({user: userId, name: decodedUser.name, comment: comment, date: new Date()});
+			if(request.user != userId) req.email = 'comment';
+			req.notif = 'comment';
+		}
 
 		request.save(function(err, saved) {
 			if(!err) {
 				res.status(200).json({status: 'comment'});
 				req.workorder = saved;
-				if(saved.user != userId) req.email = 'comment';
-				req.notif = 'comment';
 				next();
 			}
 			else {

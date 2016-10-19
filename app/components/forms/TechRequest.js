@@ -253,6 +253,7 @@ class TechRequest extends Component{
 						enable={(this.props.details._id ? true : false)}
 						comments={this.state.comments} 
 						handleComment={this.handleComment}
+						userId={this.props.token.user._id}
 						styles={this.state.styles}
 					/>
 
