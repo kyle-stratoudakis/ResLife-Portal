@@ -46,11 +46,12 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		closed: null
 	});
 
-	techRequest.save(function(err) {
+	techRequest.save(function(err, saved) {
 		if(!err) {
-			res.email = 'new_submission';
-			res.notif = 'tech_new';
 			res.json(techRequest._id);
+			req.workorder = saved;
+			req.email = 'new_submission';
+			req.notif = 'tech_new';
 			next();
 		}
 		else {
@@ -59,7 +60,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		}
 	});
 });
-route.put('/put/create', m_notif);
+route.post('/post/create', m_notif);
 
 route.put('/put/update', jsonParser, m_role, function(req, res, next){
 	var decodedUser = req.decodedUser;
@@ -78,11 +79,12 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 		if(request.closed) {
 			request.closed = null;
 			request.closedDate = null;
-			req.notif = 're_opened';
+			req.notif = 'tech_reopened';
 		}
-		request.save(function(){
+		request.save(function(err, saved){
 			if(!err){
 				res.json(request._id);
+				req.workorder = saved
 				next();
 			}
 			else {
@@ -97,6 +99,7 @@ route.put('/put/update', m_notif);
 route.put('/put/close', jsonParser, m_role, function(req, res, next){
 	var decodedUser = req.decodedUser;
 	var role = decodedUser.role;
+	var userId = decodedUser._id;
 	var id = req.body.id;
 	var comment = req.body.comment;
 
@@ -104,9 +107,9 @@ route.put('/put/close', jsonParser, m_role, function(req, res, next){
 		if(role === 'technician') {
 			request.closed = decodedUser._id;
 			request.closedDate = new Date();
+			request.comments.push({user: userId, name: decodedUser.name, comment: comment, date: new Date()});
 			req.email = 'closed';
 			req.notif = 'delete_notif';
-			req.comment = comment;
 		}
 		request.save(function(err, saved){
 			if(!err){

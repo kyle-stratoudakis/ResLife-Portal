@@ -142,7 +142,7 @@ class pCardRequest extends Component{
 			else if(role === 'approver') {
 				disabled = (approved ? true : false);
 			}
-			else if(role === 'rha') {
+			else if(role === 'checker') {
 				disabled = (checked ? true : false);
 			}
 			return (
@@ -157,7 +157,6 @@ class pCardRequest extends Component{
 						label='Deny'
 						backgroundColor='#ef9a9a'
 						hoverColor='#ef5350'
-						disabled={!disabled}
 						onClick={this.props.workorderAction.bind(this, 'Funding/put/return', data, 'Funding')}
 					/>
 					<FlatButton
@@ -205,7 +204,7 @@ class pCardRequest extends Component{
 	}
 
 	renderItem(item, i) {
-				let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
+		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
 		return (
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Item '+(i+1)}</Subheader>

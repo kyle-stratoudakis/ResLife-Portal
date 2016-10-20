@@ -265,12 +265,15 @@ route.put('/put/deny', jsonParser, m_role, function(req, res, next){
 	var decodedUser = req.decodedUser;
 	var id = req.body.id
 	var role = decodedUser.role;
+	var userId = decodedUser._id;
+	var comment = req.body.comment;
 
 	programModel.findOne({ _id: id }, function(err, program) {
 		if(err) {
 			console.log(err);
 		}
 		else {
+			program.comments.push({user: userId, name: decodedUser.name, comment: comment, date: new Date()})
 			if(role === 'hall_director') {
 				program.denied = true;
 				program.checked = null;

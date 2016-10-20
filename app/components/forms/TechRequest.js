@@ -27,6 +27,7 @@ class TechRequest extends Component{
 		this.getActionButtons = this.getActionButtons.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 		this.handleComment = this.handleComment.bind(this);
+		this.getLabel = this.getLabel.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -67,9 +68,16 @@ class TechRequest extends Component{
 				type: workOrder.type || '',
 				description: workOrder.description || '',
 				comments: workOrder.comments || [],
-				label: (workOrder._id ? 'Edit' : 'Submit')
+				label: this.getLabel(workOrder)
 			});
 		}
+	}
+
+	getLabel(workOrder) {
+		let label = 'submit';
+		if(workOrder._id) label = 'Edit';
+		if(workOrder.closed) label = 'Re-Open';
+		return label;
 	}
 
 	enableButton() {
