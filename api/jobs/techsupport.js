@@ -107,7 +107,7 @@ route.put('/put/close', jsonParser, m_role, function(req, res, next){
 		if(role === 'technician') {
 			request.closed = decodedUser._id;
 			request.closedDate = new Date();
-			request.comments.push({user: userId, name: decodedUser.name, comment: comment, date: new Date()});
+			if(comment && comment !== '') request.comments.push({user: userId, name: decodedUser.name, comment: 'Closing Comment:' + comment, date: new Date()});
 			req.email = 'closed';
 			req.notif = 'delete_notif';
 		}

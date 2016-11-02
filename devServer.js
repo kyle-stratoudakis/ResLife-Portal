@@ -27,13 +27,16 @@ app.use('/login', NoAD_login)
 app.use('/api', routes)
 
 // Start server listening on configured IP:PORT
-app.listen(PORT, IP, function(err) {
+const server = app.listen(PORT, IP, function(err) {
   if (err) {
     console.log(err);
     return;
   }
   console.log('Listening at ' + IP + ':' + PORT);
 });
+
+// Socket.io - Requires server instance on instantiation
+const io = require('socket.io')(server);
 
 // Redirect away from blank root route
 app.get('/', function(req, res) {

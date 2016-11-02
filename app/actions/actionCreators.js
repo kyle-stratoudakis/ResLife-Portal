@@ -3,12 +3,22 @@ import { PROTOCOL, HOST } from '../../../config';
 
 const host = PROTOCOL + HOST;
 
+/*
+	Perform routre transition in a manner that is synced with the store
+	string route - destination route
+*/
 export function performRoute(route) {
 	return function(dispatch) {
 		dispatch(push(route));
 	}
 }
 
+/*
+	Perform routre transition in a manner that is synced with the store
+	and update workorders after routing
+	string route - destination route
+	string endpoint - arguement passed to fetchWorkorders
+*/
 export function performRouteAndUpdate(route, endpoint) {
 	return function(dispatch) {
 		dispatch(push(route));
@@ -16,6 +26,11 @@ export function performRouteAndUpdate(route, endpoint) {
 	}
 }
 
+/*
+	Sends request to backend for user data
+	object data - contains info collected from login form
+	string redirect - path to redirect to on successful login
+*/
 export function login(data, redirect) {
 	return function (dispatch) {
 		dispatch(loggingIn);
@@ -40,6 +55,11 @@ export function login(data, redirect) {
 	}
 }
 
+/*
+	Displays error messages on login screen based on server response
+	func dispatch - enables function dispatching
+	object json - contains server response message
+*/
 function handleMessages(dispatch, json) {
 	if(json.message) {
 		dispatch(setLoginMessage(json.message));
@@ -49,20 +69,10 @@ function handleMessages(dispatch, json) {
 	}
 }
 
-export function setLoginMessage(message) {
-	return {
-		type: 'LOGIN_MESSAGE',
-		message
-	}
-}
-
-export function loggedIn(json) {
-	return {
-		type: 'LOGGED_IN',
-		data: json
-	}
-}
-
+/*
+	Dispatches functions that clear user state in frontend
+	effectivly logging the user out
+*/
 export function logOut() {
 	return function (dispatch) {
 		dispatch(loggingOut());
@@ -70,6 +80,10 @@ export function logOut() {
 	}
 }
 
+/*
+	Sends request for users assigned jobs
+	string jwt - users token for authentication
+*/
 export function fetchJobs(jwt) {
 	return function (dispatch) {
 		dispatch(getJobs())
@@ -81,13 +95,10 @@ export function fetchJobs(jwt) {
 	}
 }
 
-export function receiveJobs(jobs) {
-	return {
-		type: 'RECEIVE_JOBS',
-		jobs
-	}
-}
-
+/*
+	Sends request for a list of workorders
+	string query - string of combined endpoint and GET params
+*/
 export function fetchWorkorders(query) {
 	return function (dispatch) {
 		dispatch(getWorkorders())
@@ -99,14 +110,11 @@ export function fetchWorkorders(query) {
 	}
 }
 
-export function receiveWorkorders(workOrders) {
-	return {
-		type: 'RECEIVE_WORKORDERS',
-		workOrders,
-		received: new Date()
-	}
-}
-
+/*
+	Sends request for a single workorders details
+	string location - job associated with workorder
+	string query - GET params
+*/
 export function fetchDetails(location, query) {
 	return function (dispatch) {
 		dispatch(getDetails())
@@ -118,13 +126,13 @@ export function fetchDetails(location, query) {
 	}
 }
 
-export function receiveDetails(details) {
-	return {
-		type: 'RECEIVE_DETAILS',
-		details
-	}
-}
-
+/*
+	Sends post request with collected form data
+	string jwt - users token
+	string location - job associated with workorder
+	string jobId - id of job form is being submitted under
+	object data - contains collected form data
+*/
 export function submitForm(jwt, location, jobId, data) {
 	return function (dispatch) {
 		var json = JSON.stringify({
@@ -148,6 +156,14 @@ export function submitForm(jwt, location, jobId, data) {
 	}
 }
 
+/*
+	Sends post request with collected form data to update specific workorder
+	string jwt - users token
+	string location - job associated with workorder
+	string formId - id of workorder to update
+	string jobId - id of job form is being submitted under
+	object data - contains collected form data
+*/
 export function updateForm(jwt, location, formId, jobId, data) {
 	return function (dispatch) {
 		var json = JSON.stringify({
@@ -172,6 +188,11 @@ export function updateForm(jwt, location, formId, jobId, data) {
 	}
 }
 
+/*
+	Sends request to add comment to specific workorder
+	object data - contains comment and authentication data
+	string location - job associated with workorder
+*/
 export function comment(data, location) {
 	return function (dispatch) {
 		var json = JSON.stringify(data);
@@ -190,6 +211,13 @@ export function comment(data, location) {
 	}
 }
 
+
+/* 
+	Send requests to process action then update frontend from ContentRow
+	string endpoint - backend endpoint to send request
+	object data - relevent details fequired by endpoint to complete action
+	string update - arguement passed to fecthWorkorders to sync action results with frontend
+*/
 export function modifyAction(endpoint, data, update) {
 	return function (dispatch) {
 		var json = JSON.stringify(data);
@@ -208,6 +236,12 @@ export function modifyAction(endpoint, data, update) {
 	}
 }
 
+/* 
+	Send requests to process action then update frontend from individual form
+	string endpoint - backend endpoint to send request
+	object data - relevent details fequired by endpoint to complete action
+	string route - location to transition to after action is complete
+*/
 export function workorderAction(endpoint, data, route) {
 	return function (dispatch) {
 		var json = JSON.stringify(data);
@@ -225,19 +259,17 @@ export function workorderAction(endpoint, data, route) {
 	}
 }
 
+/*
+	Creates and clicks an HTML link to download a file
+	string route - endpoint on backend to link to
+	string jwt - users token
+	string jobId - id of job associated with request
+*/
 export function downloadLink(route, jwt, jobId) {
 	var link = document.createElement('a');
 	link.setAttribute('href', `${host}/api/${route}&jwt=${jwt}&job=${jobId}`);
 	link.setAttribute('download', 'Download Link');
-
-	if (document.createEvent) {
-		var event = document.createEvent('MouseEvents');
-		event.initEvent('click', true, true);
-		link.dispatchEvent(event);
-	}
-	else {
-		link.click();
-	}
+	link.click();
 	
 	return {
 		type: 'DOWNLOAD_LINK',
@@ -245,20 +277,17 @@ export function downloadLink(route, jwt, jobId) {
 	}
 }
 
+/*
+	Creates and clicks an HTML link to download a pdf of a single workorder
+	string wo - id of workorder
+	string location - job associated with workorder
+*/
 export function downloadPdf(wo, location) {
 	var link = document.createElement('a');
 	link.setAttribute('href', host + '/api/' + location + '/download?id=' + wo._id);
 	link.setAttribute('download', 'P-Card Auth Form-'+wo.searchId);
+	link.click();
 
-	if (document.createEvent) {
-		var event = document.createEvent('MouseEvents');
-		event.initEvent('click', true, true);
-		link.dispatchEvent(event);
-	}
-	else {
-		link.click();
-	}
-	
 	return {
 		type: 'DOWNLOAD_PDF',
 		wo,
@@ -266,18 +295,14 @@ export function downloadPdf(wo, location) {
 	}
 }
 
+/*
+	Creates and clicks a mailTo link
+	object wo - data from workorder
+*/
 export function emailUser(wo) {
 	var link = document.createElement('a');
 	link.setAttribute('href', `mailto:${wo.email}?Subject=${wo.title}`);
-
-	if (document.createEvent) {
-		var event = document.createEvent('MouseEvents');
-		event.initEvent('click', true, true);
-		link.dispatchEvent(event);
-	}
-	else {
-		link.click();
-	}
+	link.click();
 	
 	return {
 		type: 'EMAIL_USER',
@@ -285,6 +310,10 @@ export function emailUser(wo) {
 	}
 }
 
+/*
+	Sends request to delete a specific workorder
+	object wo - data from workorder
+*/
 export function deleteWorkorder(wo) {
 	return function (dispatch) {
 		let json = JSON.stringify({id: wo._id})
@@ -302,6 +331,53 @@ export function deleteWorkorder(wo) {
 	}
 }
 
+/*
+	Generic callback for throwing fetch errors
+	object response - object returned by fetch request
+*/
+function handleErrors(response) {
+	if(!response.ok) {
+		throw Error(response.statusText);
+	}
+	return response;
+}
+
+/*
+	Remaining functions are dispatched through Redux actions
+	to be consumed by Reducers which update the Store
+*/
+export function setLoginMessage(message) {
+	return {
+		type: 'LOGIN_MESSAGE',
+		message
+	}
+}
+export function loggedIn(json) {
+	return {
+		type: 'LOGGED_IN',
+		data: json
+	}
+}
+
+export function receiveJobs(jobs) {
+	return {
+		type: 'RECEIVE_JOBS',
+		jobs
+	}
+}
+export function receiveWorkorders(workOrders) {
+	return {
+		type: 'RECEIVE_WORKORDERS',
+		workOrders,
+		received: new Date()
+	}
+}
+export function receiveDetails(details) {
+	return {
+		type: 'RECEIVE_DETAILS',
+		details
+	}
+}
 export function openDialog(title, content, actions) {
 	return {
 		type: 'OPEN_DIALOG',
@@ -311,13 +387,14 @@ export function openDialog(title, content, actions) {
 		modal: false
 	}
 }
-
+export function refreshPage(forceGet) {
+	location.reload(forceGet);
+}
 export function closeDialog() {
 	return {
 		type: 'CLOSE_DIALOG'
 	}
 }
-
 export function snackbarAlert(endpoint) {
 	return {
 		type: 'SNACKBAR_ALERT',
@@ -370,11 +447,4 @@ export function toggleNav() {
 	return {
 		type: 'TOGGLE_NAV'
 	}
-}
-
-function handleErrors(response) {
-	if(!response.ok) {
-		throw Error(response.statusText);
-	}
-	return response;
 }

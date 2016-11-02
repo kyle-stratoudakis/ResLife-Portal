@@ -1,14 +1,10 @@
 var juice = require('juice');
 var mailer = require('./mailer');
 var notifModel = require('../../model/notification');
-var programModel = require('../../model/program');
-var pCardModel = require('../../model/pCardRequest');
-var userModel = require('../../model/user');
 var confirmNew = require('./emailTemplates/confirmNew');
 var statusNotif = require('./emailTemplates/statusNotif');
 var deleted = require('./emailTemplates/deleted');
-var fundingApproval = require('./emailTemplates/fundingApproval');
-var pcardAuthForm = require('./emailTemplates/pcardAuthForm');
+var pCardMailer = require('./pCardMailer');
 
 const notification_middleware = function(req, res, next) {
 	var template;
@@ -44,79 +40,12 @@ const notification_middleware = function(req, res, next) {
 			wo.who = req.decodedUser.name;
 			template = statusNotif(req.email, wo);
 		}
+		else if(req.email === 'approved' || req.email === 'funding_approved') {
+			pCardMailer(wo);
+			template = statusNotif('approved', wo);
+		}
 		else if(req.email === 'deleted') {
 			template = deleted(wo);
-		}
-		else if(req.email === 'approved') {
-			var email = fundingApproval(wo);
-			programModel.findOne({ _id: wo._id })
-			.populate({
-				path: 'checked reviewed approved',
-				select: 'name -_id',
-				model: userModel
-			})
-			.exec(function(err, fields) {
-				if(!err) {
-					mailOptions.to = getHD(wo.hall);
-					if(!fields.funding) fields.funding = 'No Funding';
-
-					try {
-						// console.log('notifs' + __dirname)
-						mailOptions.attachments = [{ filename: 'ID-'+wo.searchId+' P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
-					}
-					catch(ex) {
-						console.log('pcard auth attachment error, wo._id: ' + wo._id, ex);
-					}
-
-					juice.juiceResources(email, {}, function(err, inlined) {
-						if(err) {
-							console.log(err)
-						}
-						else {
-							mailOptions.html = inlined;
-							mailer(mailOptions);
-							console.log('mailed pcard for '+ wo.searchId +' to ' + mailOptions.to);
-						}
-					});
-				}
-			});
-		}
-		else if(req.email === 'funding_approved') {
-			var email = fundingApproval(wo);
-			pCardModel.findOne({ _id: wo._id })
-			.populate({
-				path: 'checked reviewed approved',
-				select: 'name -_id',
-				model: userModel
-			})
-			.exec(function(err, fields) {
-				if(!err) {
-					try {
-						fields.date = new Date();
-						fields.time = new Date();
-						fields.type = fields.cardType;
-						if(!fields.checkedDate) fields.checkedDate = '';
-						if(!fields.funding) fields.funding = 'No Funding';
-
-						mailOptions.attachments = [{ filename: 'P-Card Authorization.pdf', path: pcardAuthForm(fields) }];
-					}
-					catch(ex) {
-						console.log('pcard attachment error, wo._id: ' + wo._id, ex);
-					}
-
-					juice.juiceResources(email, {}, function(err, inlined) {
-						if(err) {
-							console.log(err)
-						}
-						else {
-							mailOptions.to = getHD('Central_Office');
-							mailOptions.html = inlined;
-							mailer(mailOptions);
-							console.log('mailed pcard for '+ wo.searchId +' to ' + mailOptions.to);
-						}
-					});
-				}
-			});
 		}
 
 		// Inline CSS for HTML mail and send email
@@ -216,39 +145,4 @@ function deleteNotif(id) {
 	});
 }
 
-function getHD(hall) {
-	var email = 'stratoudakk1@southernct.edu'
-	// if(hall === 'Schwartz') {
-	// 	email = 'gleifertn1@southernct.edu';
-	// }
-	// else if(hall === 'West') {
-	// 	email = 'dishiane1@southernct.edu';
-	// }
-	// else if(hall === 'Brownell') {
-	// 	email = 'rizkj1@southernct.edu';
-	// }
-	// else if(hall === 'Chase') {
-	// 	email = 'eppsjrw1@southernct.edu';
-	// }
-	// else if(hall === 'Farnham') {
-	// 	email = 'vargasc1@southernct.edu';
-	// }
-	// else if(hall === 'Hickerson') {
-	// 	email = 'codyk2@southernct.edu';
-	// }
-	// else if(hall === 'Neff') {
-	// 	email = 'johnsonj103@southernct.edu';
-	// }
-	// else if(hall === 'North') {
-	// 	email = 'boneta1@southernct.edu';
-	// }
-	// else if(hall === 'Wilkinson') {
-	// 	email = 'hoffmannk1@southernct.edu';
-	// }
-	// 	else if(hall === 'Central_Office') {
-	// 	email = 'thibaultk1@southernct.edu';
-	// }
-
-	return email;
-}
 module.exports = notification_middleware;

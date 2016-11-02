@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router';
 import Card from 'material-ui/Card';
 import CardActions from 'material-ui/Card/CardActions';
 import CardHeader from 'material-ui/Card/CardHeader';
