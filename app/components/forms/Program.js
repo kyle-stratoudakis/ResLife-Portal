@@ -173,6 +173,7 @@ class Program extends Component {
 	handleDeny() {
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
+		if(index === -1) return //If user does not have job, no action are returned
 		let jobId = this.props.jobs[index]._id;
 		let comment = (this.refs.denyComment ? this.refs.denyComment.getValue() : '');
 		let data = {

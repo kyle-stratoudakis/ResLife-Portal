@@ -125,6 +125,7 @@ class pCardRequest extends Component{
 	getActionButtons() {
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
+		if(index === -1) return //If user does not have job, no action are returned
 		let jobId = this.props.jobs[index]._id;
 		let role = this.props.jobs[index].role;
 		let { checked, reviewed, approved } = this.state;
