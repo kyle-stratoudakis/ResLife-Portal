@@ -332,6 +332,18 @@ export function deleteWorkorder(wo) {
 }
 
 /*
+	Adds endpoint to create tab for passed jobId, optionally
+	selects tab to make it active
+	integer jobId - index of job in jobs array
+	object endpoint - object added to endpoints array {_id, name, route, actions}
+	boolean selectTab - choose if tab is set as active tab
+
+*/
+export function addTab(jobId, endpoint, selectTab) {
+	
+}
+
+/*
 	Generic callback for throwing fetch errors
 	object response - object returned by fetch request
 */

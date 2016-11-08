@@ -41,6 +41,7 @@ class Program extends Component {
 		this.handleComment = this.handleComment.bind(this);
 		this.renderEvalContent = this.renderEvalContent.bind(this);
 		this.renderEvalUser = this.renderEvalUser.bind(this);
+		this.renderResolutionButton = this.renderResolutionButton.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -570,6 +571,7 @@ class Program extends Component {
 									label='Denied'
 								/>
 							</FormsyRadioGroup>
+							{this.renderResolutionButton()}
 						</div>
 					</div>
 				)
@@ -718,6 +720,24 @@ class Program extends Component {
 			comment: comment
 		}
 		if(comment > '') this.props.comment(data, 'Programs');
+	}
+
+	renderResolutionButton() {
+		let { centerStyle } = this.state.styles;
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let id = this.props.details._id;
+		let jwt = this.props.token.jwt;
+		if(this.state.councilDate !== {}) {
+			return (
+				<FlatButton
+					label='Download Resolution Form'
+					onClick={this.props.downloadLink.bind(this, 'programs/get/resolution?id='+id, jwt, jobId)}
+					style={centerStyle}
+				/>
+			)
+		}
 	}
 
 	render() {

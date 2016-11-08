@@ -1,0 +1,190 @@
+const pdfkit = require('pdfkit');
+const fs = require('fs');
+const getDate = require('../../../utils/getDate');
+const getDateTime = require('../../../utils/getDateTime');
+const Transform = require('stream').Transform;
+
+const Resolution = function(program) {
+	var margins = {top: 72, bottom: 0, left: 72, right: 72};
+	var info = {Title: 'Hall Council Resolution: ' + program.searchId, Author: 'SCSU Office of Residence Life', Subject: program.title};
+	var doc = new pdfkit({margins: margins, info: info});
+	var stream = new Transform;
+	
+	// write document to stream
+	doc.pipe(stream);
+
+	// write stream data to response
+	stream._write = function (chunk, enc, next) {
+	    next();
+	};
+
+	// required for transform stream
+	stream._transform = function (chunk, encoding, done) {
+		done()
+	};
+
+	// Header logo image
+	doc.image('./api/services/email/emailTemplates/residence-life-logo.png', 25, 40, {width: 160});
+
+	// Title
+	doc.fontSize(16);
+	doc.text('Southern Connecticut State University', {align: 'center'});
+	doc.fontSize(20);
+	doc.text('Office of Residence Life', {align: 'center'});
+	doc.fontSize(14);
+	doc.text('Hall Council Resolution', {align: 'center'});
+	
+	/*Program info table*/
+	// User Name Email Phone
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.fillColor('black');
+	doc.text(getString('Name', 45) + getString('Email', 45) + 'Phone', {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.moveDown(0.25);
+	doc.fillColor('black');
+	doc.text(getString(program.name, 40) + getString(program.email, 30) + program.primary_contact, {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.moveDown(0.5);
+	// Program ID Title Amount
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.fillColor('black');
+	doc.text(getString('ID', 25) + getString('Title', 75) + 'Amount', {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.moveDown(0.25);
+	doc.fillColor('black');
+	doc.text(getString(program.searchId, 20) + getString(program.title, 60) + program.funding, {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.moveDown(0.5);
+	// Program Date of meeting, Motioned By, Seconded By
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.moveDown(0.25);
+	doc.fillColor('black');
+	doc.text(getString('Date of Meeting', 30) + getString('Motioned By', 40) + 'Seconded By', {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.fillColor('black');
+	doc.moveDown(0.25);
+	doc.text(getString(getDate(program.councilDate), 35) + getString(program.councilMotioned, 40) + program.councilSeconded, {indent: 10, characterSpacing: 0.25, lineGap: -5} );
+	doc.moveDown(0.5);
+	// Program Number in Favor, Number Opposed, Number Abstained
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.fillColor('black');
+	doc.text(getString('In Favor', 40) + getString('Opposed', 40) + 'Abstained', {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.moveDown(0.25);
+	doc.fillColor('black');
+	doc.text(getString(program.councilFavor, 45) + getString(program.councilOpposed, 45) + program.councilAbstained, {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.moveDown(0.5);
+	// Program Council Approval
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.moveDown(0.25);
+	doc.fillColor('black');
+	doc.text('Council Approval', {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(14);
+	doc.fillColor('black');
+	doc.moveDown(0.25);
+	doc.text(program.councilApproval.toUpperCase(), {indent: 10, characterSpacing: 0.25});
+	// Program Description
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.moveDown(0.25);
+	doc.fillColor('black');
+	doc.text('Description', {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.fillColor('black');
+	doc.moveDown(0.25);
+	doc.fontSize(10);
+	doc.text(getString(program.description, 1000), {indent: 10, characterSpacing: 0.25});
+    doc.moveDown(4);
+	// Program Notes
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('Notes: __________________________________________________________________________________________________', {indent: 25});
+	doc.moveDown(2);
+	doc.text('________________________________________________________________________________________________________', {indent: 25});
+	doc.moveDown(2);
+	doc.text('________________________________________________________________________________________________________', {indent: 25});
+	doc.moveDown(2);
+	doc.text('________________________________________________________________________________________________________', {indent: 25});
+	doc.moveDown(2);
+	doc.text('________________________________________________________________________________________________________', {indent: 25});
+	doc.moveDown(2);
+	doc.text('________________________________________________________________________________________________________', {indent: 25});
+	doc.moveDown(2);
+	doc.text('________________________________________________________________________________________________________', {indent: 25});
+	doc.moveDown(2);
+
+	// Timestamp
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.moveDown(1);
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.moveDown(1);
+	doc.text(getDate(new Date()) + ' Southern Connecticut State University, Office of Residence Life');
+	
+	doc.end();
+	return doc;
+}
+
+function getString(str, size) {
+	var s;
+	if(str && (str.length > size)) {
+		s = padRight(str.substring(0, size), size);
+	}
+	else {
+		s = padRight(str, size);
+	}
+	return s;
+}
+
+function padRight(str, num) {
+	while(str && str.length < num) {
+		str += ' ';
+	}
+	return str;
+}
+
+// Use to fill string when testing if data fits in space provided
+// function fillString(num) {
+//     var str = "";
+//     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 '\":;_-=+[]{}|\\";
+
+// 	while(str && str.length < num) {
+// 		str += possible.charAt(Math.floor(Math.random() * possible.length));
+// 	}
+// 	return str;
+// }
+
+module.exports = Resolution;
