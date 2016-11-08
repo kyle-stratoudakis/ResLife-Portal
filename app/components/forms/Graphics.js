@@ -33,51 +33,41 @@ class Graphics extends Component {
 
 		this.disableButton = this.disableButton.bind(this);
 		this.enableButton = this.enableButton.bind(this);
-		this.renderItem = this.renderItem.bind(this);
-		this.renderStaff = this.renderStaff.bind(this);
 		this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this);
-		this.renderCostTotal = this.renderCostTotal.bind(this);
 		this.getActionButtons = this.getActionButtons.bind(this);
 		this.renderSearchId = this.renderSearchId.bind(this);
 		this.formatDate = this.formatDate.bind(this);
-		this.renderTypeContent = this.renderTypeContent.bind(this);
-		this.renderEvaluation = this.renderEvaluation.bind(this);
-		this.renderQuote = this.renderQuote.bind(this);
 		this.handleSelection = this.handleSelection.bind(this);
 		this.renderDenyDialog = this.renderDenyDialog.bind(this);
 		this.handleDeny = this.handleDeny.bind(this);
-		this.renderAddComment = this.renderAddComment.bind(this);
+		this.renderUploads = this.renderUploads.bind(this);
+		this.handleFileOnClick = this.handleFileOnClick.bind(this);
+		this.handleFiles = this.handleFiles.bind(this);
 
 		this.state = {
 			canSubmit: false,
 			searchId: null,
 			title: '',
-			type: '',
 			location: '',
-			outcomes:'',
+			phone: '',
 			description: '',
+			width: '',
+			height: '',
+			amount: '',
+			file: [],
 			label: 'Submit',
-			fundingType: 'pcard',
 			department: '',
-			items: [],
-			staff: [],
+			measurements: 'Flyers (9"x11")',
+			orientation: 'Portrait',
 			date: {},
+			completionDate: {},
 			starttime: {},
 			endtime: {},
 			new: null,
 			assigned: null,
+			proof: null,
 			completed: null,
-			evalTime: {},
-			evalAttendance: '',
-			evalCost: '',
-			evalCardReturn: '',
-			evalOutcomes: '',
-			evalStrengths: '',
-			evalWeaknesses: '',
-			evalSuggestions: '',
-			evalOther: '',
 			televisionRequest: 'No thank you.',
-			chartwellsQuote: '',
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
@@ -96,7 +86,17 @@ class Graphics extends Component {
 				actionStyle: {
 					marginTop: '1em',
 					marginRight: '2em'
-				}
+				},
+				exampleImageInput: {
+				    cursor: 'pointer',
+				    position: 'absolute',
+				    top: 0,
+				    bottom: 0,
+				    right: 0,
+				    left: 0,
+				    width: '100%',
+				    opacity: 0,
+				 }
 			}
 		}
 	}
@@ -111,35 +111,22 @@ class Graphics extends Component {
 				date: (wo.date ? new Date(wo.date) : {}),
 				starttime: (wo.starttime ? new Date(wo.starttime) : {}),
 				endtime: (wo.endtime ? new Date(wo.endtime) : {}),
-				type: wo.type || '',
+				phone: wo.phone || '',
 				location: wo.location || '',
-				outcomes: wo.outcomes || '',
 				description: wo.description || '',
 				department: wo.department || '',
-				fundingType: wo.fundingType || 'pcard',
-				items: (wo.items ? JSON.parse(wo.items) : []),
-				staff: (wo.staff ? JSON.parse(wo.staff) : []),
+				file: (wo.file ? JSON.parse(wo.file) : []),
+				width: wo.width || '',
+				height: wo.height || '',
+				amount: wo.amount || '',
+				measurements: wo.measurements || 'Flyers (9"x11")',
+				orientation: wo.orientation || 'Portrait',
+				completionDate: {},
 				new: wo.new,
 				assigned: wo.assigned,
+				proof: wo.proof,
 				completed: wo.completed,
-				councilDate: (wo.councilDate ? new Date(wo.councilDate) : {}),
-				councilMotioned: wo.councilMotioned || '',
-				councilSeconded: wo.councilSeconded || '',
-				councilFavor: wo.councilFavor || '',
-				councilOpposed: wo.councilOpposed || '',
-				councilAbstained: wo.councilAbstained || '',
-				councilApproval: wo.councilApproval || '',
-				evalTime: (wo.evalTime ? new Date(wo.evalTime) : {}),
-				evalAttendance: wo.evalAttendance || '',
-				evalCost: wo.evalCost || '',
-				evalCardReturn: wo.evalCardReturn || '',
-				evalOutcomes: wo.evalOutcomes || '',
-				evalStrengths: wo.evalStrengths || '',
-				evalWeaknesses: wo.evalWeaknesses || '',
-				evalSuggestions: wo.evalSuggestions || '',
-				evalOther: wo.evalOther || '',
 				televisionRequest: wo.televisionRequest || 'No thank you.',
-				chartwellsQuote: wo.chartwellsQuote || '',
 				label: (wo._id ? 'Edit' : 'Submit')
 			})
 		}
@@ -182,7 +169,7 @@ class Graphics extends Component {
 			jwt: this.props.token.jwt,
 			comment: comment
 		}
-		this.props.workorderAction('Graphicss/put/deny', data, 'Graphicss');
+		this.props.workorderAction('Graphics/put/deny', data, 'Graphics');
 	}
 
 	getActionButtons() {
@@ -190,7 +177,7 @@ class Graphics extends Component {
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
 		let role = this.props.jobs[index].role;
-		let { checked, reviewed, approved } = this.state;
+		let { assigned, proof, completed } = this.state;
 		let { actionStyle } = this.state.styles;
 		let data = {
 			id: this.props.details._id,
@@ -231,13 +218,10 @@ class Graphics extends Component {
 
 		if(!(role === 'submitter') && this.props.details._id) {
 			if(role === 'hall_director'){
-				disabled = (checked ? true : false);
+				disabled = (assigned ? true : false);
 			}
 			if(role === 'reviewer') {
-				disabled = (reviewed ? true : false);
-			}
-			if(role === 'approver') {
-				disabled = (approved ? true : false);
+				disabled = (completed ? true : false);
 			}
 			return (
 				<div>
@@ -259,7 +243,7 @@ class Graphics extends Component {
 						backgroundColor='#C5E1A5'
 						hoverColor='#9CCC65'
 						disabled={disabled}
-						onClick={this.props.workorderAction.bind(this, 'Graphicss/put/approve', data, 'Graphicss')}
+						onClick={this.props.workorderAction.bind(this, 'Graphics/put/approve', data, 'Graphics')}
 					/>
 				</div>
 			)
@@ -283,171 +267,139 @@ class Graphics extends Component {
 		console.error('Form error:', data);
 	}
 
-	addJSONItem() {
-		let items = this.state.items;
-		items.push({ description: '', cost: '' });
-		this.setState({ items });
-	}
-
-	removeJSONItem(index) {
-		let itemsArray = this.refs.form.getModel().items;
-		let newItems = [];
-		delete itemsArray[index];
-		itemsArray.map((item) => newItems.push({description: item.description, cost: item.cost}))
-		this.setState({ items: newItems });
-	}
-
-	renderItem(item, i) {
-		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
-		return (
-			<Paper style={listPaperStyle} key={i}>
-				<Subheader>{'Item '+(i+1)}</Subheader>
-				<div style={listStyle}>
-					<FormsyText
-						required
-						name={'items['+i+'][description]'}
-						hintText='Include name and quantity'
-						floatingLabelText='Item Description'
-						multiLine={true}
-						style={{paddingLeft: '0em'}}
-						value={item.description}
-					/>
-					<br />
-					<FormsyText
-						required
-						name={'items['+i+'][cost]'}
-						validation='isNumeric'
-						validationError='Please use only numbers'
-						hintText='Total item cost'
-						floatingLabelText='Item cost'
-						style={{paddingLeft: '0em'}}
-						value={item.cost}
-						disabled={(this.state.reviewed ? true : false)}
-					/>
-				</div>
-				<FlatButton
-					label='Remove'
-					hoverColor={red500}
-					disabled={(this.state.reviewed ? true : false)}
-					onClick={this.removeJSONItem.bind(this, i)}
-					style={centerStyle}
-				/>
-			</Paper>
-		)
-	}
-
-	renderCostTotal() {
-		if(this.refs.form){
-			let itemsArray = this.refs.form.getModel().items;
-			let total = 0;
-			let { listStyle } = this.state.styles;
-			if(itemsArray){
-				itemsArray.map(function(item) {
-					if(item.cost !== ''){
-						total+=parseFloat(item.cost.replace(/[^0-9.]/g, ""), 10);
-					}
-				});
-				if(total > 0){
-					return (
-						<div className='row'>
-							<Subheader>Funding Type</Subheader>
-							<FormsyRadioGroup
-								required
-								name='fundingType'
-								valueSelected={this.state.fundingType}
-								onChange={this.handleSelection} 
-							>
-								<FormsyRadio
-									value='pcard'
-									label='P-Card'
-								/>
-								<FormsyRadio
-									value='hootloot'
-									label='Hootloot'
-								/>
-							</FormsyRadioGroup>
-							<FormsyText
-								name='funding'
-								required
-								floatingLabelText='Total Cost'
-								disabled={true}
-								fullWidth={true}
-								style={listStyle}
-								value={'$' + total.toFixed(2)}
-							/>
-							{this.renderQuote(total)}
-						</div>
-					)
-				}
-			}
-		}
-	}
-
-	renderQuote(total) {
-		if(total >= 99) {
-			return (
+	renderPosters(){
+		if(this.state.measurements === 'poster') {
+			return(
 				<div>
-					<br />
-					If your total funding request for food purchases is over $99.00 you must request a competing quote from Chartwells.
-					<Subheader>Chartwells Quote</Subheader>
-					<FormsyRadioGroup
-						required
-						name='chartwellsQuote'
-						valueSelected={this.state.chartwellsQuote}
-						onChange={this.handleSelection} 
-					>
-						<FormsyRadio
-							value='notRequired'
-							label='Not Required'
-						/>
-						<FormsyRadio
-							value='no'
-							label='No'
-						/>
-						<FormsyRadio
-							value='yes'
-							label='Yes'
-						/>
-					</FormsyRadioGroup>
+				<FormsyText
+					name='width'
+					required
+					hintText='How wide should this poster be (in inches)?'
+					floatingLabelText='Width'
+					fullWidth={true}
+					value={this.state.width}
+				/>
+				<FormsyText
+					name='height'
+					required
+					hintText='How tall should this poster be (in inches)?'
+					floatingLabelText='Height'
+					fullWidth={true}
+					value={this.state.height}
+				/>
+				<FormsyText
+					name='amount'
+					required
+					hintText='How many posters are needed?'
+					floatingLabelText='Amount'
+					fullWidth={true}
+					value={this.state.amount}
+				/>
 				</div>
 			)
 		}
 	}
 
-	addJSONStaff() {
-		let staff = this.state.staff;
-		staff.push({ name: '' });
-		this.setState({ staff });
+	renderFlyers(){
+		if(this.state.measurements === 'flyers') {
+			return(
+				<div>
+				<Subheader style={ {paddingBottom: '0.5em'} }>Orientation</Subheader>
+				<FormsyRadioGroup 
+							required
+							name='orientation'
+							valueSelected={this.state.orientation}
+							onChange={this.handleSelection} 
+						>
+							<FormsyRadio
+								value='portrait'
+								label='Portrait'
+							/>
+							<FormsyRadio
+								value='landscape'
+								label='Landscape'
+							/>
+
+				</FormsyRadioGroup>
+
+				<FormsyText
+					name='amount'
+					required
+					hintText='How many posters are needed?'
+					floatingLabelText='Amount'
+					fullWidth={true}
+					value={this.state.amount}
+				/>
+				</div>
+			)
+		}
 	}
 
-	removeJSONStaff(index) {
-		let staffArray = this.refs.form.getModel().staff;
-		let newStaff = [];
-		delete staffArray[index];
-		staffArray.map((staff) => newStaff.push({name: staff.name}))
-		this.setState({ staff: newStaff });
+	addJSONFile() {
+		let file = this.state.file;
+		file.push({ name: '' });
+		this.setState({ file });
 	}
 
-	renderStaff(staff, i) {
-		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
+	removeJSONFile(index) {
+		let fileArray = this.refs.form.getModel().file;
+		console.log(fileArray);
+		let newFile = [];
+		delete fileArray[index];
+		fileArray.map((file) => newFile.push({name: file.name}))
+		this.setState({ file: newFile });
+	}
+
+	handleFileOnClick() {
+		let input = this.refs.input;
+
+		
+
+		if (document.createEvent) {
+			var event = document.createEvent('MouseEvents');
+			event.initEvent('click', true, true);
+			input.dispatchEvent(event);
+		}
+		else {
+			input.click();
+		}
+
+	}
+
+	handleFiles(files) {
+  		console.log(this.refs.input.files[0].name);
+
+  		this.refs.hedgewig.setValue(this.refs.input.files[0].name);
+
+	}
+
+	//<input type="file" id="fileInput" style="position: fixed; top: -100em" />
+
+	renderUploads(file, i) {
+		let { listStyle, listPaperStyle, centerStyle, exampleImageInput } = this.state.styles;
 		return (
 			<Paper style={listPaperStyle} key={i}>
-				<Subheader>{'Staff '+(i+1)}</Subheader>
+				<Subheader>{'File '+(i+1)}</Subheader>
 				<div style={listStyle}>
 					<FormsyText
-						name={'staff['+i+'][name]'}
+						name={'file['+i+'][filename]'}
 						required
-						hintText='Additional Staff'
-						floatingLabelText='Staff Name'
+						floatingLabelText='File Name'
 						multiLine={true}
 						style={{paddingLeft: '0em'}}
-						value={staff.name}
+						ref="hedgewig"
+						onClick={this.handleFileOnClick.bind(this)}
+						value={file.value}
 					/>
+
+					<input type='file' style={exampleImageInput} onChange={this.handleFiles.bind(this)} hidden ref='input' />
+					{/*onChange={this.handleFiles.bind(this)}*/}
+
 				</div>
 				<FlatButton
 					label='Remove'
 					hoverColor={red500}
-					onClick={this.removeJSONStaff.bind(this, i)}
+					onClick={this.removeJSONFile.bind(this, i)}
 					style={centerStyle}
 				/>
 			</Paper>
@@ -468,209 +420,6 @@ class Graphics extends Component {
 		}
 	}
 
-	renderTypeContent() {
-		let { centerStyle } = this.state.styles;
-		if(this.refs.form) {
-			let type = this.refs.form.getModel().type;
-			if(type === 'Hall Council' || type === 'Social') {
-				return (
-					<div>
-						<Divider />
-						<Subheader>Hall Council Resolution</Subheader>
-						<div style={centerStyle}>
-							<FormsyDate
-								name='councilDate'
-								required
-								fullWidth={true}
-								firstDayOfWeek={0}
-								formatDate={(date) => this.formatDate(date)}
-								hintText='Date of council meeting'
-								floatingLabelText='Date Of Meeting'
-								value={this.state.councilDate}
-							/>
-							<FormsyText
-								name='councilMotioned'
-								required
-								fullWidth={true}
-								hintText='Who initiated this resolution'
-								floatingLabelText='Motioned By'
-								value={this.state.councilMotioned}
-							/>
-							<FormsyText
-								name='councilSeconded'
-								required
-								fullWidth={true}
-								hintText='Who seconded this resolution'
-								floatingLabelText='Seconded By'
-								value={this.state.councilSeconded}
-							/>
-							<FormsyText
-								name='councilFavor'
-								required
-								fullWidth={true}
-								validation='isNumeric'
-								validationError='Please use only numbers'
-								hintText='Number of members in Favor'
-								floatingLabelText='Number In Favor'
-								value={this.state.councilFavor}
-							/>
-							<FormsyText
-								name='councilOpposed'
-								required
-								fullWidth={true}
-								validation='isNumeric'
-								validationError='Please use only numbers'
-								hintText='Number of members opposed'
-								floatingLabelText='Number Opposed'
-								value={this.state.councilOpposed}
-							/>
-							<FormsyText
-								name='councilAbstained'
-								required
-								fullWidth={true}
-								validation='isNumeric'
-								validationError='Please use only numbers'
-								hintText='Number of members abstained'
-								floatingLabelText='Number abstained'
-								value={this.state.councilAbstained}
-							/>
-							<Subheader>Council Approval</Subheader>
-							<FormsyRadioGroup
-								required
-								name='councilApproval'
-								valueSelected={this.state.councilApproval}
-								onChange={this.handleSelection} 
-							>
-								<FormsyRadio
-									value='approved'
-									label='Approved'
-								/>
-								<FormsyRadio
-									value='denied'
-									label='Denied'
-								/>
-							</FormsyRadioGroup>
-						</div>
-					</div>
-				)
-			}
-		}
-	}
-
-	renderEvaluation () {
-		let { centerStyle } = this.state.styles;
-		if(this.refs.form && (this.state.approved || this.state.evaluated)) {
-			return (
-				<div>
-					<Divider />
-					<Subheader>Graphics Evaluation</Subheader>
-					<div style={centerStyle}>
-						<FormsyTime
-							name='evalTime'
-							fullWidth={true}
-							hintText='When did the event end?'
-							floatingLabelText='End Time'
-							value={this.state.evalTime}
-						/>
-						<FormsyText
-							name='evalAttendance'
-							fullWidth={true}
-							hintText='How many students attended?'
-							floatingLabelText='Attendance'
-							value={this.state.evalAttendance}
-						/>
-						<FormsyText
-							name='evalCost'
-							fullWidth={true}
-							hintText='How much did you actually spend?'
-							floatingLabelText='Actual Cost'
-							value={this.state.evalCost}
-						/>
-						<Subheader>P-card and Reciepts Returned</Subheader>
-						<FormsyRadioGroup
-							name='evalCardReturn'
-							valueSelected={this.state.evalCardReturn}
-							onChange={this.handleSelection} 
-						>
-							<FormsyRadio
-								value='no'
-								label='No'
-							/>
-							<FormsyRadio
-								value='yes'
-								label='Yes'
-							/>
-						</FormsyRadioGroup>
-						<FormsyText
-							name='evalOutcomes'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What learning outcomes were achieved?'
-							floatingLabelText='Achieved Outcomes'
-							value={this.state.evalOutcomes}
-						/>
-						<FormsyText
-							name='evalStrengths'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What were the graphics strengths?'
-							floatingLabelText='Strengths'
-							value={this.state.evalStrengths}
-						/>
-						<FormsyText
-							name='evalWeaknesses'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What were the graphics weaknesses?'
-							floatingLabelText='Weaknesses'
-							value={this.state.evalWeaknesses}
-						/>
-						<FormsyText
-							name='evalSuggestions'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What could improve this graphic if it was done again?'
-							floatingLabelText='Suggestions for Improvement'
-							value={this.state.evalSuggestions}
-						/>
-						<FormsyText
-							name='evalOther'
-							fullWidth={true}
-							multiLine={true}
-							hintText='Other Comments or Concerns?'
-							floatingLabelText='Other Comments or Concerns (0ptional)'
-							value={this.state.evalOther}
-						/>
-					</div>
-				</div>
-			)
-		}
-	}
-
-	renderAddComment() {
-		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
-		return (
-			<Paper style={listPaperStyle}>
-				<Formsy.Form
-					ref='form'
-					onValid={this.enableButton}
-					onInvalid={this.disableButton}
-					//onValidSubmit={this.submitComment.bind(this)}
-					onValidSubmit={this.submitForm}
-					onInvalidSubmit={this.notifyFormError}
-				>
-					<FormsyText
-						name={'message'}
-						required
-						floatingLabelText='Add Comment'
-						multiLine={true}
-						// style={listStyle}
-					/>
-				</Formsy.Form>
-			</Paper>
-		)
-	}
-
 	render() {
 		let { centerStyle } = this.state.styles;
 		return (
@@ -685,8 +434,8 @@ class Graphics extends Component {
 					ref='form'
 					onValid={this.enableButton}
 					onInvalid={this.disableButton}
-					onValidSubmit={this.props.onSubmit.bind(this)}
-					// onValidSubmit={this.submitForm}
+					//onValidSubmit={this.props.onSubmit.bind(this)}
+					onValidSubmit={this.submitForm}
 					onInvalidSubmit={this.notifyFormError}
 				>
 					<Divider />
@@ -694,17 +443,8 @@ class Graphics extends Component {
 					<div style={centerStyle}>
 						{this.renderSearchId()}
 						<FormsyText
-							name='phone'
-							required
-							fullWidth={true}
-							multiLine={true}
-							hintText='Phone #'
-							floatingLabelText='Phone'
-							value={this.state.title}
-						/>
-						<FormsyText
 							name='title'
-							required
+							//required
 							fullWidth={true}
 							multiLine={true}
 							hintText='Descriptive Graphics title?'
@@ -712,19 +452,43 @@ class Graphics extends Component {
 							value={this.state.title}
 						/>
 						<FormsyDate
-							name='date'
-							required
+							name='completionDate'
+							//required
 							fullWidth={true}
 							firstDayOfWeek={0}
 							minDate={new Date()}
 							formatDate={(date) => this.formatDate(date)}
-							hintText='Graphics date?'
+							hintText='What date would you like the graphic to be completed by?'
+							floatingLabelText='Requested Completion Date'
+							value={this.state.date}
+						/>
+						<FormsyText
+							name='phone'
+							//required
+							fullWidth={true}
+							hintText='Phone # for Contact'
+							floatingLabelText='Phone'
+							value={this.state.title}
+						/>
+					</div>
+
+					<Divider />
+					<Subheader>Graphics Details</Subheader>
+					<div style={centerStyle}>
+						<FormsyDate
+							name='date'
+							//required
+							fullWidth={true}
+							firstDayOfWeek={0}
+							minDate={new Date()}
+							formatDate={(date) => this.formatDate(date)}
+							hintText='When is the event?'
 							floatingLabelText='Date'
 							value={this.state.date}
 						/>
 						<FormsyTime
 							name='startTime'
-							required
+							//required
 							fullWidth={true}
 							hintText='Start time for the event?'
 							floatingLabelText='Start Time'
@@ -732,56 +496,25 @@ class Graphics extends Component {
 						/>
 						<FormsyTime
 							name='endTime'
-							required
+							//required
 							fullWidth={true}
 							hintText='End time for the event?'
 							floatingLabelText='End Time'
 							value={this.state.endtime}
 						/>
-						<FormsySelect
-							name='type'
-							required
-							fullWidth={true}
-							floatingLabelText='Type'
-							value={this.state.type}
-						>
-							<MenuItem value='Social' primaryText='Social' />
-							<MenuItem value='All Hall' primaryText='All Hall' />
-							<MenuItem value='Academic Professional Success' primaryText='Academic Professional Success' />
-							<MenuItem value='Civic Engagement' primaryText='Civic Engagement' />
-							<MenuItem value='Hall Council' primaryText='Hall Council' />
-							<MenuItem value='RHA' primaryText='RHA' />
-							<MenuItem value='Life Skills' primaryText='Life Skills' />
-							<MenuItem value='LLC Honors' primaryText='LLC Honors' />
-							<MenuItem value='LLC International' primaryText='LLC International' />
-							<MenuItem value='LLC Sustainability' primaryText='LLC Sustainability' />
-							<MenuItem value='LLC Transfer' primaryText='LLC Transfer' />
-							<MenuItem value='LLC First Generation' primaryText='LLC First Generation' />
-							<MenuItem value='LLC Health Professions' primaryText='LLC Health Professions' />
-							<MenuItem value='Social Justice' primaryText='Social Justice' />
-							<MenuItem value='Weekend' primaryText='Weekend' />
-							<MenuItem value='Funding Only' primaryText='Funding Only' />
-							<MenuItem value='Other' primaryText='Other' />
-						</FormsySelect>
-					</div>
-
-					{this.renderTypeContent()}
-
-					<Divider />
-					<Subheader>Graphics Details</Subheader>
-					<div style={centerStyle}>
 						<FormsyText
 							name='location'
-							required
+							//required
 							fullWidth={true}
 							multiLine={true}
-							hintText='Graphics location?'
-							floatingLabelText='Location'
+							hintText='Where is the event taking place?'
+							floatingLabelText='Event Location'
 							value={this.state.location}
 						/>
-						<Subheader>Television Request</Subheader>
+
+						<Subheader style={ {paddingBottom: '0.5em'} }>Television Request</Subheader>
 						<FormsyRadioGroup
-							required
+							//required
 							name='televisionRequest'
 							valueSelected={this.state.televisionRequest}
 							onChange={this.handleSelection} 
@@ -799,61 +532,38 @@ class Graphics extends Component {
 								label='No thank you.'
 							/>
 						</FormsyRadioGroup>
-						<FormsyText
-							name='outcomes'
-							required
-							fullWidth={true}
-							multiLine={true}
-							hintText='Expected learning outcomes?'
-							floatingLabelText='Outcomes'
-							value={this.state.outcomes}
-						/>
+
+						<Subheader style={ {paddingBottom: '0.5em'} }>Type, Size, and Quantity</Subheader>
+						<FormsyRadioGroup
+							//required
+							name='measurements'
+							valueSelected={this.state.measurements}
+							onChange={this.handleSelection} 
+						>
+							<FormsyRadio
+								value='poster'
+								label='Posters'
+							/>
+							<FormsyRadio
+								value='flyers'
+								label='Flyers (9"x11")'
+							/>
+
+						</FormsyRadioGroup>
+
+						{this.renderPosters()}
+						{this.renderFlyers()}
+						
 						<FormsyText
 							name='description'
-							required
+							//required
 							fullWidth={true}
 							multiLine={true}
-							hintText='Graphics description?'
-							floatingLabelText='Description'
+							hintText='Describe how you would like the graphic to look.'
+							floatingLabelText='Description of Request'
 							value={this.state.description}
 						/>
-						<FormsyText
-							name='department'
-							fullWidth={true}
-							multiLine={true}
-							hintText='Collaborating Department?'
-							floatingLabelText='Department (optional)'
-							value={this.state.department}
-						/>
 					</div>
-
-					<Divider />
-					<Subheader>Funding</Subheader>
-					<div style={centerStyle}>
-						{this.state.items.map(this.renderItem)}
-						<FlatButton
-							icon={<FontIcon className='material-icons'>{'add'}</FontIcon>}
-							type='button'
-							label='Add Item'
-							onClick={this.addJSONItem.bind(this)}
-							disabled={(this.state.reviewed ? true : false)}
-						/>
-						{this.renderCostTotal()}
-					</div>
-
-					<Divider />
-					<Subheader>Staff</Subheader>
-					<div style={centerStyle}>
-						{this.state.staff.map(this.renderStaff)}
-						<FlatButton
-							icon={<FontIcon className='material-icons'>{'add'}</FontIcon>}
-							type='button'
-							label='Add Staff'
-							onClick={this.addJSONStaff.bind(this)}
-						/>
-					</div>
-
-					{this.renderEvaluation()}
 
 					{/*
 					Add Comment Box
@@ -863,6 +573,20 @@ class Graphics extends Component {
 						{this.renderAddComment()}
 					</div>
 					*/}
+
+					<Divider />
+					<Subheader>File Upload</Subheader>
+					<div style={centerStyle} >
+
+					{this.state.file.map(this.renderUploads)}
+
+						<FlatButton
+						      label="Upload"
+						      icon={<FontIcon className="material-icons">file_upload </FontIcon>}
+						      onClick={this.addJSONFile.bind(this)}>
+						</FlatButton>
+
+					</div>
 
 					<Divider />
 					<Subheader>Actions</Subheader>

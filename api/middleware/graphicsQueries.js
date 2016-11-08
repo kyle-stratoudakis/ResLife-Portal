@@ -18,6 +18,7 @@ const graphicsQueries = function(req, res, next) {
 		query.hall = { $in: halls };
 	}
 
+	//for role, need submitter/requester and designer
 	if(override) {
 		role = override;
 	}
@@ -27,22 +28,24 @@ const graphicsQueries = function(req, res, next) {
 	}
 
 	if(status === 'new') {
-		query.checked = { $ne: null };
-		query.reviewed = { $ne: null };
-		query.approved = { $ne: null };
-		query.evaluated = null;
+		query.assigned = null;
+		query.proof = null;
+		query.completed = null;
 	}
 	if(status === 'assigned') {
-		query.checked = { $ne: null };
-		query.reviewed = { $ne: null };
-		query.approved = { $ne: null };
-		query.evaluated = null;
+		query.assigned = { $ne: null };
+		query.proof = null;
+		query.completed = null;
+	}
+	else if(status === 'proof') {
+		query.assigned = { $ne: null };
+		query.proof = { $ne: null };
+		query.completed = null;
 	}
 	else if(status === 'completed') {
-		query.checked = { $ne: null };
-		query.reviewed = { $ne: null };
-		query.approved = { $ne: null };
-		query.evaluated = { $ne: null };
+		query.assigned = { $ne: null };
+		query.proof = { $ne: null };
+		query.completed = { $ne: null };
 	}
 	
 	if(query) {
@@ -56,6 +59,7 @@ const graphicsQueries = function(req, res, next) {
 			description: 1,
 			submittedDate: 1,
 			assigned: 1,
+			proof: 1,
 			completed: 1
 		};
 
