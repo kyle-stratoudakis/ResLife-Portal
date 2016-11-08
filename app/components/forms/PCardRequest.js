@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormWrapper } from '../FormWrapper/';
+import { FormWrapper } from './formWrapper/';
 import Formsy from 'formsy-react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -9,10 +9,12 @@ import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon'
 import { red500 } from 'material-ui/styles/colors';
-import FormsyText from './Formsy/FormsyText';
-import FormsyDate from './Formsy/FormsyDate';
-import FormsyTime from './Formsy/FormsyTime';
-import TrackFunding from '../TrackFunding' ;
+import FormsyText from './formComponents/FormsyText';
+import FormsyDate from './formComponents/FormsyDate';
+import FormsyTime from './formComponents/FormsyTime';
+import TrackFunding from './formComponents/TrackFunding' ;
+import CommentSection from './formComponents/CommentSection';
+import formatDate from '../../../utils/formatDate';
 import {
 	FormsyRadioGroup,
 	FormsyRadio,
@@ -31,9 +33,9 @@ class pCardRequest extends Component{
 		this.renderCostTotal = this.renderCostTotal.bind(this);
 		this.getActionButtons = this.getActionButtons.bind(this);
 		this.renderSearchId = this.renderSearchId.bind(this);
-		this.formatDate = this.formatDate.bind(this);
 		this.renderQuote = this.renderQuote.bind(this);
 		this.handleToggle = this.handleToggle.bind(this);
+		this.handleComment = this.handleComment.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -48,6 +50,7 @@ class pCardRequest extends Component{
 			department: '',
 			items: [],
 			staff: [],
+			comments: [],
 			date: {},
 			time: {},
 			checked: null,
@@ -63,9 +66,10 @@ class pCardRequest extends Component{
 					width: '50%'
 				},
 				listStyle: {
-					// marginLeft: '1em',
-					// marginRight: '1em',
-					padding: '1em'
+					marginTop: '0em',
+					paddingTop: '0em',
+					paddingLeft: '1em',
+					paddingRight: '1em'
 				},
 				listPaperStyle: {
 					marginBottom: '1em'
@@ -95,13 +99,14 @@ class pCardRequest extends Component{
 				cardType: wo.cardType || '',
 				items: (wo.items ? JSON.parse(wo.items) : []),
 				staff: (wo.staff ? JSON.parse(wo.staff) : []),
+				comments: wo.comments || [],
 				checked: wo.checked,
 				reviewed: wo.reviewed,
 				approved: wo.approved,
 				travelAuthorization: wo.travelAuthorization || 'onCampus',
 				chartwellsQuote: wo.chartwellsQuote || '',
 				label: (wo._id ? 'Edit' : 'Submit')
-			})
+			});
 		}
 	}
 
@@ -120,6 +125,7 @@ class pCardRequest extends Component{
 	getActionButtons() {
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
+		if(index === -1) return //If user does not have job, no action are returned
 		let jobId = this.props.jobs[index]._id;
 		let role = this.props.jobs[index].role;
 		let { checked, reviewed, approved } = this.state;
@@ -137,8 +143,7 @@ class pCardRequest extends Component{
 			else if(role === 'approver') {
 				disabled = (approved ? true : false);
 			}
-			else if(role === 'rha') {
-				// console.log(this.state.checked)
+			else if(role === 'checker') {
 				disabled = (checked ? true : false);
 			}
 			return (
@@ -153,7 +158,6 @@ class pCardRequest extends Component{
 						label='Deny'
 						backgroundColor='#ef9a9a'
 						hoverColor='#ef5350'
-						disabled={!disabled}
 						onClick={this.props.workorderAction.bind(this, 'Funding/put/return', data, 'Funding')}
 					/>
 					<FlatButton
@@ -205,33 +209,40 @@ class pCardRequest extends Component{
 		return (
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Item '+(i+1)}</Subheader>
-				<FormsyText
-					required
-					name={'items['+i+'][description]'}
-					hintText='Include name and quantity'
-					floatingLabelText='Item Description'
-					// multiLine={true}
-					style={listStyle}
-					value={item.description}
-				/>
-				<br />
-				<FormsyText
-					required
-					name={'items['+i+'][cost]'}
-					validation='isNumeric'
-					validationError='Please use only numbers'
-					hintText='Total item cost'
-					floatingLabelText='Item cost'
-					style={listStyle}
-					value={item.cost}
-					disabled={(this.state.checked || this.state.reviewed ? true : false)}
-				/>
-				<FlatButton
-					label='Remove'
-					hoverColor={red500}
-					onClick={this.removeJSONItem.bind(this, i)}
-					style={centerStyle}
-				/>
+				<div style={listStyle}>
+					<FormsyText
+						required
+						name={'items['+i+'][description]'}
+						hintText='Include name and quantity'
+						floatingLabelText='Item Description'
+						fullWidth={true}
+						multiLine={true}
+						style={{paddingLeft: '0em'}}
+						value={item.description}
+					/>
+					<br />
+					<FormsyText
+						required
+						fullWidth={true}
+						name={'items['+i+'][cost]'}
+						validation='isNumeric'
+						validationError='Please use only numbers'
+						hintText='Total item cost'
+						floatingLabelText='Item cost'
+						style={{paddingLeft: '0em'}}
+						value={item.cost}
+						disabled={(this.state.reviewed ? true : false)}
+					/>
+				</div>
+				<center>
+					<FlatButton
+						label='Remove'
+						hoverColor={red500}
+						disabled={(this.state.reviewed ? true : false)}
+						onClick={this.removeJSONItem.bind(this, i)}
+						style={centerStyle}
+					/>
+				</center>
 			</Paper>
 		)
 	}
@@ -317,21 +328,26 @@ class pCardRequest extends Component{
 		return (
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Staff '+(i+1)}</Subheader>
-				<FormsyText
-					name={'staff['+i+'][name]'}
-					required
-					hintText='Additional Staff'
-					floatingLabelText='Staff Name'
-					// multiLine={true}
-					style={listStyle}
-					value={staff.name}
-				/>
-				<FlatButton
-					label='Remove'
-					hoverColor={red500}
-					onClick={this.removeJSONStaff.bind(this, i)}
-					style={centerStyle}
-				/>
+				<div style={listStyle}>
+					<FormsyText
+						required
+						name={'staff['+i+'][name]'}
+						hintText='Additional Staff'
+						floatingLabelText='Staff Name'
+						fullWidth={true}
+						multiLine={true}
+						style={{paddingLeft: '0em'}}
+						value={staff.name}
+					/>
+				</div>
+				<center>
+					<FlatButton
+						label='Remove'
+						hoverColor={red500}
+						onClick={this.removeJSONStaff.bind(this, i)}
+						style={centerStyle}
+					/>
+				</center>
 			</Paper>
 		)
 	}
@@ -350,14 +366,23 @@ class pCardRequest extends Component{
 		}
 	}
 
-	formatDate(d) {
-		return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-	}
-
 	handleToggle(e, value) {
 		let data = {};
 		data[e.target.name] = value;
 		this.setState(data);
+	}
+
+	handleComment(comment) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt,
+			comment: comment
+		}
+		if(comment > '') this.props.comment(data, 'Funding');
 	}
 
 	render() {
@@ -397,7 +422,7 @@ class pCardRequest extends Component{
 							fullWidth={true}
 							firstDayOfWeek={0}
 							minDate={new Date()}
-							formatDate={(date) => this.formatDate(date)}
+							formatDate={(date) => formatDate(date)}
 							hintText='Program date?'
 							floatingLabelText='Date'
 							value={this.state.date}
@@ -525,6 +550,14 @@ class pCardRequest extends Component{
 							onClick={this.addJSONStaff.bind(this)}
 						/>
 					</div>
+
+					<CommentSection 
+						enable={(this.props.details._id ? true : false)}
+						comments={this.state.comments} 
+						handleComment={this.handleComment}
+						userId={this.props.token.user._id}
+						styles={this.state.styles}
+					/>
 
 					<Divider />
 					<div style={centerStyle}>

@@ -9,6 +9,10 @@ const deleted = function(wo) {
 		title = 'Your Funding Request has been deleted';
 		message = `Your Funding Request <strong><i>`+wo.title+` </i></strong> has been deleted. If you believe there was a mistake, please contact the office of Residence Life.`;
 	}
+	else if(wo.application === 'TechSupport') {
+		title = 'Your Tech Request has been deleted';
+		message = `Your Tech Request <strong><i>`+wo.title+` </i></strong> has been deleted. If you believe there was a mistake, please contact the office of Residence Life.`;
+	}
 	return (
 		`<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
 		<html xmlns='http://www.w3.org/1999/xhtml'>

@@ -1,5 +1,5 @@
 const route = require('express').Router();
-const fs = require('fs');
+const mongoose = require('mongoose');
 const programModel= require('../model/program');
 const userModel= require('../model/user');
 const m_notif = require('../services/email/notifications');
@@ -11,12 +11,13 @@ const generatePcard = require('../services/email/emailTemplates/pcardAuthForm');
 const jsonParser = bodyParser.json();
 
 route.get('/get/workorders', m_role, m_programQuery, function(req, res) {
-	var query = req.programQuery;
-	var projection = req.programProjection;
-	var sort = req.programSort;
-	var empty = [{'_id': 'x','title': 'No Programs','description': 'No Programs Found', 'submittedDate': new Date()}]
+	var query = req.query;
+	var projection = req.projection;
+	var sort = req.sort;
+	var empty = [{_id: 'x', title: 'No Programs', description: 'No Programs Found', date: new Date()}];
 
-	programModel.find(query, projection, sort)
+	programModel.find(query, projection)
+	.sort(sort)
 	.lean()
 	.exec(function(err, programs) {
 		if(err) {
@@ -73,7 +74,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 	if(data.councilAbstained) program.councilAbstained = data.councilAbstained;
 	if(data.councilApproval) program.councilApproval = data.councilApproval;
 
-	if(data.evalTime) program.evalTime = data.evalTime;
+	if(data.evalTime && data.evalTime != {}) program.evalTime = data.evalTime;
 	if(data.evalAttendance) program.evalAttendance = data.evalAttendance;
 	if(data.evalCost) program.evalCost = data.evalCost;
 	if(data.evalCardReturn) program.evalCardReturn = data.evalCardReturn;
@@ -122,7 +123,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		if(!err) {
 			res.json(saved._id);
 			req.workorder = saved;
-			req.email = 'new';
+			req.email = 'new_submission';
 			next();
 		}
 		else {
@@ -137,8 +138,6 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 	var decodedUser = req.decodedUser;
 	var data = req.body.data;
 	var formId = req.body.formId;
-
-	console.log(data);
 
 	programModel.findOne({_id: formId}, function(err, program) {
 		program.title = data.title;
@@ -166,11 +165,11 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 
 		if(data.travelAuthorization) program.travelAuthorization = data.travelAuthorization;
 		if(data.chartwellsQuote) program.chartwellsQuote = data.chartwellsQuote;
- 		
- 		if(data.councilDate || data.councilMotioned || data.councilSeconded || data.councilFavor || data.councilOpposed || data.councilAbstained || data.councilApproval) {
- 			req.email = 'hall_council';
- 			req.notif = 'hall_council';
- 		}
+		
+		if(data.councilDate || data.councilMotioned || data.councilSeconded || data.councilFavor || data.councilOpposed || data.councilAbstained || data.councilApproval) {
+			req.email = 'hall_council';
+			req.notif = 'hall_council';
+		}
 		if(data.councilDate) program.councilDate = data.councilDate;
 		if(data.councilMotioned) program.councilMotioned = data.councilMotioned;
 		if(data.councilSeconded) program.councilSeconded = data.councilSeconded;
@@ -185,10 +184,7 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 			req.email = 'evaluated';
 			req.notif = 'evaluated';
 		}
-		if(data.evalTime) {
-			program.evalTime = data.evalTime;
-			console.log(program._id, data.evalTime);
-		}
+		if(data.evalTime && data.evalTime != {}) program.evalTime = data.evalTime;
 		if(data.evalAttendance) program.evalAttendance = data.evalAttendance;
 		if(data.evalCost) program.evalCost = data.evalCost;
 		if(data.evalCardReturn) program.evalCardReturn = data.evalCardReturn;
@@ -240,7 +236,6 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 					program.approvedDate = new Date();
 					req.email = 'approved';
 					req.notif = 'delete_notif';
-					console.log('program approved ' + program.searchId);
 				}
 			}
 			else if(role === 'approver') {
@@ -248,7 +243,6 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 				program.approvedDate = new Date();
 				req.email = 'approved';
 				req.notif = 'delete_notif';
-				console.log('program approved ' + program.searchId);
 			}
 
 			program.save(function(err, saved) {
@@ -271,12 +265,15 @@ route.put('/put/deny', jsonParser, m_role, function(req, res, next){
 	var decodedUser = req.decodedUser;
 	var id = req.body.id
 	var role = decodedUser.role;
+	var userId = decodedUser._id;
+	var comment = req.body.comment;
 
 	programModel.findOne({ _id: id }, function(err, program) {
 		if(err) {
 			console.log(err);
 		}
 		else {
+			program.comments.push({user: userId, name: decodedUser.name, comment: comment, date: new Date()})
 			if(role === 'hall_director') {
 				program.denied = true;
 				program.checked = null;
@@ -374,18 +371,24 @@ route.put('/put/return', m_notif);
 
 route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
 	var decodedUser = req.decodedUser;
+	var userId = decodedUser._id;
 	var id = req.body.id
-	var message = req.body.message;
-	var role = decodedUser.role;
+	var comment = req.body.comment;
 
 	programModel.findOne({ _id: id }, function(err, program) {
-		program.comments.push({user: decodedUser._id, message: message, date: new Date()});
-		req.email = 'comment';
-		req.notif = 'comment';
+		if(comment.remove) {
+			var _id = mongoose.Types.ObjectId(comment.remove);
+			program.comments.id(_id).remove();
+		}
+		else {
+			program.comments.push({user: userId, name: decodedUser.name, comment: comment, date: new Date()});
+			if(program.user != userId) req.email = 'comment';
+			req.notif = 'comment';
+		}
 
 		program.save(function(err, saved) {
 			if(!err) {
-				res.status(200).json({status: 'return'});
+				res.status(200).json({status: 'comment'});
 				req.workorder = saved;
 				next();
 			}
@@ -399,22 +402,22 @@ route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
 route.put('/put/comment', m_notif);
 
 route.put('/put/delete', jsonParser, function(req, res, next) {
-    var id = req.body.id;
-    programModel.findOne({ _id : id })
-    .exec(function(err, program) {
-        if(!err) {
-            res.status(200).json({status: 'return'});
-            req.email = 'deleted';
-            req.notif = 'delete_notif';
-            req.workorder = program;
-            next();
-        }
-        else {
-            res.status(500).send(err);
-            console.log(err);
-        }
-        programModel.remove({ _id : id }).exec();
-    });
+	var id = req.body.id;
+	programModel.findOne({ _id : id })
+	.exec(function(err, program) {
+		if(!err) {
+			res.status(200).json({status: 'return'});
+			req.email = 'deleted';
+			req.notif = 'delete_notif';
+			req.workorder = program;
+			next();
+		}
+		else {
+			res.status(500).send(err);
+			console.log(err);
+		}
+		programModel.remove({ _id : id }).exec();
+	});
 });
 route.put('/put/delete', m_notif);
 
@@ -470,59 +473,53 @@ route.get('/download', function(req, res) {
 	}
 });
 
-route.get('/get/tableData', function(req, res) {
-	var fs = require('fs');
+route.get('/get/tableData', m_role, m_programQuery, function(req, res) {
 	var getDate = require('../../utils/getDate');
 	var getTime = require('../../utils/getTime');
-	var getDateTime = require('../../utils/getDateTime'); // determine final path
-	if(req.query.hall) {
-		console.log(req.query.hall)
-		programModel.find({ hall: { $in: req.query.hall }, approved: { $ne: null } }) 
-		.select('approved approvedDate checked checkedDate date description email evaluated hall location name outcomes primary_contact reviewed reviewedDate searchId submittedDate time title type user')
-		.populate({
-			path: 'user checked reviewed approved evaluated',
-			select: 'name -_id',
-			model: userModel
-		})
-		.lean()
-		.exec(function(err, programs) {
-			if(programs && programs.length > 0) {
-				var cell;
-				var keys = Object.keys(programs[0]);
-				res.set('Content-Disposition', 'attachment; filename=Programs.csv');
-				res.write(keys.join(',') + '\n');
-				for(var i = 0; i < programs.length; i++) {
-					for(var k = 0; k < keys.length; k++) {
-						
-						cell = programs[i][keys[k]];
-						
-						if(keys[k] === 'date') cell = getDate(new Date(cell));
-						if(keys[k] === 'time') cell = getTime(new Date(cell));
-						if(keys[k] === 'submittedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if(keys[k] === 'checkedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if(keys[k] === 'reviewedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if(keys[k] === 'approvedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if(keys[k] === 'evaluatedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if((keys[k] === 'user' || keys[k] === 'checked' || keys[k] === 'reviewed' || keys[k] === 'approved' || keys[k] === 'evaluated') && cell) {
-							cell = cell.name;
-						}
-						if(keys[k] === 'description' || keys[k] === 'outcomes') {
-							cell = cell.replace(/\"/g, `""`);
-							cell = cell.replace(/,/g, `\,`);
-							cell = cell.replace(/–/g, '\-');
-							cell = `"${cell}"`;
-						}
-
-						if(cell === undefined || cell === null) cell = '';
-
-						res.write(cell.toString().trim() + ',');
+	var getDateTime = require('../../utils/getDateTime');
+	var query = req.programQuery;
+	programModel.find(query) 
+	.select('approved approvedDate checked checkedDate date description email evaluated hall location name outcomes primary_contact reviewed reviewedDate searchId submittedDate time title type user')
+	.populate({
+		path: 'user checked reviewed approved evaluated',
+		select: 'name -_id',
+		model: userModel
+	})
+	.lean()
+	.exec(function(err, programs) {
+		if(programs && programs.length > 0) {
+			var cell;
+			var date;
+			var keys = Object.keys(programs[0]);
+			res.set('Content-Disposition', 'attachment; filename=Programs.csv');
+			res.write(keys.join(',') + '\n');
+			for(var i = 0; i < programs.length; i++) {
+				for(var k = 0; k < keys.length; k++) {
+					
+					cell = programs[i][keys[k]];
+					
+					if(cell && keys[k].match(/date|time$/ig)) {
+						date = new Date(cell);
+						if(keys[k] === 'date') cell = getDate(date);
+						else if(keys[k] === 'time') cell = getTime(date);
+						else cell = getDateTime(date, date);
 					}
-					res.write('\n');
+					if(cell && cell.name) {
+						cell = cell.name;
+					}
+					if(cell === undefined || cell === null) cell = '';
+
+					res.write(`"${cell.toString().trim().replace(/\"|\-/g, '')}"` + ',');
 				}
-				res.status(200).end();
+				res.write('\n');
 			}
-		});
-	}
+			res.status(200).end();
+		}
+		else {
+			res.set('Content-Disposition', 'attachment; filename=No_Programs.txt');
+			res.status(200).send('No Programs were returned using the query provided likely because you do not have access to any programs.');
+		}
+	});
 });
 
 module.exports = route;

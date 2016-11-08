@@ -28,6 +28,17 @@ import { NavigationMoreVert } from 'material-ui/svg-icons';
 // });
 
 const Main = React.createClass({
+	componentDidMount () {
+		let that = this;
+		this.socket = io();
+		this.socket.on('ejectUser', function(event) {
+			if(event.user === that.props.token.user._id || event.user === 'all') {
+				that.props.logOut();
+				location.reload(true);
+			}
+		});
+	},
+
 	renderJob (job, i) {
 		let endpoint = job.link +'/'+ this.props.jobs[i].endpoints[0].route +"&jwt="+ this.props.token.jwt +"&job="+ job._id;
 		return (

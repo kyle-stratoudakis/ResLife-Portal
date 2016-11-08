@@ -59,6 +59,7 @@
     "redux-localstorage": "^0.4.1",
     "redux-thunk": "^2.1.0",
     "rimraf": "^2.5.2",
+    "socket.io": "^1.5.1",
     "style-loader": "^0.13.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^2.0.0",

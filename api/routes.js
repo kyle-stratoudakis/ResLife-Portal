@@ -6,7 +6,6 @@ const graphics = require('./jobs/graphics');
 const hallcouncil = require('./jobs/hallcouncil');
 const techsupport = require('./jobs/techsupport');
 const aggregate = require('./services/email/aggregate');
-const generatePcard = require('./services/email/standAlonePcard');
 const getDateTime = require('../utils/getDateTime');
 
 routes.use('/getJobs', getJobs);
@@ -26,14 +25,6 @@ routes.get('/aggregateNotifs', function(req, res) {
 		else if(req.query.hour === 'test') {
 			res.status(200).send(getDateTime(new Date(), new Date()) + ', Test OK\n').end();
 		}
-	}
-});
-
-routes.get('/pcard', function(req, res) {
-	if(req.query.id) {
-		var filename;
-		filename = generatePcard(req.query.id);
-		res.status(200).send(getDateTime(new Date(), new Date()) + ' generated pdf id=' + req.query.id);
 	}
 });
 

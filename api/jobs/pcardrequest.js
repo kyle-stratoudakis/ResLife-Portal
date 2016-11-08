@@ -1,5 +1,5 @@
 const route = require('express').Router();
-
+const mongoose = require('mongoose');
 const pCardModel= require('../model/pCardRequest');
 const userModel= require('../model/user');
 const m_notif = require('../services/email/notifications');
@@ -14,9 +14,10 @@ route.get('/get/workorders', m_role, m_pCardQueries, function(req, res) {
 	var query = req.query;
 	var projection = req.projection;
 	var sort = req.sort;
-	var empty = [{'_id': 'x','title': 'No Requests','description': 'No Funding Requests Found', 'submittedDate': new Date()}]
+	var empty = [{'_id': 'x','title': 'No Requests','description': 'No Funding Requests Found', 'date': new Date()}]
 
-	pCardModel.find(query, projection, sort)
+	pCardModel.find(query, projection)
+	.sort(sort)
 	.lean()
 	.exec(function(err, requests) {
 		if(err) {
@@ -83,7 +84,7 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		if(!err) {
 			res.json(saved._id);
 			req.workorder = saved;
-			req.email = 'pcard_new';
+			req.email = 'new_submission';
 			next();
 		}
 		else {
@@ -401,6 +402,39 @@ route.get('/get/details', function(req, res) {
 	}
 });
 
+route.put('/put/comment', jsonParser, m_role, function(req, res, next) {
+	var decodedUser = req.decodedUser;
+	var userId = decodedUser._id;
+	var id = req.body.id
+	var comment = req.body.comment;
+
+	pCardModel.findOne({ _id: id }, function(err, request) {
+
+		if(comment.remove) {
+			var _id = mongoose.Types.ObjectId(comment.remove);
+			request.comments.id(_id).remove();
+		}
+		else {
+			request.comments.push({user: userId, name: decodedUser.name, comment: comment, date: new Date()});
+			if(request.user != userId) req.email = 'comment';
+			req.notif = 'comment';
+		}
+
+		request.save(function(err, saved) {
+			if(!err) {
+				res.status(200).json({status: 'comment'});
+				req.workorder = saved;
+				next();
+			}
+			else {
+				res.status(500).send(err);
+				console.log(err)
+			}
+		});
+	});
+});
+route.put('/put/comment', m_notif);
+
 route.get('/download', function(req, res) {
 	if(req.query.id) {
 		pCardModel.findOne({ _id: req.query.id })
@@ -411,6 +445,7 @@ route.get('/download', function(req, res) {
 		})
 		.exec(function(err, fields) {
 			if(!err && fields) {
+				fields.type = fields.cardType;
 				try {
 					generatePcard(fields);
 				}

@@ -11,6 +11,9 @@ const statusNotif = function(status, wo) {
 	else if(wo.application === 'Funding') {
 		label = 'Request'
 	}
+	else if(wo.application === 'TechSupport') {
+		label = 'Tech Request'
+	}
 
 	if(status === 'checked') {
 		title = 'Hall Director Approved';
@@ -28,12 +31,20 @@ const statusNotif = function(status, wo) {
 		title = 'Awaiting Funding Approval'
 		message = 'approved by an associate director and is awaiting funding approval from the department director.';
 	}
-	else if(status === 'reviewer approved') {
+	else if(status === 'reviewer_approved') {
 		message = 'approved by an assoicate director.';
 	}
 	else if(status === 'deny') {
 		title = label+' Denied'
 		message = `denied by ${wo.who} for the following reason:<br><br><i>${wo.comment}</i><br><br>`;
+	}
+	else if(status === 'closed') {
+		title = label+' Closed'
+		message = `closed by ${wo.who} with the following message:<br><br><i>${wo.comment}</i><br><br>`;
+	}
+	else if(status === 'comment') {
+		title = label+' Comment'
+		message = `commented on by ${wo.who} with the following message:<br><br><i>${wo.comment}</i><br><br>`;
 	}
 	else if(status === 'rha_checked') {
 		title = 'Request Status Update';

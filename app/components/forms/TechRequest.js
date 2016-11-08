@@ -8,11 +8,14 @@ import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon'
 import { red500 } from 'material-ui/styles/colors';
-import FormsyText from './Formsy/FormsyText';
-import FormsyDate from './Formsy/FormsyDate';
-import FormsyTime from './Formsy/FormsyTime';
+import FormsyText from './formComponents/FormsyText';
+import FormsyDate from './formComponents/FormsyDate';
+import FormsyTime from './formComponents/FormsyTime';
 import { FormsySelect } from 'formsy-material-ui/lib';
-import { FormWrapper } from '../FormWrapper/';
+import { FormWrapper } from './formWrapper/';
+import TrackTech from './formComponents/TrackTech' ;
+import CommentSection from './formComponents/CommentSection';
+import formatDate from '../../../utils/formatDate';
 
 class TechRequest extends Component{
 	constructor(props) {
@@ -21,14 +24,18 @@ class TechRequest extends Component{
 		this.disableButton = this.disableButton.bind(this);
 		this.enableButton = this.enableButton.bind(this);
 		this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this);
+		this.getActionButtons = this.getActionButtons.bind(this);
+		this.handleClose = this.handleClose.bind(this);
+		this.handleComment = this.handleComment.bind(this);
+		this.getLabel = this.getLabel.bind(this);
 
 		this.state = {
 			canSubmit: false,
 			title: '',
 			type: '',
-			location: '',
 			description: '',
 			label: 'Submit',
+			comments: [],
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
@@ -36,19 +43,18 @@ class TechRequest extends Component{
 					marginRight: 'auto', 
 					width: '50%'
 				},
-				switchStyle: {
-					marginBottom: 16,
-				},
-				submitStyle: {
-					marginTop: 32,
-				},
 				listStyle: {
-					marginLeft: '1em',
-					marginRight: '1em',
-					padding: 'none'
+					marginTop: '0em',
+					paddingTop: '0em',
+					paddingLeft: '1em',
+					paddingRight: '1em'
 				},
 				listPaperStyle: {
 					marginBottom: '1em'
+				},
+				actionStyle: {
+					marginTop: '1em',
+					marginRight: '2em'
 				}
 			}
 		}
@@ -61,9 +67,17 @@ class TechRequest extends Component{
 				title: workOrder.title || '',
 				type: workOrder.type || '',
 				description: workOrder.description || '',
-				label: (workOrder._id ? 'Edit' : 'Submit')
-			})
+				comments: workOrder.comments || [],
+				label: this.getLabel(workOrder)
+			});
 		}
+	}
+
+	getLabel(workOrder) {
+		let label = 'submit';
+		if(workOrder._id) label = 'Edit';
+		if(workOrder.closed) label = 'Re-Open';
+		return label;
 	}
 
 	enableButton() {
@@ -78,77 +92,187 @@ class TechRequest extends Component{
 		});
 	}
 
-	submitForm(data) {
-		alert(JSON.stringify(data, null, 4));
-	}
-
 	notifyFormError(data) {
+		alert('There was an error submitting the form, check that all required fields are filled and try again. If you are still having issues email reslifeportal@southernct.edu');
 		console.error('Form error:', data);
 	}
 
-	render() {
-		let { centerStyle, switchStyle, submitStyle } = this.state.styles;
-		
-		return (
-			<Formsy.Form
-				ref="form"
-				onValid={this.enableButton}
-				onInvalid={this.disableButton}
-				onValidSubmit={this.props.onSubmit.bind(this)}
-				// onValidSubmit={this.submitForm}
-				onInvalidSubmit={this.notifyFormError}
-			>
-				<Divider />
-				<Subheader>Request Details</Subheader>
-
-				<div style={centerStyle}>
+	getActionButtons() {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		if(index === -1) return //If user does not have job, no action are returned
+		let jobId = this.props.jobs[index]._id;
+		let role = this.props.jobs[index].role;
+		let { closed } = this.state;
+		let { actionStyle } = this.state.styles;
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt
+		}
+		let disabled;
+		let title = 'Close Request';
+		let content = [
+			<center>
+				<p>Please enter a reason which will be included in an email sent to the submitter.</p>
+				<Formsy.Form
+					ref='closeForm'
+				>
 					<FormsyText
-						name='title'
-						required
-						fullWidth={true}
-						hintText='Descriptive Request title?'
-						floatingLabelText='Title'
-						value={this.state.title}
-					/>
-
-					<FormsySelect
-						name='type'
-						required
-						fullWidth={true}
-						floatingLabelText='Type'
-						value={this.state.type}
-					>
-						<MenuItem value='error' primaryText='Report Error' />
-						<MenuItem value='feature' primaryText='Feature Request' />
-						<MenuItem value='name' primaryText='Change Display name' />
-						<MenuItem value='other' primaryText='Other' />
-					</FormsySelect>
-				</div>
-
-				<div style={centerStyle}>
-					<FormsyText
-						name='description'
-						required
-						fullWidth={true}
-						hintText='Please provide as much detail as possible'
-						floatingLabelText='Description'
+						ref='closeComment'
+						name='closeComment'
+						floatingLabelText='Close Comment'
 						multiLine={true}
-						rows={2}
-						value={this.state.description}
+						style={{textAlign: 'left'}}
 					/>
-				</div>
+				</Formsy.Form>
+			</center>
+		];
+		const actions = [
+			<FlatButton
+				label='Cancel'
+				key='cancel'
+				onClick={this.props.closeDialog.bind(this)}
+			/>,
+			<FlatButton
+				label='Close'
+				key='close'
+				hoverColor='#ef5350'
+				onClick={this.handleClose.bind()}
+			/>,
+		];
 
-				<Divider />
-
-				<div style={centerStyle}>
+		if(!(role === 'submitter') && this.props.details._id) {
+			if(role === 'technician'){
+				disabled = (closed ? true : false);
+			}
+			return (
+				<div>
 					<RaisedButton
-						style={submitStyle}
+						style={actionStyle}
 						type='submit'
 						label={this.state.label}
-						// disabled={!this.state.canSubmit}
+					/>
+					<FlatButton
+						style={actionStyle}
+						label='Close'
+						backgroundColor='#ef9a9a'
+						hoverColor='#ef5350'
+						onClick={this.props.openDialog.bind(this, title, content, actions)}
 					/>
 				</div>
-			</Formsy.Form>
+			)
+		}
+		else {
+			return (
+				<RaisedButton
+					style={actionStyle}
+					type='submit'
+					label={this.state.label}
+				/>
+			)
+		}
+	}
+
+	handleClose() {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let comment = (this.refs.closeComment ? this.refs.closeComment.getValue() : '');
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt,
+			comment: comment
+		}
+		this.props.workorderAction('techsupport/put/close', data, 'TechSupport');
+	}
+
+	handleComment(comment) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt,
+			comment: comment
+		}
+		if(comment > '') this.props.comment(data, 'TechSupport');
+	}
+
+	render() {
+		let { centerStyle } = this.state.styles;
+		return (
+			<div>
+				<br />
+				<Divider />
+				<Subheader>Request Tracker</Subheader>
+				<div style={centerStyle}>
+					<TrackTech workOrder={this.props.details} size={screen.width}/>
+				</div>
+				<Formsy.Form
+					ref="form"
+					onValid={this.enableButton}
+					onInvalid={this.disableButton}
+					onValidSubmit={this.props.onSubmit.bind(this)}
+					onInvalidSubmit={this.notifyFormError}
+				>
+					<br />
+					<Divider />
+					<Subheader>Request Details</Subheader>
+
+					<div style={centerStyle}>
+						<FormsyText
+							required
+							name='title'
+							fullWidth={true}
+							hintText='Descriptive Request title?'
+							floatingLabelText='Title'
+							value={this.state.title}
+						/>
+
+						<FormsySelect
+							required
+							name='type'
+							fullWidth={true}
+							floatingLabelText='Type'
+							value={this.state.type}
+						>
+							<MenuItem value='error' primaryText='Report Error' />
+							<MenuItem value='feature' primaryText='Feature Request' />
+							<MenuItem value='name' primaryText='Change Display name' />
+							<MenuItem value='other' primaryText='Other' />
+						</FormsySelect>
+					</div>
+
+					<div style={centerStyle}>
+						<FormsyText
+							required
+							name='description'
+							fullWidth={true}
+							hintText='Please provide as much detail as possible'
+							floatingLabelText='Description'
+							multiLine={true}
+							value={this.state.description}
+						/>
+					</div>
+
+					<CommentSection 
+						enable={(this.props.details._id ? true : false)}
+						comments={this.state.comments} 
+						handleComment={this.handleComment}
+						userId={this.props.token.user._id}
+						styles={this.state.styles}
+					/>
+
+					<Divider />
+					<Subheader>Actions</Subheader>
+					<div style={centerStyle}>
+						{this.getActionButtons()}
+					</div>
+				</Formsy.Form>
+			</div>
 		);
 	}
 }

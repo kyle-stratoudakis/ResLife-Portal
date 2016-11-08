@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormWrapper } from '../FormWrapper/';
+import { FormWrapper } from './formWrapper/';
 import Formsy from 'formsy-react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -9,10 +9,12 @@ import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon'
 import { red500 } from 'material-ui/styles/colors';
-import FormsyText from './Formsy/FormsyText';
-import FormsyDate from './Formsy/FormsyDate';
-import FormsyTime from './Formsy/FormsyTime';
-import TrackProgram from '../TrackProgram' ;
+import FormsyText from './formComponents/FormsyText';
+import FormsyDate from './formComponents/FormsyDate';
+import FormsyTime from './formComponents/FormsyTime';
+import TrackProgram from './formComponents/TrackProgram' ;
+import CommentSection from './formComponents/CommentSection';
+import formatDate from '../../../utils/formatDate';
 import {
 	FormsyRadioGroup,
 	FormsyRadio,
@@ -31,14 +33,14 @@ class Program extends Component {
 		this.renderCostTotal = this.renderCostTotal.bind(this);
 		this.getActionButtons = this.getActionButtons.bind(this);
 		this.renderSearchId = this.renderSearchId.bind(this);
-		this.formatDate = this.formatDate.bind(this);
 		this.renderTypeContent = this.renderTypeContent.bind(this);
 		this.renderEvaluation = this.renderEvaluation.bind(this);
 		this.renderQuote = this.renderQuote.bind(this);
 		this.handleSelection = this.handleSelection.bind(this);
-		this.renderDenyDialog = this.renderDenyDialog.bind(this);
 		this.handleDeny = this.handleDeny.bind(this);
-		this.renderAddComment = this.renderAddComment.bind(this);
+		this.handleComment = this.handleComment.bind(this);
+		this.renderEvalContent = this.renderEvalContent.bind(this);
+		this.renderEvalUser = this.renderEvalUser.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -53,6 +55,7 @@ class Program extends Component {
 			department: '',
 			items: [],
 			staff: [],
+			comments: [],
 			date: {},
 			time: {},
 			checked: null,
@@ -66,6 +69,7 @@ class Program extends Component {
 			councilOpposed: '',
 			councilAbstained: '',
 			councilApproval: '',
+			evaluatedDate: {},
 			evalTime: {},
 			evalAttendance: '',
 			evalCost: '',
@@ -77,6 +81,7 @@ class Program extends Component {
 			evalOther: '',
 			travelAuthorization: 'onCampus',
 			chartwellsQuote: '',
+			performEval: false,
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
@@ -87,7 +92,8 @@ class Program extends Component {
 				listStyle: {
 					marginTop: '0em',
 					paddingTop: '0em',
-					paddingLeft: '1em'
+					paddingLeft: '1em',
+					paddingRight: '1em'
 				},
 				listPaperStyle: {
 					marginBottom: '1em'
@@ -117,6 +123,7 @@ class Program extends Component {
 				fundingType: wo.fundingType || 'pcard',
 				items: (wo.items ? JSON.parse(wo.items) : []),
 				staff: (wo.staff ? JSON.parse(wo.staff) : []),
+				comments: wo.comments || [],
 				checked: wo.checked,
 				reviewed: wo.reviewed,
 				approved: wo.approved,
@@ -128,6 +135,7 @@ class Program extends Component {
 				councilOpposed: wo.councilOpposed || '',
 				councilAbstained: wo.councilAbstained || '',
 				councilApproval: wo.councilApproval || '',
+				evaluatedDate: (wo.evaluatedDate ? new Date(wo.evaluatedDate) : {}),
 				evalTime: (wo.evalTime ? new Date(wo.evalTime) : {}),
 				evalAttendance: wo.evalAttendance || '',
 				evalCost: wo.evalCost || '',
@@ -156,23 +164,16 @@ class Program extends Component {
 		});
 	}
 
-	formatDate(d) {
-		return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-	}
-
 	handleSelection(e, value) {
 		let data = {};
 		data[e.target.name] = value;
 		this.setState(data);
 	}
 
-	renderDenyDialog() {
-
-	}
-
 	handleDeny() {
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
+		if(index === -1) return //If user does not have job, no action are returned
 		let jobId = this.props.jobs[index]._id;
 		let comment = (this.refs.denyComment ? this.refs.denyComment.getValue() : '');
 		let data = {
@@ -182,6 +183,19 @@ class Program extends Component {
 			comment: comment
 		}
 		this.props.workorderAction('programs/put/deny', data, 'Programs');
+	}
+
+	handleComment(comment) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt,
+			comment: comment
+		}
+		if(comment > '') this.props.comment(data, 'Programs');
 	}
 
 	getActionButtons() {
@@ -250,7 +264,6 @@ class Program extends Component {
 						label='Deny'
 						backgroundColor='#ef9a9a'
 						hoverColor='#ef5350'
-						disabled={disabled}
 						onClick={this.props.openDialog.bind(this, title, content, actions)}
 					/>
 					<FlatButton
@@ -308,6 +321,7 @@ class Program extends Component {
 						name={'items['+i+'][description]'}
 						hintText='Include name and quantity'
 						floatingLabelText='Item Description'
+						fullWidth={true}
 						multiLine={true}
 						style={{paddingLeft: '0em'}}
 						value={item.description}
@@ -315,6 +329,7 @@ class Program extends Component {
 					<br />
 					<FormsyText
 						required
+						fullWidth={true}
 						name={'items['+i+'][cost]'}
 						validation='isNumeric'
 						validationError='Please use only numbers'
@@ -325,13 +340,15 @@ class Program extends Component {
 						disabled={(this.state.reviewed ? true : false)}
 					/>
 				</div>
-				<FlatButton
-					label='Remove'
-					hoverColor={red500}
-					disabled={(this.state.reviewed ? true : false)}
-					onClick={this.removeJSONItem.bind(this, i)}
-					style={centerStyle}
-				/>
+				<center>
+					<FlatButton
+						label='Remove'
+						hoverColor={red500}
+						disabled={(this.state.reviewed ? true : false)}
+						onClick={this.removeJSONItem.bind(this, i)}
+						style={centerStyle}
+					/>
+				</center>
 			</Paper>
 		)
 	}
@@ -435,21 +452,24 @@ class Program extends Component {
 				<Subheader>{'Staff '+(i+1)}</Subheader>
 				<div style={listStyle}>
 					<FormsyText
-						name={'staff['+i+'][name]'}
 						required
+						name={'staff['+i+'][name]'}
 						hintText='Additional Staff'
 						floatingLabelText='Staff Name'
+						fullWidth={true}
 						multiLine={true}
 						style={{paddingLeft: '0em'}}
 						value={staff.name}
 					/>
 				</div>
-				<FlatButton
-					label='Remove'
-					hoverColor={red500}
-					onClick={this.removeJSONStaff.bind(this, i)}
-					style={centerStyle}
-				/>
+				<center>
+					<FlatButton
+						label='Remove'
+						hoverColor={red500}
+						onClick={this.removeJSONStaff.bind(this, i)}
+						style={centerStyle}
+					/>
+				</center>
 			</Paper>
 		)
 	}
@@ -472,7 +492,7 @@ class Program extends Component {
 		let { centerStyle } = this.state.styles;
 		if(this.refs.form) {
 			let type = this.refs.form.getModel().type;
-			if(type === 'Hall Council' || type === 'Social') {
+			if(type === 'Hall Council') {
 				return (
 					<div>
 						<Divider />
@@ -483,7 +503,7 @@ class Program extends Component {
 								required
 								fullWidth={true}
 								firstDayOfWeek={0}
-								formatDate={(date) => this.formatDate(date)}
+								formatDate={(date) => formatDate(date)}
 								hintText='Date of council meeting'
 								floatingLabelText='Date Of Meeting'
 								value={this.state.councilDate}
@@ -557,118 +577,147 @@ class Program extends Component {
 		}
 	}
 
+	renderEvalUser() {
+		if(this.state.evaluated && this.state.evaluatedDate) {
+			return (
+				<div>
+					<FormsyText
+						name='evalName'
+						fullWidth={true}
+						disabled={true}
+						floatingLabelText='Evaluated By'
+						value={this.state.evaluated.name}
+					/>
+					<FormsyDate
+						name='evalDate'
+						fullWidth={true}
+						disabled={true}
+						formatDate={(date) => formatDate(date)}
+						floatingLabelText='Date Evaluated'
+						value={this.state.evaluatedDate}
+					/>
+				</div>
+			)
+		}
+	}
+
+	renderEvalContent() {
+		if(!this.state.evaluated && this.state.performEval === false) {
+			return (
+				<FlatButton onClick={this.setState.bind(this, {performEval: true, label: 'Submit'})} label='Perform Evaluation'/>
+			)
+		}
+		else {
+			return (
+				<div>
+					{this.renderEvalUser()}
+					<FormsyTime
+						name='evalTime'
+						fullWidth={true}
+						hintText='When did the event end?'
+						floatingLabelText='End Time'
+						value={this.state.evalTime}
+					/>
+					<FormsyText
+						name='evalAttendance'
+						fullWidth={true}
+						hintText='How many students attended?'
+						floatingLabelText='Attendance'
+						value={this.state.evalAttendance}
+					/>
+					<FormsyText
+						name='evalCost'
+						fullWidth={true}
+						hintText='How much did you actually spend?'
+						floatingLabelText='Actual Cost'
+						value={this.state.evalCost}
+					/>
+					<Subheader>P-card and Reciepts Returned</Subheader>
+					<FormsyRadioGroup
+						name='evalCardReturn'
+						valueSelected={this.state.evalCardReturn}
+						onChange={this.handleSelection} 
+					>
+						<FormsyRadio
+							value='no'
+							label='No'
+						/>
+						<FormsyRadio
+							value='yes'
+							label='Yes'
+						/>
+					</FormsyRadioGroup>
+					<FormsyText
+						name='evalOutcomes'
+						fullWidth={true}
+						multiLine={true}
+						hintText='What learning outcomes were achieved?'
+						floatingLabelText='Achieved Outcomes'
+						value={this.state.evalOutcomes}
+					/>
+					<FormsyText
+						name='evalStrengths'
+						fullWidth={true}
+						multiLine={true}
+						hintText='What were the programs strengths?'
+						floatingLabelText='Strengths'
+						value={this.state.evalStrengths}
+					/>
+					<FormsyText
+						name='evalWeaknesses'
+						fullWidth={true}
+						multiLine={true}
+						hintText='What were the programs weaknesses?'
+						floatingLabelText='Weaknesses'
+						value={this.state.evalWeaknesses}
+					/>
+					<FormsyText
+						name='evalSuggestions'
+						fullWidth={true}
+						multiLine={true}
+						hintText='What could improve this program for if done again?'
+						floatingLabelText='Suggestions for Improvement'
+						value={this.state.evalSuggestions}
+					/>
+					<FormsyText
+						name='evalOther'
+						fullWidth={true}
+						multiLine={true}
+						hintText='Other Comments or Concerns?'
+						floatingLabelText='Other Comments or Concerns (0ptional)'
+						value={this.state.evalOther}
+					/>
+				</div>
+			)
+		}
+	}
+
 	renderEvaluation () {
 		let { centerStyle } = this.state.styles;
-		if(this.refs.form && (this.state.approved || this.state.evaluated)) {
+		if(this.state.evaluated || this.state.approved) {
 			return (
 				<div>
 					<Divider />
 					<Subheader>Program Evaluation</Subheader>
 					<div style={centerStyle}>
-						<FormsyTime
-							name='evalTime'
-							fullWidth={true}
-							hintText='When did the event end?'
-							floatingLabelText='End Time'
-							value={this.state.evalTime}
-						/>
-						<FormsyText
-							name='evalAttendance'
-							fullWidth={true}
-							hintText='How many students attended?'
-							floatingLabelText='Attendance'
-							value={this.state.evalAttendance}
-						/>
-						<FormsyText
-							name='evalCost'
-							fullWidth={true}
-							hintText='How much did you actually spend?'
-							floatingLabelText='Actual Cost'
-							value={this.state.evalCost}
-						/>
-						<Subheader>P-card and Reciepts Returned</Subheader>
-						<FormsyRadioGroup
-							name='evalCardReturn'
-							valueSelected={this.state.evalCardReturn}
-							onChange={this.handleSelection} 
-						>
-							<FormsyRadio
-								value='no'
-								label='No'
-							/>
-							<FormsyRadio
-								value='yes'
-								label='Yes'
-							/>
-						</FormsyRadioGroup>
-						<FormsyText
-							name='evalOutcomes'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What learning outcomes were achieved?'
-							floatingLabelText='Achieved Outcomes'
-							value={this.state.evalOutcomes}
-						/>
-						<FormsyText
-							name='evalStrengths'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What were the programs strengths?'
-							floatingLabelText='Strengths'
-							value={this.state.evalStrengths}
-						/>
-						<FormsyText
-							name='evalWeaknesses'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What were the programs weaknesses?'
-							floatingLabelText='Weaknesses'
-							value={this.state.evalWeaknesses}
-						/>
-						<FormsyText
-							name='evalSuggestions'
-							fullWidth={true}
-							multiLine={true}
-							hintText='What could improve this program for if done again?'
-							floatingLabelText='Suggestions for Improvement'
-							value={this.state.evalSuggestions}
-						/>
-						<FormsyText
-							name='evalOther'
-							fullWidth={true}
-							multiLine={true}
-							hintText='Other Comments or Concerns?'
-							floatingLabelText='Other Comments or Concerns (0ptional)'
-							value={this.state.evalOther}
-						/>
+						{this.renderEvalContent()}
 					</div>
 				</div>
 			)
 		}
 	}
 
-	renderAddComment() {
-		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
-		return (
-			<Paper style={listPaperStyle}>
-				<Formsy.Form
-					ref='form'
-					onValid={this.enableButton}
-					onInvalid={this.disableButton}
-					//onValidSubmit={this.submitComment.bind(this)}
-					onValidSubmit={this.submitForm}
-					onInvalidSubmit={this.notifyFormError}
-				>
-					<FormsyText
-						name={'message'}
-						required
-						floatingLabelText='Add Comment'
-						multiLine={true}
-						// style={listStyle}
-					/>
-				</Formsy.Form>
-			</Paper>
-		)
+	handleComment(comment) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		let data = {
+			id: this.props.details._id,
+			jobId: jobId,
+			jwt: this.props.token.jwt,
+			comment: comment
+		}
+		if(comment > '') this.props.comment(data, 'Programs');
 	}
 
 	render() {
@@ -678,9 +727,9 @@ class Program extends Component {
 				<br />
 				<Divider />
 				<Subheader>Program Tracker</Subheader>
-				<div style={centerStyle}>
+				<center>
 					<TrackProgram workOrder={this.props.details} size={screen.width}/>
-				</div>
+				</center>
 				<Formsy.Form
 					ref='form'
 					onValid={this.enableButton}
@@ -708,7 +757,7 @@ class Program extends Component {
 							fullWidth={true}
 							firstDayOfWeek={0}
 							minDate={new Date()}
-							formatDate={(date) => this.formatDate(date)}
+							formatDate={(date) => formatDate(date)}
 							hintText='Program date?'
 							floatingLabelText='Date'
 							value={this.state.date}
@@ -836,16 +885,15 @@ class Program extends Component {
 						/>
 					</div>
 
-					{this.renderEvaluation()}
+					<CommentSection 
+						enable={(this.props.details._id ? true : false)}
+						comments={this.state.comments} 
+						userId={this.props.token.user._id}
+						handleComment={this.handleComment}
+						styles={this.state.styles}
+					/>
 
-					{/*
-					Add Comment Box
-					<Divider />
-					<Subheader>Comments</Subheader>
-					<div style={centerStyle}>
-						{this.renderAddComment()}
-					</div>
-					*/}
+					{this.renderEvaluation()}
 
 					<Divider />
 					<Subheader>Actions</Subheader>

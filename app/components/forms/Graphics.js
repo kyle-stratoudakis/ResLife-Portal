@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormWrapper } from '../FormWrapper/';
+import { FormWrapper } from './formWrapper/';
 import Formsy from 'formsy-react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -9,11 +9,10 @@ import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon'
 import { red500 } from 'material-ui/styles/colors';
-import FormsyText from './Formsy/FormsyText';
-import FormsyDate from './Formsy/FormsyDate';
-import FormsyTime from './Formsy/FormsyTime';
-import TrackGraphics from '../TrackGraphics' ;
-
+import FormsyText from './formComponents/FormsyText';
+import FormsyDate from './formComponents/FormsyDate';
+import FormsyTime from './formComponents/FormsyTime';
+import TrackGraphics from './formComponents/TrackGraphics' ;
 import {
 	FormsyRadioGroup,
 	FormsyRadio,

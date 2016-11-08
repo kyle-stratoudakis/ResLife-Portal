@@ -12,7 +12,8 @@ const compiler = webpack(config);
 
 const IP = accessConfig.IP || 'localhost';
 const PORT = accessConfig.PORT || '9080';
-const host = accessConfig.HOST || 'localhost:9080';
+const HOST = accessConfig.HOST || 'localhost:9080';
+const PROTOCOL = accessConfig.PROTOCOL || 'http://';
 
 app.use(require('webpack-dev-middleware')(compiler, {
 	noInfo: true,
@@ -26,7 +27,7 @@ app.use('/login', NoAD_login)
 app.use('/api', routes)
 
 // Start server listening on configured IP:PORT
-app.listen(PORT, IP, function(err) {
+const server = app.listen(PORT, IP, function(err) {
   if (err) {
     console.log(err);
     return;
@@ -34,9 +35,12 @@ app.listen(PORT, IP, function(err) {
   console.log('Listening at ' + IP + ':' + PORT);
 });
 
+// Socket.io - Requires server instance on instantiation
+const io = require('socket.io')(server);
+
 // Redirect away from blank root route
 app.get('/', function(req, res) {
-	res.redirect('https://'+host+'/Home');
+	res.redirect(PROTOCOL+HOST+'/Home');
 });
 
 // Serves image for tab and shortcut icon

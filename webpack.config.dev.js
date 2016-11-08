@@ -18,6 +18,11 @@ module.exports = {
 		new webpack.NoErrorsPlugin(),
 		new webpack.ProvidePlugin({
 			'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
+		}),
+		new webpack.DefinePlugin({
+			'process.env': {
+				'NODE_ENV': JSON.stringify('production')
+			}
 		})
 	],
 	module: {

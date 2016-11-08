@@ -8,6 +8,9 @@ const getTime = function(time) {
 		hr = hr - 12;
 		tod = ' pm';
 	}
+	else if(hr === 0) {
+		hr = 12;
+	}
 	if(mn < 10) {
 		mn = '0'+ mn;
 	}

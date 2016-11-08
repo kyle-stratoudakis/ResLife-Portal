@@ -63,7 +63,7 @@ const fundingApproval = function(wo) {
 								</tr>
 								<tr>
 								  <td class="mui--divider-top">
-									`+wo.name+`,
+									Portal User,
 								  </td>
 								</tr>
 								<tr>

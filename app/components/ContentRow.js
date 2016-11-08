@@ -23,12 +23,16 @@ class ContentRow extends Component {
 	constructor(props) {
 		super(props)
 
-		this.state = {limit: 20};
+		this.state = {
+			limit: 20,
+			sort: null
+		};
 
 		this.renderAction = this.renderAction.bind(this);
 		this.renderAvatar = this.renderAvatar.bind(this);
 		this.renderDescription = this.renderDescription.bind(this);
 		this.renderRow = this.renderRow.bind(this);
+		this.sortToggle = this.sortToggle.bind(this);
 	}
 
 	renderAction (action, id, i) {
@@ -95,7 +99,11 @@ class ContentRow extends Component {
 			return (
 				<div>
 					{description.substring(0, 120)}
-					<Link to={'/job/'+this.props.location+'/View/'+this.props.location+'/'+_id}>...</Link>
+					<a 
+						style={{cursor: 'pointer'}} 
+						onClick={this.props.performRoute.bind(null, '/job/'+this.props.location+'/View/'+this.props.location+'/'+_id)}>
+						...
+					</a>
 				</div>
 			)	
 		}
@@ -105,7 +113,7 @@ class ContentRow extends Component {
 	}
 
 	renderRow (row, i) {
-		let{ checked, reviewed, approved, evaluated, submittedDate } = row;
+		let{ checked, reviewed, approved, evaluated, date } = row;
 		let { searchId, title } = row; 
 		return (
 			<div className="container row" key={i}>
@@ -123,7 +131,7 @@ class ContentRow extends Component {
 				</div>
 				<div className="col-sm-2">
 					<CardText>
-						{getDate(new Date(submittedDate))}
+						{getDate(new Date(date))}
 					</CardText>
 				</div>
 				<div className="col-sm-2">
@@ -133,13 +141,6 @@ class ContentRow extends Component {
 				</div>
 				<Divider />
 			</div>
-		)
-	}
-
-	limitRender() {
-		let workorders = this.props.data.slice(0, this.state.limit);
-		return (
-			workorders.map(this.renderRow)
 		)
 	}
 
@@ -162,27 +163,36 @@ class ContentRow extends Component {
 	}
 
 	handleLoadMore() {
-		this.setState({limit: this.state.limit += 20})
+		this.setState({limit: this.state.limit += 20});
+	}
+
+	sortToggle(property) {
+		var order = '_asc';
+		if(this.state.sort === property+order) {
+			order = '_desc';
+		}
+		this.setState({sort: property+order});
+		this.props.handleSort(this.props.parentEndpoint, property+order);
 	}
 
 	render () {
 		return (
-			<div ref='table'>
-				<Table>
-					<TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-						<TableRow>
-							<TableHeaderColumn className="col-sm-4">Title</TableHeaderColumn>
-							<TableHeaderColumn className="col-sm-4">Description</TableHeaderColumn>
-							<TableHeaderColumn className="col-sm-2">Date Submitted</TableHeaderColumn>
-							<TableHeaderColumn className="col-sm-2">Actions</TableHeaderColumn>
-							<Divider />
-						</TableRow>
-					</TableHeader>
-				</Table>
-				<div>
-					{this.limitRender()}
-					{this.renderLoadMore()}
+			<div className="container row">
+				<div className="col-sm-4">
+					<FlatButton label='Title'onClick={this.sortToggle.bind(null, 'title')}></FlatButton>
 				</div>
+				<div className="col-sm-4">
+					<FlatButton label='Description' onClick={this.sortToggle.bind(null, 'description')}></FlatButton>
+				</div>
+				<div className="col-sm-2">
+					<FlatButton label='Date' onClick={this.sortToggle.bind(null, 'date')}></FlatButton>
+				</div>
+				<div className="col-sm-2">
+					<FlatButton label='Actions' disabled={true}></FlatButton>
+				</div>
+				<Divider />
+					{this.props.data.slice(0, this.state.limit).map(this.renderRow)}
+					{this.renderLoadMore()}
 			</div>
 		)
 	}

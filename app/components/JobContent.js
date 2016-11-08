@@ -3,14 +3,8 @@ import ContentRow from './ContentRow';
 import ActionCard from './ActionCard';
 import {grey500} from 'material-ui/styles/colors';
 import Paper from 'material-ui/Paper';
-import Card from 'material-ui/Card';
-import CardActions from 'material-ui/Card/CardActions';
-import CardMedia from 'material-ui/Card/CardMedia';
-import CardTitle from 'material-ui/Card/CardTitle';
-import FlatButton from 'material-ui/FlatButton';
 import Tabs from 'material-ui/Tabs';
 import Tab from 'material-ui/Tabs/Tab';
-import FontIcon from 'material-ui/FontIcon';
 
 let JobContent = React.createClass({
 	componentWillMount () {
@@ -23,7 +17,14 @@ let JobContent = React.createClass({
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
-		this.props.fetchWorkorders(location + '/' + endpoint + "&jwt=" + this.props.token.jwt + "&job=" + jobId);
+		this.props.fetchWorkorders(location+'/'+endpoint+'&jwt='+this.props.token.jwt+'&job='+jobId);
+	},
+
+	handleSort(endpoint, sort) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
+		this.props.fetchWorkorders(location+'/'+endpoint+'&jwt='+this.props.token.jwt+'&job='+jobId+'&sort='+sort);
 	},
 
 	renderTab (endpoint, i) {
@@ -38,6 +39,7 @@ let JobContent = React.createClass({
 				style={{background: grey500}}
 				onActive={this.handleEndpoint.bind(null, endpoint.route)}>
 				<ContentRow
+					handleSort={this.handleSort}
 					parentEndpoint={endpoint.route}
 					location={this.props.params['_job']}
 					jwt={this.props.token.jwt}
@@ -52,12 +54,19 @@ let JobContent = React.createClass({
 	},
 
 	renderCard (action) {
+		let location = this.props.params['_job'];
+		let index = this.props.jobs.findIndex((job) => job.link === location);
+		let jobId = this.props.jobs[index]._id;
 		return (
-			<div key={action._id} className="col-sm-3">
+			<div key={action._id} className='col-sm-3'>
 				<ActionCard
 					location={this.props.params['_job']}
 					performRoute={this.props.performRoute}
+					downloadLink={this.props.downloadLink}
+					jwt={this.props.token.jwt}
+					jobId={jobId}
 					title={action.title}
+					type={action.type}
 					route={action.route}
 					color={action.color}
 					icon={action.icon}
@@ -75,14 +84,13 @@ let JobContent = React.createClass({
 		return (
 			<div>
 				<br />
-				<div className="container">
+				<div className='container'>
 					{dashActions.map(this.renderCard)}
 				</div>
 				<br />
-				<div className="container">
+				<div className='container'>
 					<Paper zDepth={2}>
 						<Tabs
-							// initialSelectedIndex={0}
 							value={this.props.selectedTab}
 							onChange={(value) => this.props.changeTab(value)}>
 							{endpoints.map(this.renderTab)}

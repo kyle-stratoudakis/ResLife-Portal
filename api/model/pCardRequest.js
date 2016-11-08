@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 var userSchema = require('./schema/user');
-var Schema = mongoose.Schema;
 var config = require('../../../config');
+var commentSchema = require('./schema/comment');
+var Schema = mongoose.Schema;
 mongoose.Promise = global.Promise;
 
 var db = mongoose.createConnection(config.mongodb+'/workorders/pCardRequests');
@@ -39,6 +40,7 @@ var pCardSchema = new mongoose.Schema({
 	outcomes: String,
 	travelAuthorization: String,
 	chartwellsQuote: String,
+	comments: [commentSchema]
 });
 
 module.exports = db.model('pCardRequest', pCardSchema);
