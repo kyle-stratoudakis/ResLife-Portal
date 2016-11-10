@@ -2,11 +2,16 @@ import React from 'react'
 import { Stepper, Step, StepLabel, StepButton, StepContent } from 'material-ui'
 import { ActionAssignment, ActionAssignmentTurnedIn, ActionAssignmentInd } from 'material-ui/svg-icons';
 import { grey500, lightGreen500 } from 'material-ui/styles/colors';
-import getDate from '../../../../utils/getDate';
 
 const TrackGraphics = React.createClass({
+	getDate(date) {
+		let d = new Date(date)
+		let formated = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
+		return formated;
+	},
+
 	/*
-		So, this should have the following statuses: new, assigned, completed.
+		So, this should have the following statuses: new, assigned, proofing, completed.
 		User obviously sumbits and the assigned SWK graphic designer obviously completes,
 		
 		but the question is do we want someone to assign these tasks? 
@@ -31,7 +36,7 @@ const TrackGraphics = React.createClass({
 						<br />
 						{workorder.user.name}
 						<br />
-						{workorder.submittedDate ? getDate(workorder.submittedDate) : ''}
+						{workorder.submittedDate ? this.getDate(workorder.submittedDate) : ''}
 					</StepLabel>
 				</Step>
 			);
@@ -46,15 +51,15 @@ const TrackGraphics = React.createClass({
 			);
 		}
 
-		if(workorder.checked){
+		if(workorder.assigned){
 			steps.push(
 				<Step>
-					<StepLabel icon={(workorder.checked ? approved : pending)}>
-						Hall Director
+					<StepLabel icon={(workorder.assigned ? approved : pending)}>
+						Assigned
 						<br />
-						{workorder.checked.name}
+						{workorder.assigned.name}
 						<br />
-						{workorder.checkedDate ? getDate(workorder.checkedDate) : ''}
+						{workorder.assignedDate ? this.getDate(workorder.assignedDate) : ''}
 					</StepLabel>
 				</Step>
 			);
@@ -63,21 +68,42 @@ const TrackGraphics = React.createClass({
 			steps.push(
 				<Step>
 					<StepLabel icon={pending}>
-						Hall Director
+						Assigned
 					</StepLabel>
 				</Step>
 			);
 		}
-
-		if(workorder.reviewed){
+		if(workorder.proof){
+			steps.push(
+				<Step>
+					<StepLabel icon={(workorder.assigned ? approved : pending)}>
+						Proof
+						<br />
+						{workorder.proof.name}
+						<br />
+						{workorder.proofDate ? this.getDate(workorder.proofDate) : ''}
+					</StepLabel>
+				</Step>
+			);
+		}
+		else {
+			steps.push(
+				<Step>
+					<StepLabel icon={pending}>
+						Proof
+					</StepLabel>
+				</Step>
+			);
+		}
+		if(workorder.completed){
 			steps.push(
 				<Step>
 					<StepLabel icon={approved}>
-						Reviewed
+						Completed
 						<br />
-						{workorder.reviewed.name}
+						{workorder.completed.name}
 						<br />
-						{getDate(workorder.reviewedDate)}
+						{this.getDate(workorder.completedDate)}
 					</StepLabel>
 				</Step>
 			);
@@ -86,30 +112,7 @@ const TrackGraphics = React.createClass({
 			steps.push(
 				<Step>
 					<StepLabel icon={pending}>
-						Reviewed
-					</StepLabel>
-				</Step>
-			);
-		}
-
-		if(workorder.approved){
-			steps.push(
-				<Step>
-					<StepLabel icon={approved}>
-						Approved
-						<br />
-						{workorder.approved.name}
-						<br />
-						{workorder.approvedDate ? getDate(workorder.approvedDate) : ''}
-					</StepLabel>
-				</Step>
-			);
-		}
-		else {
-			steps.push(
-				<Step>
-					<StepLabel icon={pending}>
-						Approved
+						Completed
 					</StepLabel>
 				</Step>
 			);

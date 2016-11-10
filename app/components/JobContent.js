@@ -6,8 +6,6 @@ import Paper from 'material-ui/Paper';
 import Tabs from 'material-ui/Tabs';
 import Tab from 'material-ui/Tabs/Tab';
 import FlatButton from 'material-ui/FlatButton';
-import Formsy from 'formsy-react';
-import FormsyText from './forms/formComponents/FormsyText';
 
 let JobContent = React.createClass({
 	componentWillMount () {
@@ -23,7 +21,7 @@ let JobContent = React.createClass({
 		this.props.fetchWorkorders(location+'/'+endpoint+'&jwt='+this.props.token.jwt+'&job='+jobId);
 	},
 
-	handleSort(endpoint, sort) {
+	handleSort (endpoint, sort) {
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
@@ -61,37 +59,6 @@ let JobContent = React.createClass({
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
 
-		let title = 'Search By ID';
-		const content = [
-			<center>
-				<p>Enter the search ID of the program you are looking for.</p>
-				
-				<Formsy.Form
-					ref='searchForm'
-				>
-					<FormsyText
-						ref='searchID'
-						name='searchID'
-						floatingLabelText='Search ID'
-						style={{textAlign: 'left'}}
-					/>
-				</Formsy.Form>
-			</center>
-		];
-
-		const actions = [
-			<FlatButton
-				label='Cancel'
-				key='cancel'
-				onClick={this.props.closeDialog.bind(this)}
-			/>,
-			<FlatButton
-				label='Search'
-				key='search'
-				onClick={this.handleSearch.bind(this)}
-			/>,
-		];
-
 		return (
 			<div key={action._id} className='col-sm-3'>
 				<ActionCard
@@ -106,27 +73,9 @@ let JobContent = React.createClass({
 					color={action.color}
 					icon={action.icon}
 					height={0.5}
-					searchDialog={this.props.openDialog.bind(this, title, content, actions)}
 				/>
 			</div>
 		)
-	},
-
-	handleSearch() {
-		let location = this.props.params['_job'];
-		let index = this.props.jobs.findIndex((job) => job.link === location);
-		let jobId = this.props.jobs[index]._id;
-		let searchID = (this.refs.searchID ? this.refs.searchID.getValue() : '');
-		let data = {
-			jobId: jobId,
-			jwt: this.props.token.jwt,
-			searchID: searchID
-		}
-
-		if(searchID > '') {
-			console.log(searchID)
-			this.props.workorderAction('programs/get/search', data, location);
-		}
 	},
 
 	render() {

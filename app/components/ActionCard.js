@@ -17,9 +17,6 @@ const ActionCard = React.createClass({
 		else if(this.props.type === 'download') {
 			this.props.downloadLink(this.props.route, this.props.jwt, this.props.jobId);
 		}
-		else if(this.props.type === 'dialog') {
-			this.props.searchDialog();
-		}
 	},
 
 	render () {

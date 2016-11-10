@@ -729,7 +729,7 @@ class Program extends Component {
 		let jobId = this.props.jobs[index]._id;
 		let id = this.props.details._id;
 		let jwt = this.props.token.jwt;
-		if(this.state.councilDate !== {}) {
+		if(this.props.details.councilDate && this.props.details.councilDate !== {}) {
 			return (
 				<FlatButton
 					label='Download Resolution Form'
