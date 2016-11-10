@@ -53,7 +53,6 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		email: decodedUser.email,
 		primary_contact: decodedUser.primary_contact,
 		hall: decodedUser.hall,
-		type: data.type,
 		date: data.date,
 		time: data.time,
 		location: data.location,
@@ -61,36 +60,13 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		description: data.description,
 		checked: null,
 		reviewed: null,
-		approved: null,
+		completed: null,
 		evaluated: null
 	});
 
 	if(data.department) graphics.department = data.department;
 	if(data.items) graphics.items = JSON.stringify(data.items);
 	if(data.staff) graphics.staff = JSON.stringify(data.staff);
-	if(data.funding) graphics.funding = data.funding;
-	if(data.fundingType) graphics.fundingType = data.fundingType;
-
-	if(data.travelAuthorization) graphics.travelAuthorization = data.travelAuthorization;
-	if(data.chartwellsQuote) graphics.chartwellsQuote = data.chartwellsQuote;
-
-	if(data.councilDate) graphics.councilDate = data.councilDate;
-	if(data.councilMotioned) graphics.councilMotioned = data.councilMotioned;
-	if(data.councilSeconded) graphics.councilSeconded = data.councilSeconded;
-	if(data.councilFavor) graphics.councilFavor = data.councilFavor;
-	if(data.councilOpposed) graphics.councilOpposed = data.councilOpposed;
-	if(data.councilAbstained) graphics.councilAbstained = data.councilAbstained;
-	if(data.councilApproval) graphics.councilApproval = data.councilApproval;
-
-	if(data.evalTime) graphics.evalTime = data.evalTime;
-	if(data.evalAttendance) graphics.evalAttendance = data.evalAttendance;
-	if(data.evalCost) graphics.evalCost = data.evalCost;
-	if(data.evalCardReturn) graphics.evalCardReturn = data.evalCardReturn;
-	if(data.evalOutcomes) graphics.evalOutcomes = data.evalOutcomes;
-	if(data.evalStrengths) graphics.evalStrengths = data.evalStrengths;
-	if(data.evalWeaknesses) graphics.evalWeaknesses = data.evalWeaknesses;
-	if(data.evalSuggestions) graphics.evalSuggestions = data.evalSuggestions;
-	if(data.evalOther) graphics.evalOther = data.evalOther;
 
 	if(role === 'submitter') {
 		req.notif = 'new';
@@ -106,8 +82,8 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		graphics.reviewed = decodedUser._id;
 		graphics.reviewedDate = new Date();
 		if(!graphics.funding) {
-			graphics.approved = decodedUser._id;
-			graphics.approvedDate = new Date();
+			graphics.completed = decodedUser._id;
+			graphics.completedDate = new Date();
 		}
 		else {
 			req.notif = 'reviewed';
@@ -118,8 +94,8 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		graphics.checkedDate = new Date();
 		graphics.reviewed = decodedUser._id;
 		graphics.reviewedDate = new Date();
-		graphics.approved = decodedUser._id;
-		graphics.approvedDate = new Date();
+		graphics.completed = decodedUser._id;
+		graphics.completedDate = new Date();
 	}
 
 	if(data.councilDate || data.councilMotioned || data.councilSeconded || data.councilFavor || data.councilOpposed || data.councilAbstained || data.councilApproval) {
@@ -170,42 +146,6 @@ route.put('/put/update', jsonParser, m_role, function(req, res, next){
 		if(data.department) graphics.department = data.department;
 		if(data.items) graphics.items = JSON.stringify(data.items);
 		if(data.staff) graphics.staff = JSON.stringify(data.staff);
-		if(data.funding) graphics.funding = data.funding;
-		if(data.fundingType) graphics.fundingType = data.fundingType;
-
-		if(data.travelAuthorization) graphics.travelAuthorization = data.travelAuthorization;
-		if(data.chartwellsQuote) graphics.chartwellsQuote = data.chartwellsQuote;
- 		
- 		if(data.councilDate || data.councilMotioned || data.councilSeconded || data.councilFavor || data.councilOpposed || data.councilAbstained || data.councilApproval) {
- 			req.email = 'hall_council';
- 			req.notif = 'hall_council';
- 		}
-		if(data.councilDate) graphics.councilDate = data.councilDate;
-		if(data.councilMotioned) graphics.councilMotioned = data.councilMotioned;
-		if(data.councilSeconded) graphics.councilSeconded = data.councilSeconded;
-		if(data.councilFavor) graphics.councilFavor = data.councilFavor;
-		if(data.councilOpposed) graphics.councilOpposed = data.councilOpposed;
-		if(data.councilAbstained) graphics.councilAbstained = data.councilAbstained;
-		if(data.councilApproval) graphics.councilApproval = data.councilApproval;
-		
-		if(data.evalTime || data.evalAttendance || data.evalCost || data.evalCardReturn || data.evalOutcomes || data.evalStrengths || data.evalWeaknesses || data.evalSuggestions || data.evalOther) {
-			graphics.evaluated = decodedUser._id;
-			graphics.evaluatedDate = new Date();
-			req.email = 'evaluated';
-			req.notif = 'evaluated';
-		}
-		if(data.evalTime) {
-			graphics.evalTime = data.evalTime;
-			console.log(graphics._id, data.evalTime);
-		}
-		if(data.evalAttendance) graphics.evalAttendance = data.evalAttendance;
-		if(data.evalCost) graphics.evalCost = data.evalCost;
-		if(data.evalCardReturn) graphics.evalCardReturn = data.evalCardReturn;
-		if(data.evalOutcomes) graphics.evalOutcomes = data.evalOutcomes;
-		if(data.evalStrengths) graphics.evalStrengths = data.evalStrengths;
-		if(data.evalWeaknesses) graphics.evalWeaknesses = data.evalWeaknesses;
-		if(data.evalSuggestions) graphics.evalSuggestions = data.evalSuggestions;
-		if(data.evalOther) graphics.evalOther = data.evalOther;
 
 		graphics.save(function(err, saved) {
 			if(!err) {
@@ -245,19 +185,19 @@ route.put('/put/approve', jsonParser, m_role, function(req, res, next) {
 				req.email = 'reviewed';
 				req.notif = 'reviewed';
 				if(!graphics.funding) {
-					graphics.approved = userId;
-					graphics.approvedDate = new Date();
-					req.email = 'approved';
+					graphics.completed = userId;
+					graphics.completedDate = new Date();
+					req.email = 'completed';
 					req.notif = 'delete_notif';
-					console.log('graphics approved ' + graphics.searchId);
+					console.log('graphics completed ' + graphics.searchId);
 				}
 			}
 			else if(role === 'approver') {
-				graphics.approved = userId;
-				graphics.approvedDate = new Date();
-				req.email = 'approved';
+				graphics.completed = userId;
+				graphics.completedDate = new Date();
+				req.email = 'completed';
 				req.notif = 'delete_notif';
-				console.log('graphics approved ' + graphics.searchId);
+				console.log('graphics completed ' + graphics.searchId);
 			}
 
 			graphics.save(function(err, saved) {
@@ -292,8 +232,8 @@ route.put('/put/deny', jsonParser, m_role, function(req, res, next){
 				graphics.checkedDate = null;
 				graphics.reviewed = null;
 				graphics.reviewedDate = null;
-				graphics.approved = null;
-				graphics.approvedDate = null;
+				graphics.completed = null;
+				graphics.completedDate = null;
 				req.email = 'deny';
 				req.notif = 'delete_notif';
 			}
@@ -302,16 +242,16 @@ route.put('/put/deny', jsonParser, m_role, function(req, res, next){
 				graphics.checkedDate = null;
 				graphics.reviewed = null;
 				graphics.reviewedDate = null;
-				graphics.approved = null;
-				graphics.approvedDate = null;
+				graphics.completed = null;
+				graphics.completedDate = null;
 				req.email = 'deny';
 				req.notif = 'new';
 			}
 			else if(role === 'approver') {
 				graphics.reviewed = null;
 				graphics.reviewedDate = null;
-				graphics.approved = null;
-				graphics.approvedDate = null;
+				graphics.completed = null;
+				graphics.completedDate = null;
 				req.email = 'deny';
 				req.notif = 'checked';
 			}
@@ -353,17 +293,17 @@ route.put('/put/return', jsonParser, m_role, function(req, res, next){
 				req.email = 'deny_reviewed';
 				req.notif = 'deny_reviewed';
 				if(!graphics.funding) {
-					graphics.approved = null;
-					graphics.approvedDate = null;
-					req.email = 'deny_reviewer_approved';
-					req.notif = 'deny_reviewer_approved';
+					graphics.completed = null;
+					graphics.completedDate = null;
+					req.email = 'deny_reviewer_completed';
+					req.notif = 'deny_reviewer_completed';
 				}
 			}
 			else if(role === 'approver') {
-				graphics.approved = null;
-				graphics.approvedDate = null;
-				req.email = 'deny_approved';
-				req.notif = 'deny_approved';
+				graphics.completed = null;
+				graphics.completedDate = null;
+				req.email = 'deny_completed';
+				req.notif = 'deny_completed';
 			}
 			graphics.save(function(err, saved) {
 				if(!err) {
@@ -432,7 +372,7 @@ route.get('/get/details', function(req, res) {
 		var id = req.query.id;
 		graphicsModel.findOne({ '_id': id })
 		.populate({
-			path: 'user checked reviewed approved evaluated',
+			path: 'user checked reviewed completed evaluated',
 			select: 'name -_id',
 			model: userModel
 		})
@@ -449,36 +389,6 @@ route.get('/get/details', function(req, res) {
 	}
 });
 
-route.get('/download', function(req, res) {
-	if(req.query.id) {
-		graphicsModel.findOne({ _id: req.query.id })
-		.populate({
-			path: 'checked reviewed approved',
-			select: 'name -_id',
-			model: userModel
-		})
-		.exec(function(err, fields) {
-			if(!err && fields) {
-				try {
-					generatePcard(fields);
-				}
-				catch (ex) {
-					console.log('graphics generate: ' + ex)
-				}
-				setTimeout(function() {
-					try {
-						res.download('./api/services/email/sentForms/pcard-'+ fields._id +'.pdf');
-					}
-					catch (ex) {
-						console.log('graphics download pdf ' + ex);
-						res.status(500).send(ex);
-					}
-				}, 1500);
-			}
-		});
-	}
-});
-
 route.get('/get/tableData', function(req, res) {
 	var fs = require('fs');
 	var getDate = require('../../utils/getDate');
@@ -486,10 +396,10 @@ route.get('/get/tableData', function(req, res) {
 	var getDateTime = require('../../utils/getDateTime'); // determine final path
 	if(req.query.hall) {
 		console.log(req.query.hall)
-		graphicsModel.find({ hall: { $in: req.query.hall }, approved: { $ne: null } }) 
-		.select('approved approvedDate checked checkedDate date description email evaluated hall location name outcomes primary_contact reviewed reviewedDate searchId submittedDate time title type user')
+		graphicsModel.find({ hall: { $in: req.query.hall }, completed: { $ne: null } }) 
+		.select('completed completedDate checked checkedDate date description email evaluated hall location name outcomes primary_contact reviewed reviewedDate searchId submittedDate time title type user')
 		.populate({
-			path: 'user checked reviewed approved evaluated',
+			path: 'user checked reviewed completed evaluated',
 			select: 'name -_id',
 			model: userModel
 		})
@@ -510,9 +420,9 @@ route.get('/get/tableData', function(req, res) {
 						if(keys[k] === 'submittedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
 						if(keys[k] === 'checkedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
 						if(keys[k] === 'reviewedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if(keys[k] === 'approvedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
+						if(keys[k] === 'completedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
 						if(keys[k] === 'evaluatedDate' && cell) cell = getDateTime(new Date(cell), new Date(cell)).replace(/,/g, '');
-						if((keys[k] === 'user' || keys[k] === 'checked' || keys[k] === 'reviewed' || keys[k] === 'approved' || keys[k] === 'evaluated') && cell) {
+						if((keys[k] === 'user' || keys[k] === 'checked' || keys[k] === 'reviewed' || keys[k] === 'completed' || keys[k] === 'evaluated') && cell) {
 							cell = cell.name;
 						}
 						if(keys[k] === 'description' || keys[k] === 'outcomes') {

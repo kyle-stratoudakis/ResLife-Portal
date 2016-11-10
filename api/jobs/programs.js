@@ -8,6 +8,7 @@ const m_programQuery = require('../middleware/programQueries');
 const getSearchId = require('../utils/getSearchId');
 const bodyParser = require('body-parser');
 const generatePcard = require('../services/email/emailTemplates/pcardAuthForm');
+const generateResolution = require('../services/formGenerators/Resolution');
 const jsonParser = bodyParser.json();
 
 route.get('/get/workorders', m_role, m_programQuery, function(req, res) {
@@ -468,6 +469,29 @@ route.get('/download', function(req, res) {
 						res.status(500).send(ex);
 					}
 				}, 1500);
+			}
+		});
+	}
+});
+
+route.get('/get/resolution', function(req, res) {
+	if(req.query.id) {
+		programModel.findOne({ _id: req.query.id })
+		.populate({
+			path: 'checked reviewed approved',
+			select: 'name -_id',
+			model: userModel
+		})
+		.exec(function(err, fields) {
+			if(!err && fields) {
+				res.set('Content-Disposition', 'attachment; filename=Resolution_'+fields.searchId+'.pdf');
+				var doc = generateResolution(fields);
+				doc.on('data', function(chunk) {
+					res.write(chunk);
+				});
+				doc.on('end', function() {
+					res.end();
+				});
 			}
 		});
 	}

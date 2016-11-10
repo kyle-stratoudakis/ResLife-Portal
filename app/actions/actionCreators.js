@@ -4,7 +4,7 @@ import { PROTOCOL, HOST } from '../../../config';
 const host = PROTOCOL + HOST;
 
 /*
-	Perform routre transition in a manner that is synced with the store
+	Perform router transition in a manner that is synced with the store
 	string route - destination route
 */
 export function performRoute(route) {
@@ -14,7 +14,7 @@ export function performRoute(route) {
 }
 
 /*
-	Perform routre transition in a manner that is synced with the store
+	Perform router transition in a manner that is synced with the store
 	and update workorders after routing
 	string route - destination route
 	string endpoint - arguement passed to fetchWorkorders
@@ -77,6 +77,7 @@ export function logOut() {
 	return function (dispatch) {
 		dispatch(loggingOut());
 		dispatch(push('/Login'));
+		dispatch(refreshPage(true));
 	}
 }
 
@@ -269,7 +270,7 @@ export function downloadLink(route, jwt, jobId) {
 	var link = document.createElement('a');
 	link.setAttribute('href', `${host}/api/${route}&jwt=${jwt}&job=${jobId}`);
 	link.setAttribute('download', 'Download Link');
-	link.click();
+	clickLink(link);
 	
 	return {
 		type: 'DOWNLOAD_LINK',
@@ -286,7 +287,7 @@ export function downloadPdf(wo, location) {
 	var link = document.createElement('a');
 	link.setAttribute('href', host + '/api/' + location + '/download?id=' + wo._id);
 	link.setAttribute('download', 'P-Card Auth Form-'+wo.searchId);
-	link.click();
+	clickLink(link);
 
 	return {
 		type: 'DOWNLOAD_PDF',
@@ -302,12 +303,27 @@ export function downloadPdf(wo, location) {
 export function emailUser(wo) {
 	var link = document.createElement('a');
 	link.setAttribute('href', `mailto:${wo.email}?Subject=${wo.title}`);
-	link.click();
+	clickLink(link);
 	
 	return {
 		type: 'EMAIL_USER',
 		wo
 	}
+}
+
+/*
+	Clicks the passed in link based on browser capability
+	DOMObject link - DOM link to click
+*/
+function clickLink(link) {
+	if (document.createEvent) { 
+		var event = document.createEvent('MouseEvents'); 
+		event.initEvent('click', true, true); 
+		link.dispatchEvent(event); 
+	} 
+	else { 
+		link.click(); 
+	} 
 }
 
 /*

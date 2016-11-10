@@ -70,14 +70,6 @@ export default function factory(React, empty) {
 			}
 
 			render() {
-				const center = { 
-					marginTop: '1em',
-					marginBottom: '1em',
-					marginLeft: 'auto', 
-					marginRight: 'auto', 
-					width: '65%'
-				}
-
 				const title = 'Delete' + this.state.label;
 
 				const content = [

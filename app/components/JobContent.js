@@ -5,6 +5,7 @@ import {grey500} from 'material-ui/styles/colors';
 import Paper from 'material-ui/Paper';
 import Tabs from 'material-ui/Tabs';
 import Tab from 'material-ui/Tabs/Tab';
+import FlatButton from 'material-ui/FlatButton';
 
 let JobContent = React.createClass({
 	componentWillMount () {
@@ -20,7 +21,7 @@ let JobContent = React.createClass({
 		this.props.fetchWorkorders(location+'/'+endpoint+'&jwt='+this.props.token.jwt+'&job='+jobId);
 	},
 
-	handleSort(endpoint, sort) {
+	handleSort (endpoint, sort) {
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
@@ -57,14 +58,15 @@ let JobContent = React.createClass({
 		let location = this.props.params['_job'];
 		let index = this.props.jobs.findIndex((job) => job.link === location);
 		let jobId = this.props.jobs[index]._id;
+
 		return (
 			<div key={action._id} className='col-sm-3'>
 				<ActionCard
 					location={this.props.params['_job']}
-					performRoute={this.props.performRoute}
-					downloadLink={this.props.downloadLink}
-					jwt={this.props.token.jwt}
 					jobId={jobId}
+					jwt={this.props.token.jwt}
+					performRoute={this.props.performRoute} 
+					downloadLink={this.props.downloadLink}
 					title={action.title}
 					type={action.type}
 					route={action.route}

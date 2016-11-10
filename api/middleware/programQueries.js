@@ -55,7 +55,7 @@ const programQueries = function(req, res, next) {
 			query.checked = { $ne: null };
 			query.reviewed = { $ne: null };
 			query.approved = { $ne: null };
-			query.evaluated = null ;
+			query.evaluated = null;
 		}
 		else if(status === 'evaluated') {
 			query.checked = { $ne: null };
