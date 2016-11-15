@@ -42,8 +42,7 @@ class Graphics extends Component {
 		this.renderDenyDialog = this.renderDenyDialog.bind(this);
 		this.handleDeny = this.handleDeny.bind(this);
 		this.renderUploads = this.renderUploads.bind(this);
-		this.handleFileOnClick = this.handleFileOnClick.bind(this);
-		this.handleFiles = this.handleFiles.bind(this);
+		this.addFile = this.addFile.bind(this);
 
 		this.state = {
 			canSubmit: false,
@@ -87,17 +86,7 @@ class Graphics extends Component {
 				actionStyle: {
 					marginTop: '1em',
 					marginRight: '2em'
-				},
-				exampleImageInput: {
-				    cursor: 'pointer',
-				    position: 'absolute',
-				    top: 0,
-				    bottom: 0,
-				    right: 0,
-				    left: 0,
-				    width: '100%',
-				    opacity: 0,
-				 }
+				}
 			}
 		}
 	}
@@ -272,30 +261,30 @@ class Graphics extends Component {
 		if(this.state.measurements === 'poster') {
 			return(
 				<div>
-				<FormsyText
-					name='width'
-					required
-					hintText='How wide should this poster be (in inches)?'
-					floatingLabelText='Width'
-					fullWidth={true}
-					value={this.state.width}
-				/>
-				<FormsyText
-					name='height'
-					required
-					hintText='How tall should this poster be (in inches)?'
-					floatingLabelText='Height'
-					fullWidth={true}
-					value={this.state.height}
-				/>
-				<FormsyText
-					name='amount'
-					required
-					hintText='How many posters are needed?'
-					floatingLabelText='Amount'
-					fullWidth={true}
-					value={this.state.amount}
-				/>
+					<FormsyText
+						name='width'
+						required
+						hintText='How wide should this poster be (in inches)?'
+						floatingLabelText='Width'
+						fullWidth={true}
+						value={this.state.width}
+					/>
+					<FormsyText
+						name='height'
+						required
+						hintText='How tall should this poster be (in inches)?'
+						floatingLabelText='Height'
+						fullWidth={true}
+						value={this.state.height}
+					/>
+					<FormsyText
+						name='amount'
+						required
+						hintText='How many posters are needed?'
+						floatingLabelText='Amount'
+						fullWidth={true}
+						value={this.state.amount}
+					/>
 				</div>
 			)
 		}
@@ -307,20 +296,19 @@ class Graphics extends Component {
 				<div>
 				<Subheader style={ {paddingBottom: '0.5em'} }>Orientation</Subheader>
 				<FormsyRadioGroup 
-							required
-							name='orientation'
-							valueSelected={this.state.orientation}
-							onChange={this.handleSelection} 
-						>
-							<FormsyRadio
-								value='portrait'
-								label='Portrait'
-							/>
-							<FormsyRadio
-								value='landscape'
-								label='Landscape'
-							/>
-
+					required
+					name='orientation'
+					valueSelected={this.state.orientation}
+					onChange={this.handleSelection} 
+				>
+					<FormsyRadio
+						value='portrait'
+						label='Portrait'
+					/>
+					<FormsyRadio
+						value='landscape'
+						label='Landscape'
+					/>
 				</FormsyRadioGroup>
 
 				<FormsyText
@@ -351,51 +339,13 @@ class Graphics extends Component {
 		this.setState({ file: newFile });
 	}
 
-	handleFileOnClick() {
-		let input = this.refs.input;
-
-		
-
-		if (document.createEvent) {
-			var event = document.createEvent('MouseEvents');
-			event.initEvent('click', true, true);
-			input.dispatchEvent(event);
-		}
-		else {
-			input.click();
-		}
-
-	}
-
-	handleFiles(files) {
-  		console.log(this.refs.input.files[0].name);
-
-  		this.refs.hedgewig.setValue(this.refs.input.files[0].name);
-
-	}
-
-	//<input type="file" id="fileInput" style="position: fixed; top: -100em" />
-
 	renderUploads(file, i) {
 		let { listStyle, listPaperStyle, centerStyle, exampleImageInput } = this.state.styles;
 		return (
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'File '+(i+1)}</Subheader>
 				<div style={listStyle}>
-					<FormsyText
-						name={'file['+i+'][filename]'}
-						required
-						floatingLabelText='File Name'
-						multiLine={true}
-						style={{paddingLeft: '0em'}}
-						ref="hedgewig"
-						onClick={this.handleFileOnClick.bind(this)}
-						value={file.value}
-					/>
-
-					<input type='file' style={exampleImageInput} onChange={this.handleFiles.bind(this)} hidden ref='input' />
-					{/*onChange={this.handleFiles.bind(this)}*/}
-
+					<input type='file' style={exampleImageInput} onChange={this.addFile} ref='input' />
 				</div>
 				<FlatButton
 					label='Remove'
@@ -405,6 +355,17 @@ class Graphics extends Component {
 				/>
 			</Paper>
 		)
+	}
+
+	addFile(file, i) {
+
+		if(this.refs.input.files) {
+			console.log(this.refs.input.files)
+		}
+
+		//actually add file to file array?
+		this.refs.input.files = file[i];
+
 	}
 
 	renderSearchId() {

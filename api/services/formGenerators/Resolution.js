@@ -111,6 +111,23 @@ const Resolution = function(program) {
 	doc.fillColor('black');
 	doc.moveDown(0.25);
 	doc.text(program.councilApproval.toUpperCase(), {indent: 10, characterSpacing: 0.25});
+	// Program director apporval
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.moveDown(0.25);
+	doc.fillColor('black');
+	doc.text('Approval', {indent: 10, characterSpacing: 0.25, lineGap: -5});
+	doc.fontSize(7);
+	doc.fillColor('grey');
+	doc.text('________________________________________________________________________________________________________________________');
+	doc.fontSize(12);
+	doc.fillColor('black');
+	doc.moveDown(0.25);
+	doc.text('Checked: ' + (program.checked.name ? program.checked.name : '') + ', ' + getDateTime(program.checkedDate, program.checkedDate), {indent: 10});
+	doc.text('Reviewed: ' + (program.reviewed.name ? program.reviewed.name : '') + ', ' + getDateTime(program.reviewedDate, program.reviewedDate), {indent: 10});
+	doc.text('Approved: ' + (program.approved.name ? program.approved.name : '') + ', ' + getDateTime(program.approvedDate, program.approvedDate), {indent: 10});
 	// Program Description
 	doc.fontSize(7);
 	doc.fillColor('grey');
@@ -126,25 +143,8 @@ const Resolution = function(program) {
 	doc.fillColor('black');
 	doc.moveDown(0.25);
 	doc.fontSize(10);
-	doc.text(getString(program.description, 1000), {indent: 10, characterSpacing: 0.25});
-    doc.moveDown(4);
+	doc.text(getString(program.description, 2000), {indent: 10, characterSpacing: 0.25});
 	// Program Notes
-	doc.fontSize(7);
-	doc.fillColor('grey');
-	doc.text('Notes: __________________________________________________________________________________________________', {indent: 25});
-	doc.moveDown(2);
-	doc.text('________________________________________________________________________________________________________', {indent: 25});
-	doc.moveDown(2);
-	doc.text('________________________________________________________________________________________________________', {indent: 25});
-	doc.moveDown(2);
-	doc.text('________________________________________________________________________________________________________', {indent: 25});
-	doc.moveDown(2);
-	doc.text('________________________________________________________________________________________________________', {indent: 25});
-	doc.moveDown(2);
-	doc.text('________________________________________________________________________________________________________', {indent: 25});
-	doc.moveDown(2);
-	doc.text('________________________________________________________________________________________________________', {indent: 25});
-	doc.moveDown(2);
 
 	// Timestamp
 	doc.fontSize(7);
