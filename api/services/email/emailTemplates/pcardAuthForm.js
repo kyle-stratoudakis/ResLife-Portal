@@ -148,17 +148,12 @@ const pcardAuthForm = function(program) {
 	doc.text('Pick up Signature __________________________________________________________________ Date ___________________');
 	doc.moveDown(3);
 	doc.text('Return and Receipt Signature ________________________________________________________ Date ___________________');
-	doc.fontSize(7);
-	doc.fillColor('grey');
-	doc.moveDown(1);
-	doc.text('________________________________________________________________________________________________________________________');
-	doc.moveDown(1);
 
 	// Timestamp
 	doc.fontSize(7);
-	doc.moveDown(1);
 	doc.fillColor('grey');
-	doc.text(getDate(new Date()) + ' Southern Connecticut State University, Office of Residence Life');
+	doc.text('________________________________________________________________________________________________________________________', 72, 750);
+	doc.text(getDate(new Date()) + ' Southern Connecticut State University, Office of Residence Life', 72, 760);
    
 	// Header logo image
 	doc.image('./api/services/email/emailTemplates/residence-life-logo.png', 25, 40, {width: 160});

@@ -9,6 +9,7 @@ const Resolution = function(program) {
 	var info = {Title: 'Hall Council Resolution: ' + program.searchId, Author: 'SCSU Office of Residence Life', Subject: program.title};
 	var doc = new pdfkit({margins: margins, info: info});
 	var stream = new Transform;
+	var descLength = 1800;
 	
 	// write document to stream
 	doc.pipe(stream);
@@ -125,9 +126,39 @@ const Resolution = function(program) {
 	doc.fontSize(12);
 	doc.fillColor('black');
 	doc.moveDown(0.25);
-	doc.text('Checked: ' + (program.checked.name ? program.checked.name : '') + ', ' + getDateTime(program.checkedDate, program.checkedDate), {indent: 10});
-	doc.text('Reviewed: ' + (program.reviewed.name ? program.reviewed.name : '') + ', ' + getDateTime(program.reviewedDate, program.reviewedDate), {indent: 10});
-	doc.text('Approved: ' + (program.approved.name ? program.approved.name : '') + ', ' + getDateTime(program.approvedDate, program.approvedDate), {indent: 10});
+	if(program.checked) {
+		doc.fontSize(12);
+		doc.text('Checked: ' + program.checked.name + ', ' + getDateTime(program.checkedDate, program.checkedDate), {indent: 10});
+	}
+	else {
+		descLength -= 112;
+		doc.fontSize(8);
+		doc.moveDown(2.75);
+		doc.text('Checked __________________________________________________________________ Date ___________________', {indent: 10});
+	}
+
+	if(program.reviewed) {
+		doc.fontSize(12);
+		doc.text('Reviewed: ' + program.reviewed.name + ', ' + getDateTime(program.reviewedDate, program.reviewedDate), {indent: 10});
+	}
+	else {
+		descLength -= 112;
+		doc.fontSize(8);
+		doc.moveDown(3);
+		doc.text('Reviewed __________________________________________________________________ Date ___________________', {indent: 10});
+	}
+
+	if(program.approved) {
+		doc.fontSize(12);
+		doc.text('Approved: ' + program.approved.name + ', ' + getDateTime(program.approvedDate, program.approvedDate), {indent: 10});
+	}
+	else {
+		descLength -= 112;
+		doc.fontSize(8);
+		doc.moveDown(3);
+		doc.text('Approved __________________________________________________________________ Date ___________________', {indent: 10});
+		doc.moveDown(0.5)
+	}
 	// Program Description
 	doc.fontSize(7);
 	doc.fillColor('grey');
@@ -143,16 +174,14 @@ const Resolution = function(program) {
 	doc.fillColor('black');
 	doc.moveDown(0.25);
 	doc.fontSize(10);
-	doc.text(getString(program.description, 2000), {indent: 10, characterSpacing: 0.25});
+	doc.text(getString(program.description, descLength), {indent: 10, characterSpacing: 0.25});
 	// Program Notes
 
 	// Timestamp
 	doc.fontSize(7);
 	doc.fillColor('grey');
-	doc.moveDown(1);
-	doc.text('________________________________________________________________________________________________________________________');
-	doc.moveDown(1);
-	doc.text(getDate(new Date()) + ' Southern Connecticut State University, Office of Residence Life');
+	doc.text('________________________________________________________________________________________________________________________', 72, 750);
+	doc.text(getDate(new Date()) + ' Southern Connecticut State University, Office of Residence Life', 72, 760);
 	
 	doc.end();
 	return doc;
@@ -175,16 +204,5 @@ function padRight(str, num) {
 	}
 	return str;
 }
-
-// Use to fill string when testing if data fits in space provided
-// function fillString(num) {
-//     var str = "";
-//     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 '\":;_-=+[]{}|\\";
-
-// 	while(str && str.length < num) {
-// 		str += possible.charAt(Math.floor(Math.random() * possible.length));
-// 	}
-// 	return str;
-// }
 
 module.exports = Resolution;

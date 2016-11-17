@@ -363,7 +363,7 @@ class Graphics extends Component {
 			console.log(this.refs.input.files)
 		}
 
-		//actually add file to file array?
+		//actually add file to file array? nope.
 		this.refs.input.files = file[i];
 
 	}
@@ -542,11 +542,11 @@ class Graphics extends Component {
 
 					{this.state.file.map(this.renderUploads)}
 
-						<FlatButton
-						      label="Upload"
-						      icon={<FontIcon className="material-icons">file_upload </FontIcon>}
-						      onClick={this.addJSONFile.bind(this)}>
-						</FlatButton>
+					<FlatButton
+					      label="Upload"
+					      icon={<FontIcon className="material-icons">file_upload </FontIcon>}
+					      onClick={this.addJSONFile.bind(this)}>
+					</FlatButton>
 
 					</div>
 

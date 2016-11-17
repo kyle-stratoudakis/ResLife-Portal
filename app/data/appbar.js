@@ -6,7 +6,8 @@ const appbar = {
 	Programs: {title: 'Programs', color: '#673AB7'},
 	Funding: {title: 'Funding', color: '#009688'},
 	TechSupport: {title: 'Tech Support', color: '#424242'},
-	Graphics: {title: 'Graphics', color: '#2196F3'}
+	Graphics: {title: 'Graphics', color: '#2196F3'},
+	Administrator: {title: 'Administrator', color: '#607D8B'}
 }
 
 export default appbar;

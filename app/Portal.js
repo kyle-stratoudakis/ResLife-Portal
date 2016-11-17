@@ -17,6 +17,8 @@ import PCardRequest from './components/forms/PCardRequest';
 import CardGrid from './components/CardGrid';
 import JobContent from './components/JobContent';
 import TechRequest from './components/forms/TechRequest';
+import User from './components/forms/User';
+import Job from './components/forms/Job';
 
 const Auth = UserAuthWrapper({
 	authSelector: state => state.token.user,
@@ -46,6 +48,13 @@ const router = (
 					<Route path="New/TechRequest" component={Auth(TechRequest)} />
 					<Route path="View/TechSupport/:_id" component={Auth(TechRequest)} />
 					<Route path="Edit/TechSupport/:_id" component={Auth(TechRequest)} />
+					{/* Administrator Routes */}
+					<Route path="New/Administrator/User" component={Auth(User)} />
+					<Route path="View/Administrator/User/:_id" component={Auth(User)} />
+					<Route path="Edit/Administrator/User/:_id" component={Auth(User)} />
+					<Route path="New/Administrator/Job" component={Auth(Job)} />
+					<Route path="View/Administrator/Job/:_id" component={Auth(Job)} />
+					<Route path="Edit/Administrator/Job/:_id" component={Auth(Job)} />
 					{/* Graphics Routes */}
 					<Route path="New/Graphics" component={Auth(Graphics)} />
 					<Route path="View/Graphics/:_id" component={Auth(Graphics)} />
