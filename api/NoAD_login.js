@@ -16,12 +16,17 @@ route.post('/', jsonParser, function(req, res) {
 	userModel.findOne({'username': username}, function(err, user){
 		if(err) { console.log('mongoose ' + err) }
 		else if(user) { // Known user logged in again
-			token = jwt.encode(user, accessConfig.secret);
-			payload = {
-				jwt: token,
-				user: user
+			if(!user.banned) { // check if user is banned
+				token = jwt.encode(user, accessConfig.secret);
+				payload = {
+					jwt: token,
+					user: user
+				}
+				res.json(payload);
 			}
-			res.json(payload);
+			else {
+				res.json({message: 'banned'});
+			}
 		}
 		else if(!data.name) { // new user with no details
 			payload = {message: 'No User Found'}

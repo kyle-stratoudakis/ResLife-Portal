@@ -9,7 +9,8 @@ var userSchema = new mongoose.Schema({
 	hall: String,
 	jobs: [{ type: Schema.Types.ObjectId }],
 	notifRoles: [String],
-	notifTimes: [Number]
+	notifTimes: [Number],
+	banned: Boolean
 });
 
 module.exports = userSchema;

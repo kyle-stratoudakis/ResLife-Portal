@@ -40,6 +40,9 @@ export default function factory(React, empty) {
 				else if(location === 'TechSupport') {
 					label = ' Tech Request';
 				}
+				else if(location === 'Administrator') {
+					label = ' ' + this.props.location.pathname.split('/')[5];
+				}
 
 				this.setState({
 					open: false,

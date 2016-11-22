@@ -37,6 +37,21 @@ const server = app.listen(PORT, IP, function(err) {
 
 // Socket.io - Requires server instance on instantiation
 const io = require('socket.io')(server);
+const version = versionId();
+function versionId() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
+io.on('connect', function(socket) {
+  socket.on('version-check', function() {
+    socket.emit('version-number', version);
+  });
+});
 
 // Redirect away from blank root route
 app.get('/', function(req, res) {

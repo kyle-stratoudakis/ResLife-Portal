@@ -50,6 +50,15 @@ const Login = React.createClass({
 					</div>
 				)
 			}
+			else if(message === 'banned') {
+				return (
+					<div style={{color: red600}}>
+						<br />
+						{'You have been banned, contact reslife@southernct.edu for details.'}
+						<br />
+					</div>
+				)
+			}
 			else if(message === 'No User Found') {
 				return(
 					<div>

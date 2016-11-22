@@ -29,12 +29,30 @@ import { NavigationMoreVert } from 'material-ui/svg-icons';
 
 const Main = React.createClass({
 	componentDidMount () {
-		let that = this;
 		this.socket = io();
+		let that = this; // required for accessing component in socket scope
+
+		this.socket.on('connect', function() {
+			setTimeout(function() {
+				that.socket.emit('version-check');
+			}, 20000);
+		});
+
+		this.socket.on('version-number', function(serverVersion) {
+			try {
+				if(localStorage.getItem('version')!== serverVersion) {
+					localStorage.setItem('version', serverVersion);
+					location.reload(true);
+				}
+			}
+			catch(ex) {
+				console.log(ex);
+			}
+		});
+
 		this.socket.on('ejectUser', function(event) {
 			if(event.user === that.props.token.user._id || event.user === 'all') {
 				that.props.logOut();
-				location.reload(true);
 			}
 		});
 	},

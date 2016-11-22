@@ -186,6 +186,7 @@ class Job extends Component {
 					<Subheader style={{paddingBottom: '0.25em'}}>Endpoints</Subheader>
 					<div style={centerStyle}>
 						<ManageEndpoints
+							endpoints={this.state.endpoints}
 							styles={this.state.styles}
 						/>
 					</div>
