@@ -3,6 +3,9 @@ import JobCard from './JobCard';
 
 const CardGrid = React.createClass({
 	componentWillMount () {
+		this.socket = io();
+		this.socket.emit('clientConnected', this.props.token.user._id);
+
 		if(!this.props.jobs) {
 			this.props.fetchJobs(this.props.token.jwt);
 		}

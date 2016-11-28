@@ -18,7 +18,6 @@ import { ActionAssignment, ActionAssignmentTurnedIn, ActionAssignmentInd } from 
 import { green200, red200, amber200, deepPurple200 } from 'material-ui/styles/colors';
 import getDate from '../../utils/getDate'; 
 
-
 class ContentRow extends Component {
 	constructor(props) {
 		super(props)
@@ -50,7 +49,6 @@ class ContentRow extends Component {
 			)
 		}
 		else if(action.type === 'modify') {
-			let endpoint = action.endpoint[0].route;
 			let data = {
 				jwt: this.props.jwt,
 				jobId: this.props.jobId,
@@ -64,7 +62,7 @@ class ContentRow extends Component {
 					label={action.title}
 					backgroundColor={action.color}
 					hoverColor={action.hover_color}
-					onClick={this.props.modifyAction.bind(null, endpoint, data, update)}
+					onClick={this.props.modifyAction.bind(null, action.route, data, update)}
 					disabled={disabled}
 				/>
 			)

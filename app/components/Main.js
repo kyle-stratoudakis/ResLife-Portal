@@ -130,12 +130,13 @@ const Main = React.createClass({
 					<Dialog
 						title={this.props.dialog.title}
 						actions={this.props.dialog.actions}
-						modal={this.props.dialog.modal}
+						modal={true}
+						// modal={this.props.dialog.modal}
 						open={this.props.dialog.open}
 						onRequestClose={this.props.closeDialog}
-					>
-						{this.props.dialog.content}
-					</Dialog>
+						autoScrollBodyContent={true}
+						children={this.props.dialog.content}
+					/>
 				</div>
 			</MuiThemeProvider>
 		)

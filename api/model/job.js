@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var config = require('../../../config')
-var actionSchema = require('./schema/action');
-var endpointSchema = require('./schema/endpoint');
+var actionSchema = require('./schema/actionSchema');
+var endpointSchema = require('./schema/endpointSchema');
 
 // TODO Update connection
 var db = mongoose.createConnection(config.mongodb+'/jobs');

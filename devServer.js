@@ -36,8 +36,10 @@ const server = app.listen(PORT, IP, function(err) {
 });
 
 // Socket.io - Requires server instance on instantiation
-const io = require('socket.io')(server);
 const version = versionId();
+const io = require('socket.io')(server);
+app.set('socketio', io);
+app.set('connectedClients', []);
 function versionId() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -48,9 +50,35 @@ function versionId() {
     s4() + '-' + s4() + s4() + s4();
 }
 io.on('connect', function(socket) {
+  var socketId = socket.id;
+
+  socket.on('clientConnected', function(userId) {
+    var connectedClients = app.get('connectedClients');
+    connectedClients[userId] = {userId: userId, socketId: socketId, date: new Date()};
+    app.set('connectedClients', connectedClients);
+    console.log('connectedClients', app.get('connectedClients'))
+  });
+
+  socket.on('clientDisconnected', function() {
+    var connectedClients = app.get('connectedClients');
+    var remainingClients = [];
+    for (var user in connectedClients) {
+      console.log(connectedClients[user].socketId, socketId)
+      if(connectedClients[user].socketId !== socketId) remainingClients.push(user, connectedClients[user]);
+    }
+    console.log('remainingClients', remainingClients)
+    app.set('connectedClients', remainingClients);
+    console.log('connectedClients', app.get('connectedClients'))
+  });
+
   socket.on('version-check', function() {
     socket.emit('version-number', version);
   });
+});
+
+io.on('disconnect', function(socket) {
+  var socketId = socket.id;
+  console.log(socketId);
 });
 
 // Redirect away from blank root route

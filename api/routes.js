@@ -5,6 +5,7 @@ const funding = require('./jobs/pcardrequest');
 const graphics = require('./jobs/graphics');
 const hallcouncil = require('./jobs/hallcouncil');
 const techsupport = require('./jobs/techsupport');
+const administrator = require('./jobs/administrator');
 const aggregate = require('./services/email/aggregate');
 const getDateTime = require('../utils/getDateTime');
 
@@ -14,6 +15,7 @@ routes.use('/graphics', graphics);
 routes.use('/funding', funding);
 routes.use('/hallcouncil', hallcouncil);
 routes.use('/techsupport', techsupport);
+routes.use('/administrator', administrator);
 
 routes.get('/aggregateNotifs', function(req, res) {
 	if(req.query.hour) {

@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
-var userSchema = require('./schema/user');
+var userSchema = require('./schema/userSchema');
 var config = require('../../../config')
 var Schema = mongoose.Schema;
-var commentSchema = require('./schema/comment');
+var commentSchema = require('./schema/commentSchema');
 
 var db = mongoose.createConnection(config.mongodb+'/workorders/techrequests');
 

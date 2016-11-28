@@ -26,6 +26,19 @@ export function performRouteAndUpdate(route, endpoint) {
 	}
 }
 
+export function routeToTarget(href, target) {
+	var link = document.createElement('a');
+	link.setAttribute('href', href);
+	link.setAttribute('target', target);
+	clickLink(link);
+	
+	return {
+		type: 'ROUTE_TARGET',
+		href,
+		target
+	}
+}
+
 /*
 	Sends request to backend for user data
 	object data - contains info collected from login form
@@ -56,7 +69,7 @@ export function login(data, redirect) {
 }
 
 /*
-	Displays error messages on login screen based on server response
+	Displays messages on login screen based on server response
 	func dispatch - enables function dispatching
 	object json - contains server response message
 */
@@ -103,6 +116,7 @@ export function fetchJobs(jwt) {
 export function fetchWorkorders(query) {
 	return function (dispatch) {
 		dispatch(getWorkorders())
+		console.log(host + '/api/' + query)
 		return fetch(host + '/api/' + query)
 		.then(handleErrors)
 		.then(response => response.json())
@@ -119,29 +133,29 @@ export function fetchWorkorders(query) {
 export function fetchDetails(location, query) {
 	return function (dispatch) {
 		dispatch(getDetails())
+		console.log('fetchDetails');
+		// console.log(host + '/api/' + location + '/get/details' + query);
 		return fetch(host + '/api/' + location + '/get/details' + query)
 		.then(handleErrors)
 		.then(response => response.json())
 		.then(json => dispatch(receiveDetails(json)))
-		.catch(err => console.log('fetchDetails', err))
+		.catch(err => console.log('fetchDetails', err,))
 	}
 }
 
 /*
 	Sends post request with collected form data
-	string jwt - users token
-	string location - job associated with workorder
-	string jobId - id of job form is being submitted under
-	object data - contains collected form data
+	object requestData - contains endpoint, token and jobId for post request to api
+	object formData - contains edited data collected from a form
 */
-export function submitForm(jwt, location, jobId, data) {
+export function submitForm(requestData, formData) {
 	return function (dispatch) {
 		var json = JSON.stringify({
-				jwt,
-				jobId,
-				data
+				jwt: requestData.jwt,
+				jobId: requestData.jobId,
+				data: formData
 			});
-		return fetch(host + '/api/' + location + '/post/create', {
+		return fetch(host + '/api/' + requestData.endpoint, {
 			method: 'post',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -151,29 +165,28 @@ export function submitForm(jwt, location, jobId, data) {
 		})
 		.then(handleErrors)
 		.then(response => response.json())
-		.then(json => dispatch(push('/job/' + location + '/View/' + location + '/'+json)))
-		.then(dispatch(snackbarAlert(location + '/post/create')))
+		.then(json => dispatch(push('/job/' + requestData.location + '/View/' + requestData.location + '/'+json)))
 		.catch(err => console.log('submitForm', err))
 	}
 }
 
 /*
-	Sends post request with collected form data to update specific workorder
-	string jwt - users token
-	string location - job associated with workorder
-	string formId - id of workorder to update
-	string jobId - id of job form is being submitted under
-	object data - contains collected form data
+	Sends put request with collected form data to update specific workorder
+	object requestData - contains endpoint, token, and ids for put request to api
+	object formData - contains edited data collected from a form
+	function callback - function to call after successful response
 */
-export function updateForm(jwt, location, formId, jobId, data) {
+export function updateForm(requestData, formData) {
 	return function (dispatch) {
 		var json = JSON.stringify({
-				jwt,
-				formId,
-				jobId,
-				data
+				jwt: requestData.jwt,
+				formId: requestData.formId,
+				jobId: requestData.jobId,
+				data: formData
 			});
-		return fetch(host + '/api/' + location + '/put/update', {
+		console.log('updateForm')
+		console.log(host + '/api/' + requestData.endpoint)
+		return fetch(host + '/api/' + requestData.endpoint, {
 			method: 'put',
 			headers: {
 				'Accept': 'application/json, text/plain, */*',
@@ -183,8 +196,7 @@ export function updateForm(jwt, location, formId, jobId, data) {
 		})
 		.then(handleErrors)
 		.then(response => response.json())
-		.then(json => dispatch(fetchDetails(location, '?jwt='+jwt+'&id='+json)))
-		.then(dispatch(snackbarAlert(location + '/put/update')))
+		.then(json => dispatch(fetchDetails(requestData.location, requestData.type+'?jwt='+requestData.jwt+'&id='+json)))
 		.catch(err => console.log('updateForm', err))
 	}
 }
@@ -216,7 +228,7 @@ export function comment(data, location) {
 /* 
 	Send requests to process action then update frontend from ContentRow
 	string endpoint - backend endpoint to send request
-	object data - relevent details fequired by endpoint to complete action
+	object data - relevent details required by endpoint to complete action
 	string update - arguement passed to fecthWorkorders to sync action results with frontend
 */
 export function modifyAction(endpoint, data, update) {
@@ -259,6 +271,24 @@ export function workorderAction(endpoint, data, route) {
 		.catch(err => console.log('workorderAction', err))
 	}
 }
+
+export function fetchMenuItems(endpoint) {
+	return function (dispatch) {
+		return fetch(host + '/api/' + endpoint)
+		.then(handleErrors)
+		.then(response => response.json())
+		.then(json => dispatch(receiveMenuItems(json)))
+		.catch(err => console.log('fetchMenuItems', err))
+	}
+}
+
+export function receiveMenuItems(menuItems) {
+	return {
+		type: 'RECEIVE_MENUITEMS',
+		menuItems
+	}
+}
+
 
 /*
 	Creates and clicks an HTML link to download a file
@@ -353,6 +383,7 @@ export function deleteWorkorder(wo) {
 */
 function handleErrors(response) {
 	if(!response.ok) {
+		console.log(response.json())
 		throw Error(response.statusText);
 	}
 	return response;

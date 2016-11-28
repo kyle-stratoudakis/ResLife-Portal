@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
-var userSchema = require('./schema/user');
+var userSchema = require('./schema/userSchema');
 var config = require('../../../config');
-var commentSchema = require('./schema/comment');
+var commentSchema = require('./schema/commentSchema');
 var Schema = mongoose.Schema;
 mongoose.Promise = global.Promise;
 

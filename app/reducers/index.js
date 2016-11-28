@@ -11,7 +11,8 @@ import snackbar from './snackbar';
 import loginMessage from './loginMessage';
 import selectedTab from './selectedTab';
 import dialog from './dialog';
+import menuItems from './menuItems';
 
-const rootReducer = combineReducers({jobs, workOrders, appbar, details, token, drawer, snackbar, loginMessage, selectedTab, dialog, routing: routerReducer});
+const rootReducer = combineReducers({jobs, workOrders, appbar, details, token, drawer, snackbar, loginMessage, selectedTab, dialog, menuItems, routing: routerReducer});
 
 export default rootReducer;

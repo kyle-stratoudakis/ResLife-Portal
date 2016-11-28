@@ -14,7 +14,8 @@ function mapStateToProps (state) {
 		snackbar: state.snackbar,
 		loginMessage: state.loginMessage,
 		selectedTab: state.selectedTab,
-		dialog: state.dialog
+		dialog: state.dialog,
+		menuItems: state.menuItems
 	}
 }
 

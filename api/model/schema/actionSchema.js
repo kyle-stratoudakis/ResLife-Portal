@@ -1,6 +1,5 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var endpointSchema = require('./endpoint');
 
 var actionSchema = new mongoose.Schema({
 	type: String,
@@ -10,8 +9,7 @@ var actionSchema = new mongoose.Schema({
 	route: String,
 	note: String,
 	color: String,
-	hover_color: String,
-	endpoint: [{ type: Schema.Types.ObjectId, ref: 'endpoint' }]
+	hover_color: String
 });
 
 module.exports = actionSchema;

@@ -3,6 +3,7 @@ import { FormWrapper } from './formWrapper/';
 import Formsy from 'formsy-react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
+import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 import Subheader from 'material-ui/Subheader';
@@ -36,16 +37,26 @@ class User extends Component {
 		this.addJSONNotifTime = this.addJSONNotifTime.bind(this);
 		this.removeJSONNotifTime = this.removeJSONNotifTime.bind(this);
 		this.renderNotifTime = this.renderNotifTime.bind(this);
+		this.addJSONJob = this.addJSONJob.bind(this);
+		this.removeJSONJob = this.removeJSONJob.bind(this);
+		this.renderJob = this.renderJob.bind(this);
+		this.openJobSelectionDialog = this.openJobSelectionDialog.bind(this);
+		this.onJobSelectionChange = this.onJobSelectionChange.bind(this);
+		// this.renderJobsSelections = this.renderJobsSelections.bind(this);
+		// this.renderJobItem = this.renderJobItem.bind(this);
 
+		this.props.fetchMenuItems('administrator/get/selectionMenu?type=jobs');
 		this.state = {
 			canSubmit: false,
 			label: 'Submit',
 			name: '',
 			username: '',
+			email: '',
 			primaryContact: '',
 			hall: '',
 			notifRoles: [],
 			notifTimes: [],
+			jobs: [],
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
@@ -73,8 +84,15 @@ class User extends Component {
 	componentWillReceiveProps(nextProps) {
 		if(nextProps.workOrder) {
 			let wo = nextProps.workOrder;
-			(wo.date ? new Date(wo.date) : {})
 			this.setState({
+				name: wo.name || '',
+				username: wo.username || '',
+				email: wo.email || '',
+				primaryContact: wo.primary_contact || '',
+				hall: wo.hall || '',
+				notifRoles: wo.notifRoles || [],
+				notifTimes: wo.notifTimes || [],
+				jobs: wo.jobs || [],
 				label: (wo._id ? 'Edit' : 'Submit')
 			});
 		}
@@ -117,6 +135,7 @@ class User extends Component {
 
 	notifyFormError(data) {
 		console.error('Form error:', data);
+		alert('Form could not be submitted, did you miss filling in something?');
 	}
 
 	addJSONNotifRole() {
@@ -144,8 +163,9 @@ class User extends Component {
 						name={'notifRoles['+i+']'}
 						floatingLabelText='Notification Role'
 						value={role}
-					>
+					>	
 						<MenuItem value={null} primaryText='' />
+						<MenuItem value={role} primaryText={role} />
 					</FormsySelect>	
 					<br />
 				</div>
@@ -228,8 +248,108 @@ class User extends Component {
 		)
 	}
 
+	addJSONJob(job) {
+		let jobs = this.state.jobs;
+		jobs.push(job);
+		this.setState({ jobs });
+	}
+
+	removeJSONJob(index) {
+		let jobsArray = this.refs.form.getModel().jobs;
+		let newJobs = [];
+		delete jobsArray[index];
+		jobsArray.map((job) => newJobs.push(job));
+		this.setState({ jobs: newJobs });
+	}
+
+	renderJob(job, i) {
+		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
+		return (
+			<Paper style={listPaperStyle} key={i}>
+				<div style={listStyle}>
+					<FormsyText 
+						disabled={true}
+						fullWidth={true}
+						name={'jobs['+i+'].title'}
+						floatingLabelText='Title'
+						value={job.title}
+					/>
+					<FormsyText 
+						disabled={true}
+						fullWidth={true}
+						name={'jobs['+i+'].role'}
+						floatingLabelText='Role'
+						value={job.role}
+					/>
+					<FormsyText 
+						disabled={true}
+						fullWidth={true}
+						name={'jobs['+i+'].note'}
+						floatingLabelText='Note'
+						value={job.note}
+					/>
+					<FormsyText 
+						disabled={true}
+						fullWidth={true}
+						multiline={true}
+						disabled={true}
+						name={'jobs['+i+']._id'}
+						floatingLabelText='ID'
+						value={job._id}
+					/>	
+					<br />
+				</div>
+				<center>
+					<FlatButton
+						label='View/Edit'
+						// hoverColor={red500}
+						onClick={this.props.routeToTarget.bind(this, '/job/Administrator/Edit/Administrator/Job/'+job._id, '_blank')}
+						style={centerStyle}
+					/>
+					<FlatButton
+						label='Remove'
+						hoverColor={red500}
+						onClick={this.removeJSONJob.bind(this, i)}
+						style={centerStyle}
+					/>
+				</center>
+			</Paper>
+		)
+	}
+
+	openJobSelectionDialog(title, content, actions) {
+		// this.props.fetchMenuItems('administrator/get/selectionMenu?type=jobs');
+		this.props.openDialog(title, content, actions);
+	}
+
+	onJobSelectionChange(job) {
+		this.addJSONJob(job);
+		this.props.closeDialog();
+	}
+
 	render() {
 		let { centerStyle } = this.state.styles;
+
+		const title = 'Select Job';
+
+		const content = [
+			<Menu
+				ref='jobSelection'
+				name='jobSelection'
+				onChange={(e, value) => this.onJobSelectionChange(value)}
+			>
+				{this.props.menuItems.map((job, i) => <MenuItem key={i} value={job} primaryText={job.title+' - '+job.role} secondaryText={job.note}/>)}
+			</Menu>
+		]
+
+		const actions = [
+			<FlatButton
+				key='cancel'
+				label='Cancel'
+				onClick={this.props.closeDialog.bind(this)}
+			/>
+		]
+
 		return (
 			<div>
 				<br />
@@ -264,6 +384,14 @@ class User extends Component {
 						<FormsyText
 							required
 							fullWidth={true}
+							name='email'
+							hintText='Email for notifications'
+							floatingLabelText='Email'
+							value={this.state.email}
+						/>
+						<FormsyText
+							required
+							fullWidth={true}
 							name='primary_contact'
 							hintText='Contact phone number'
 							floatingLabelText='Phone Number'
@@ -290,7 +418,7 @@ class User extends Component {
 							<MenuItem value='Schwartz' primaryText='Schwartz' />
 							<MenuItem value='West' primaryText='West Campus' />
 							<MenuItem value='Wilkinson' primaryText='Wilkinson' />
-						</FormsySelect>						
+						</FormsySelect>
 					</div>
 
 					<Divider />
@@ -319,7 +447,14 @@ class User extends Component {
 					<Divider />
 					<Subheader style={ {paddingBottom: '0.25em'} }>Job Assignment</Subheader>
 					<div style={centerStyle}>
-						
+						{this.state.jobs.map(this.renderJob)}
+						<FlatButton
+							icon={<FontIcon className='material-icons'>{'add'}</FontIcon>}
+							type='button'
+							label='Add Job'
+							// onClick={this.props.fetchMenuItems.bind(this, 'administrator/get/selectionMenu?type=jobs')}
+							onClick={this.openJobSelectionDialog.bind(this, title, content, actions)}
+						/>
 					</div>
 
 					<Divider />

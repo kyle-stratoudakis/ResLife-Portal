@@ -38,10 +38,13 @@ class Job extends Component {
 			canSubmit: false,
 			label: 'Submit',
 			title: '',
-			subTitle: '',
+			subtitle: '',
 			role: '',
 			link: '',
 			note: '',
+			endpoints: [],
+			dashActions: [],
+			cardActions: [],
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
@@ -69,8 +72,15 @@ class Job extends Component {
 	componentWillReceiveProps(nextProps) {
 		if(nextProps.workOrder) {
 			let wo = nextProps.workOrder;
-			(wo.date ? new Date(wo.date) : {})
 			this.setState({
+				title: wo.title || '',
+				subtitle: wo.subtitle || '',
+				role: wo.role || '',
+				link: wo.link || '',
+				note: wo.note || '',
+				endpoints: wo.endpoints || [],
+				dashActions: wo.dash_actions || [],
+				cardActions: wo.card_actions || [],
 				label: (wo._id ? 'Edit' : 'Submit')
 			});
 		}
@@ -150,10 +160,10 @@ class Job extends Component {
 						<FormsyText
 							required
 							fullWidth={true}
-							name='subTitle'
-							hintText='Subtitle displayed on job card'
-							floatingLabelText='Subtitle'
-							value={this.state.subTitle}
+							name='subtitle'
+							hintText='subtitle displayed on job card'
+							floatingLabelText='subtitle'
+							value={this.state.subtitle}
 						/>
 						<FormsyText
 							required
@@ -195,6 +205,7 @@ class Job extends Component {
 					<Subheader style={{paddingBottom: '0.25em'}}>Dash Actions</Subheader>
 					<div style={centerStyle}>
 						<ManageActions
+							actions={this.state.dashActions}
 							styles={this.state.styles}
 						/>
 					</div>
@@ -203,6 +214,7 @@ class Job extends Component {
 					<Subheader style={{paddingBottom: '0.25em'}}>Card Actions</Subheader>
 					<div style={centerStyle}>
 						<ManageActions
+							actions={this.state.cardActions}
 							styles={this.state.styles}
 						/>
 					</div>

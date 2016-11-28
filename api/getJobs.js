@@ -13,9 +13,6 @@ route.get('/', function(req, res) {
 		path: 'card_actions dash_actions endpoints',
 		populate: {
 			path: 'actions',
-			populate: {
-				path: 'endpoint'
-			}
 		}
 	})
 	.exec(function(err, jobDoc){

@@ -4,6 +4,6 @@ var config = require('../../../config')
 // TODO Update connection
 var db = mongoose.createConnection(config.mongodb+'/jobs/endpoints');
 
-var endpointSchema = require('./schema/endpoint');
+var endpointSchema = require('./schema/endpointSchema');
 
 module.exports = db.model('endpoint', endpointSchema);

@@ -16,10 +16,13 @@ export default function factory(React, empty) {
 			constructor(props) {
 				super(props)
 
+				this.onSubmit = this.onSubmit.bind(this);
+
 				this.state = {
 					open: false,
 					label: ' Work order',
-					action: 'New'
+					action: 'New',
+					type: ''
 				};
 			}
 
@@ -27,6 +30,7 @@ export default function factory(React, empty) {
 				let location = this.props.params['_job'];
 				let action = this.props.location.pathname.split('/')[3];
 				let label = ' Work order';
+				let type = '';
 
 				if(location === 'Programs') {
 					label = ' Program';
@@ -42,34 +46,42 @@ export default function factory(React, empty) {
 				}
 				else if(location === 'Administrator') {
 					label = ' ' + this.props.location.pathname.split('/')[5];
+					type = '/' + this.props.location.pathname.split('/')[5];
 				}
 
 				this.setState({
 					open: false,
 					label: label,
-					action: action
+					action: action,
+					type: type
 				});
 
 				if(this.props.params['_id']) {
 					let id = this.props.params['_id'];
 					let jwt = this.props.token.jwt;
 					let location = this.props.params['_job'];
-					this.props.fetchDetails(location, '?jwt='+jwt+'&id='+id)
+					this.props.fetchDetails(location, type+'?jwt='+jwt+'&id='+id)
 				}
 			}
 
 
 			onSubmit(formData) {
-				// console.log(formData)
 				let location = this.props.params['_job'];
 				let index = this.props.jobs.findIndex((job) => job.link === location);
-				let jobId = this.props.jobs[index]._id;
+				let jwt = this.props.token.jwt;
+				let jobId = this.props.jobs[index]._id || 0; // TODO remove hack for missing Administrator jobId
+				let type = this.state.type;
+
 				if(this.props.params['_id']) {
-					this.props.updateForm(this.props.token.jwt, location, this.props.params['_id'], jobId, formData)
+					let formId = this.props.params['_id'];
+					let requestData = {jwt, jobId, formId, location, type, endpoint: location+'/put/update'+this.state.type}
+					this.props.updateForm(requestData, formData);
 				}
 				else {
-					this.props.submitForm(this.props.token.jwt, location, jobId, formData)
+					let requestData = {jwt, jobId, location, endpoint: location+'/post/create'+this.state.type}
+					this.props.submitForm(requestData, formData);
 				}
+
 			}
 
 			render() {
