@@ -141,6 +141,7 @@ export function submitForm(jwt, location, jobId, data) {
 				jobId,
 				data
 			});
+		(console.log(location));		
 		return fetch(host + '/api/' + location + '/post/create', {
 			method: 'post',
 			headers: {
@@ -315,15 +316,22 @@ export function emailUser(wo) {
 	Clicks the passed in link based on browser capability
 	DOMObject link - DOM link to click
 */
-function clickLink(link) {
+export function clickLink(link) {
+	console.log('clickLink')
 	if (document.createEvent) { 
 		var event = document.createEvent('MouseEvents'); 
 		event.initEvent('click', true, true); 
-		link.dispatchEvent(event); 
+		link.dispatchEvent(event);
+		console.log('clicked-document')
 	} 
 	else { 
-		link.click(); 
-	} 
+		link.click();
+		console.log('clicked')
+	}
+
+	return {
+		type: 'CLICK_LINK'
+	}
 }
 
 /*

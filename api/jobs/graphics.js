@@ -7,17 +7,9 @@ const m_role = require('../middleware/role');
 const m_graphicsQuery = require('../middleware/graphicsQueries');
 const getSearchId = require('../utils/getSearchId');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const generatePcard = require('../services/email/emailTemplates/pcardAuthForm');
 const jsonParser = bodyParser.json();
-
-/*
-	I feel like a lot of this is going to be able to be gutted considering it has most of the conditionals
-	and such for the programs job. 
-
-	Changing the tracking method for graphics requests should hopefully shorten this file by a couple hundred lines. 
-	
-	
- */
 
 route.get('/get/workorders', m_role, m_graphicsQuery, function(req, res) {
 	var query = req.graphicsQuery;
@@ -38,13 +30,15 @@ route.get('/get/workorders', m_role, m_graphicsQuery, function(req, res) {
 	});
 });
 
+//upload.array(fileName)
+
 route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 	var decodedUser = req.decodedUser;
 	var data = req.body.data;
 	var role = decodedUser.role;
 
 	var graphics = new graphicsModel({
-		application: "graphics",
+		application: "Graphics",
 		searchId: getSearchId(),
 		submittedDate: new Date(),
 		title: data.title,
@@ -52,9 +46,20 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		name: decodedUser.name,
 		email: decodedUser.email,
 		primary_contact: decodedUser.primary_contact,
-		hall: decodedUser.hall,
+		hall: decodedUser.hall,	
 		date: data.date,
-		time: data.time,
+		startTime: data.startTime,
+		endTime: data.endTime,
+		phone: data.phone,
+		department: data.department,
+		file: data.file,
+		width: data.width,
+		height: data.height,
+		amount: data.amount,
+		measurements: data.measurements,
+		orientation: data.orientation,
+		completionDate: data.completionDate,
+		televisionRequest: data.televisionRequest,
 		location: data.location,
 		outcomes: data.outcomes,
 		description: data.description,
@@ -98,11 +103,6 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 		graphics.completedDate = new Date();
 	}
 
-	if(data.councilDate || data.councilMotioned || data.councilSeconded || data.councilFavor || data.councilOpposed || data.councilAbstained || data.councilApproval) {
-		req.email = 'hall_council';
-		req.notif = 'hall_council';
-	}
-
 	graphics.save(function(err, saved) {
 		if(!err) {
 			res.json(saved._id);
@@ -117,6 +117,10 @@ route.post('/post/create', jsonParser, m_role, function(req, res, next) {
 	});
 });
 route.post('/post/create', m_notif);
+
+route.post('/post/upload',jsonParser, m_role, function(req, res, next){
+	console.log(req);
+});
 
 route.put('/put/update', jsonParser, m_role, function(req, res, next){
 	var decodedUser = req.decodedUser;

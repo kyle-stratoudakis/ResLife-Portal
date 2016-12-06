@@ -21,13 +21,6 @@ import {
 	FormsySelect
 } from 'formsy-material-ui/lib';
 
-	/*
-		Tried to fight my way through this self-induced mess and ended up getting somewhere (not sure where though).
-		
-		The form still won't change even though I went into Portal.js and edited it. Not sure where I'm missing it
-		but I can't get the little actoin card thingy to change eihter.
-	 */
-
 class Graphics extends Component {
 	constructor(props) {
 		super(props)
@@ -61,8 +54,8 @@ class Graphics extends Component {
 			orientation: 'Portrait',
 			date: {},
 			completionDate: {},
-			starttime: {},
-			endtime: {},
+			startTime: {},
+			endTime: {},
 			new: null,
 			assigned: null,
 			proof: null,
@@ -99,8 +92,8 @@ class Graphics extends Component {
 				searchId: wo.searchId || null,
 				title: wo.title || '',
 				date: (wo.date ? new Date(wo.date) : {}),
-				starttime: (wo.starttime ? new Date(wo.starttime) : {}),
-				endtime: (wo.endtime ? new Date(wo.endtime) : {}),
+				startTime: (wo.startTime ? new Date(wo.startTime) : {}),
+				endTime: (wo.endTime ? new Date(wo.endTime) : {}),
 				phone: wo.phone || '',
 				location: wo.location || '',
 				description: wo.description || '',
@@ -250,7 +243,9 @@ class Graphics extends Component {
 	}
 
 	submitForm(data) {
-		alert(JSON.stringify(data, null, 4));
+		data.file = this.refs.input.files;
+		console.log(data)
+		this.props.onSubmit(data);
 	}
 
 	notifyFormError(data) {
@@ -330,43 +325,41 @@ class Graphics extends Component {
 		this.setState({ file });
 	}
 
+	addFile() {
+
+		if(this.refs.input.files) {
+			console.log(this.refs.input.files)
+		}
+
+	}
+
 	removeJSONFile(index) {
 		let fileArray = this.refs.form.getModel().file;
-		console.log(fileArray);
 		let newFile = [];
-		delete fileArray[index];
-		fileArray.map((file) => newFile.push({name: file.name}))
+		//fileArray.map((file) => newFile.push({name: file.name}))
 		this.setState({ file: newFile });
 	}
 
-	renderUploads(file, i) {
+	renderUploads(file) {
 		let { listStyle, listPaperStyle, centerStyle, exampleImageInput } = this.state.styles;
 		return (
-			<Paper style={listPaperStyle} key={i}>
-				<Subheader>{'File '+(i+1)}</Subheader>
+			<Paper style={listPaperStyle}>
+				<Subheader>{'File'}</Subheader>
+				
 				<div style={listStyle}>
-					<input type='file' style={exampleImageInput} onChange={this.addFile} ref='input' />
+					<input type='file' style={exampleImageInput} onChange={this.addFile} ref='input' multiple/>
 				</div>
-				<FlatButton
+
+			<FlatButton
 					label='Remove'
 					hoverColor={red500}
-					onClick={this.removeJSONFile.bind(this, i)}
+					onClick={this.removeJSONFile.bind(this)}
 					style={centerStyle}
 				/>
 			</Paper>
 		)
 	}
 
-	addFile(file, i) {
-
-		if(this.refs.input.files) {
-			console.log(this.refs.input.files)
-		}
-
-		//actually add file to file array?
-		this.refs.input.files = file[i];
-
-	}
 
 	renderSearchId() {
 		if(this.state.searchId){
@@ -397,7 +390,7 @@ class Graphics extends Component {
 					onValid={this.enableButton}
 					onInvalid={this.disableButton}
 					//onValidSubmit={this.props.onSubmit.bind(this)}
-					onValidSubmit={this.submitForm}
+					onValidSubmit={this.submitForm.bind(this)}
 					onInvalidSubmit={this.notifyFormError}
 				>
 					<Divider />
@@ -430,7 +423,7 @@ class Graphics extends Component {
 							fullWidth={true}
 							hintText='Phone # for Contact'
 							floatingLabelText='Phone'
-							value={this.state.title}
+							value={this.state.phone}
 						/>
 					</div>
 
@@ -454,7 +447,7 @@ class Graphics extends Component {
 							fullWidth={true}
 							hintText='Start time for the event?'
 							floatingLabelText='Start Time'
-							value={this.state.starttime}
+							value={this.state.startTime}
 						/>
 						<FormsyTime
 							name='endTime'
@@ -462,7 +455,7 @@ class Graphics extends Component {
 							fullWidth={true}
 							hintText='End time for the event?'
 							floatingLabelText='End Time'
-							value={this.state.endtime}
+							value={this.state.endTime}
 						/>
 						<FormsyText
 							name='location'
@@ -540,7 +533,8 @@ class Graphics extends Component {
 					<Subheader>File Upload</Subheader>
 					<div style={centerStyle} >
 
-					{this.state.file.map(this.renderUploads)}
+					{this.renderUploads()}
+					{/*this.state.file.map(this.renderUploads)*/}
 
 						<FlatButton
 						      label="Upload"

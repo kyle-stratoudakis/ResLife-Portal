@@ -16,6 +16,8 @@ export default function factory(React, empty) {
 			constructor(props) {
 				super(props)
 
+				this.onSubmit = this.onSubmit.bind(this);
+
 				this.state = {
 					open: false,
 					label: ' Work order',
