@@ -69,7 +69,7 @@ export default function factory(React, empty) {
 				let location = this.props.params['_job'];
 				let index = this.props.jobs.findIndex((job) => job.link === location);
 				let jwt = this.props.token.jwt;
-				let jobId = this.props.jobs[index]._id || 0; // TODO remove hack for missing Administrator jobId
+				let jobId = this.props.jobs[index]._id;
 				let type = this.state.type;
 
 				if(this.props.params['_id']) {
@@ -78,10 +78,9 @@ export default function factory(React, empty) {
 					this.props.updateForm(requestData, formData);
 				}
 				else {
-					let requestData = {jwt, jobId, location, endpoint: location+'/post/create'+this.state.type}
+					let requestData = {jwt, jobId, location, type, endpoint: location+'/post/create'+this.state.type}
 					this.props.submitForm(requestData, formData);
 				}
-
 			}
 
 			render() {

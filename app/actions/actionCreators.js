@@ -33,7 +33,7 @@ export function routeToTarget(href, target) {
 	clickLink(link);
 	
 	return {
-		type: 'ROUTE_TARGET',
+		type: 'ROUTE_TO_TARGET',
 		href,
 		target
 	}
@@ -116,7 +116,6 @@ export function fetchJobs(jwt) {
 export function fetchWorkorders(query) {
 	return function (dispatch) {
 		dispatch(getWorkorders())
-		console.log(host + '/api/' + query)
 		return fetch(host + '/api/' + query)
 		.then(handleErrors)
 		.then(response => response.json())
@@ -133,8 +132,6 @@ export function fetchWorkorders(query) {
 export function fetchDetails(location, query) {
 	return function (dispatch) {
 		dispatch(getDetails())
-		console.log('fetchDetails');
-		// console.log(host + '/api/' + location + '/get/details' + query);
 		return fetch(host + '/api/' + location + '/get/details' + query)
 		.then(handleErrors)
 		.then(response => response.json())
@@ -165,7 +162,7 @@ export function submitForm(requestData, formData) {
 		})
 		.then(handleErrors)
 		.then(response => response.json())
-		.then(json => dispatch(push('/job/' + requestData.location + '/View/' + requestData.location + '/'+json)))
+		.then(json => dispatch(push('/job/'+requestData.location+'/View/'+requestData.location+requestData.type+'/'+json)))
 		.catch(err => console.log('submitForm', err))
 	}
 }
@@ -184,8 +181,6 @@ export function updateForm(requestData, formData) {
 				jobId: requestData.jobId,
 				data: formData
 			});
-		console.log('updateForm')
-		console.log(host + '/api/' + requestData.endpoint)
 		return fetch(host + '/api/' + requestData.endpoint, {
 			method: 'put',
 			headers: {

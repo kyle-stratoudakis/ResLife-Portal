@@ -23,11 +23,6 @@ const Login = React.createClass({
 		}
 	},
 
-	componentWillMount () {
-		this.socket = io();
-		this.socket.emit('clientDisconnected');
-	},
-
 	onSubmit (data) {
 		let { redirect } = this.props.location.query;
 		this.props.login(data, redirect);

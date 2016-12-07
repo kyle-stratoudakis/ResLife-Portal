@@ -19,13 +19,15 @@ import JobContent from './components/JobContent';
 import TechRequest from './components/forms/TechRequest';
 import User from './components/forms/User';
 import Job from './components/forms/Job';
+import Action from './components/forms/Action';
+import Endpoint from './components/forms/Endpoint';
 
 const Auth = UserAuthWrapper({
 	authSelector: state => state.token.user,
 	redirectAction: routerActions.replace,
 	wrapperDisplayName: 'Auth',
 	failureRedirectPath: '/Login'
-})
+});
 
 const router = (
 	<Provider store={store}>
@@ -55,6 +57,12 @@ const router = (
 					<Route path="New/Administrator/Job" component={Auth(Job)} />
 					<Route path="View/Administrator/Job/:_id" component={Auth(Job)} />
 					<Route path="Edit/Administrator/Job/:_id" component={Auth(Job)} />
+					<Route path="New/Administrator/Action" component={Auth(Action)} />
+					<Route path="View/Administrator/Action/:_id" component={Auth(Action)} />
+					<Route path="Edit/Administrator/Action/:_id" component={Auth(Action)} />
+					<Route path="New/Administrator/Endpoint" component={Auth(Endpoint)} />
+					<Route path="View/Administrator/Endpoint/:_id" component={Auth(Endpoint)} />
+					<Route path="Edit/Administrator/Endpoint/:_id" component={Auth(Endpoint)} />
 					{/* Graphics Routes */}
 					<Route path="New/Graphics" component={Auth(Graphics)} />
 					<Route path="View/Graphics/:_id" component={Auth(Graphics)} />
