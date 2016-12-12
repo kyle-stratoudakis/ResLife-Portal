@@ -41,14 +41,16 @@ class User extends Component {
 		this.addJSONJob = this.addJSONJob.bind(this);
 		this.removeJSONJob = this.removeJSONJob.bind(this);
 		this.renderJob = this.renderJob.bind(this);
+		this.renderJobSelection = this.renderJobSelection.bind(this);
 		this.openJobSelectionDialog = this.openJobSelectionDialog.bind(this);
 		this.onJobSelectionChange = this.onJobSelectionChange.bind(this);
 
-		this.props.fetchMenuItems('administrator/get/selectionMenu?type=jobs');
+		this.props.fetchMenuItems('administrator/get/selectionMenu?type=jobs&filter=no_custom_jobs');
 
 		this.state = {
 			canSubmit: false,
 			label: 'Submit',
+			initialized: false,
 			name: '',
 			username: '',
 			email: '',
@@ -84,21 +86,28 @@ class User extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if(nextProps.workOrder) {
-			let user = nextProps.workOrder;
+		if(nextProps.details._id) {
+			if(!this.state.initialized){
+				let user = nextProps.details;
+				this.setState({
+					name: user.name || '',
+					username: user.username || '',
+					email: user.email || '',
+					primaryContact: user.primary_contact || '',
+					hall: user.hall || '',
+					notifRoles: user.notifRoles || [],
+					notifTimes: user.notifTimes || [],
+					jobs: user.jobs || [],
+					banned: user.banned || null,
+					label: (user._id ? 'Edit' : 'Submit'),
+					initialized: true
+				});
+			}
+		}
+		if(nextProps.menuItems) {
 			this.setState({
-				name: user.name || '',
-				username: user.username || '',
-				email: user.email || '',
-				primaryContact: user.primary_contact || '',
-				hall: user.hall || '',
-				notifRoles: user.notifRoles || [],
-				notifTimes: user.notifTimes || [],
-				jobs: user.jobs || [],
-				banned: user.banned || null,
 				jobSelections: this.props.menuItems.jobs || [],
-				label: (user._id ? 'Edit' : 'Submit')
-			});
+			})
 		}
 	}
 
@@ -269,7 +278,7 @@ class User extends Component {
 	}
 
 	removeJSONJob(index) {
-		let jobsArray = this.refs.form.getModel().jobs;
+		let jobsArray = this.state.jobs;
 		let newJobs = [];
 		delete jobsArray[index];
 		jobsArray.map((job) => newJobs.push(job));
@@ -282,27 +291,12 @@ class User extends Component {
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Job '+(i+1)}</Subheader>
 				<div style={listStyle}>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'jobs['+i+'].title'}
-						floatingLabelText='Title'
-						value={job.title}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'jobs['+i+'].role'}
-						floatingLabelText='Role'
-						value={job.role}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'jobs['+i+'].note'}
-						floatingLabelText='Note'
-						value={job.note}
-					/>
+					<h2>{job.title}</h2>
+					<h5>{job.role}</h5>
+					<h5>{job.note}</h5>
+					<h5>{'Endpoints ' + job.endpoints.length}</h5>
+					<h5>{'Card Actions ' + job.card_actions.length}</h5>
+					<h5>{'Dash Actions ' + job.dash_actions.length}</h5>
 					<FormsyText 
 						disabled={true}
 						fullWidth={true}
@@ -330,29 +324,64 @@ class User extends Component {
 		)
 	}
 
+	renderJobSelection(job, i) {
+		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
+		return (
+			<div className='row' key={i}>
+				<Divider />
+				<div className='col-sm-10'>
+					<h2>{job.title}</h2>
+					<h5>{job.role}</h5>
+					<h5>{job.note}</h5>
+					<h5>{'Endpoints ' + job.endpoints.length}</h5>
+					<h5>{'Card Actions ' + job.card_actions.length}</h5>
+					<h5>{'Dash Actions ' + job.dash_actions.length}</h5>
+					<h5>{job._id}</h5>
+					<br />
+				</div>
+				<div className='col-sm-2'>
+					<br/>
+					<br/>
+					<FlatButton
+						label='Select'
+						onClick={this.onJobSelectionChange.bind(this, i)}
+						style={centerStyle}
+					/>
+					<br/>
+					<FlatButton
+						label='View'
+						onClick={this.props.routeToTarget.bind(this, '/job/Administrator/Edit/Administrator/Job/'+job._id, '_blank')}
+						style={centerStyle}
+					/>
+				</div>	
+			</div>
+		)
+	}
+
 	openJobSelectionDialog(title, content, actions) {
 		this.props.openDialog(title, content, actions);
 	}
 
-	onJobSelectionChange(job) {
-		this.addJSONJob(job);
+	onJobSelectionChange(i) {
+		this.addJSONJob(this.state.jobSelections[i]);
 		this.props.closeDialog();
 	}
 
 	render() {
-		let { centerStyle } = this.state.styles;
-
 		const title = 'Select Job';
 
 		const content = [
-			<Menu
-				ref='jobSelection'
-				name='jobSelection'
-				onChange={(e, value) => this.onJobSelectionChange(value)}
-			>
-				{this.state.jobSelections.map((job, i) => <MenuItem key={i} value={job} primaryText={job.title+' - '+job.role} secondaryText={job.note}/>)}
-			</Menu>
+			<center>
+				<FlatButton
+					label='Create New Job'
+					labelStyle={{fontSize: '1.5em'}}
+					onClick={this.props.routeToTarget.bind(this, '/job/Administrator/New/Administrator/Job/', '_blank')}
+					style={{margin: '1em'}}
+				/>
+			</center>
 		]
+		{this.state.jobSelections.map((job, i) => content.push(this.renderJobSelection(job, i)) )}
+
 
 		const actions = [
 			<FlatButton
@@ -361,6 +390,8 @@ class User extends Component {
 				onClick={this.props.closeDialog.bind(this)}
 			/>
 		]
+
+		let { centerStyle } = this.state.styles;
 
 		return (
 			<div>

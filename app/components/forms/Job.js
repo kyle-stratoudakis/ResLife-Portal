@@ -23,8 +23,6 @@ import {
 	FormsySelect
 } from 'formsy-material-ui/lib';
 
-const component = Job;
-
 class Job extends Component {
 	
 	constructor(props) {
@@ -43,11 +41,13 @@ class Job extends Component {
 		this.addJSONDashAction = this.addJSONDashAction.bind(this);
 		this.removeJSONDashAction = this.removeJSONDashAction.bind(this);
 		this.renderDashAction = this.renderDashAction.bind(this);
-		this.onActionSelection = this.onActionSelection.bind(this);
+		this.onDialogSelection = this.onDialogSelection.bind(this);
 		this.openActionDialog = this.openActionDialog.bind(this);
 		this.addJSONEndpoint = this.addJSONEndpoint.bind(this);
 		this.removeJSONEndpoint = this.removeJSONEndpoint.bind(this);
 		this.renderEndpoint = this.renderEndpoint.bind(this);
+		this.renderEndpointSelection = this.renderEndpointSelection.bind(this);
+		this.renderActionSelection = this.renderActionSelection.bind(this);
 
 		this.props.fetchMenuItems('administrator/get/selectionMenu?type=actions&filter=ignore_modify');
 		this.props.fetchMenuItems('administrator/get/selectionMenu?type=endpoints');
@@ -55,6 +55,7 @@ class Job extends Component {
 		this.state = {
 			canSubmit: false,
 			label: 'Submit',
+			initialized: false,
 			title: '',
 			subtitle: '',
 			role: '',
@@ -90,21 +91,28 @@ class Job extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if(nextProps.workOrder) {
-			let wo = nextProps.workOrder;
+		if(nextProps.details._id) {
+			if(!this.state.initialized) {
+				let job = nextProps.details;
+				this.setState({
+					title: job.title || '',
+					subtitle: job.subtitle || '',
+					role: job.role || '',
+					link: job.link || '',
+					note: job.note || '',
+					endpoints: job.endpoints || [],
+					dashActions: job.dash_actions || [],
+					cardActions: job.card_actions || [],
+					label: (job._id ? 'Edit' : 'Submit'),
+					initialized: true
+				});
+			}
+		}
+		if(nextProps.menuItems) {
 			this.setState({
-				title: wo.title || '',
-				subtitle: wo.subtitle || '',
-				role: wo.role || '',
-				link: wo.link || '',
-				note: wo.note || '',
-				endpoints: wo.endpoints || [],
-				dashActions: wo.dash_actions || [],
-				cardActions: wo.card_actions || [],
 				actionSelections: this.props.menuItems.actions || [],
 				endpointSelections: this.props.menuItems.endpoints || [],
-				label: (wo._id ? 'Edit' : 'Submit')
-			});
+			})
 		}
 	}
 
@@ -151,11 +159,11 @@ class Job extends Component {
 	addJSONEndpoint(endpoint) {
 		let endpoints = this.state.endpoints;
 		endpoints.push(endpoint);
-		this.setState({ cardActions: endpoints });
+		this.setState({ endpoints: endpoints });
 	}
 
 	removeJSONEndpoint(index) {
-		let endpointsArray = this.refs.form.getModel().endpoints;
+		let endpointsArray = this.state.endpoints;
 		let newEndpoints = [];
 		delete endpointsArray[index];
 		endpointsArray.map((endpoint) => newEndpoints.push(endpoint))
@@ -168,28 +176,9 @@ class Job extends Component {
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Endpoint '+(i+1)}</Subheader>
 				<div style={listStyle}>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'endpoints['+i+'].name'}
-						floatingLabelText='Title'
-						value={endpoint.name}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						multiLine={true}
-						name={'endpoints['+i+'].note'}
-						floatingLabelText='Note'
-						value={endpoint.note}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'endpoints['+i+'].route'}
-						floatingLabelText='Route'
-						value={endpoint.route}
-					/>
+					<h2>{endpoint.name}</h2>
+					<h5>{endpoint.note}</h5>
+					<h5>{endpoint.route}</h5>
 					<FormsyText 
 						disabled={true}
 						fullWidth={true}
@@ -208,7 +197,7 @@ class Job extends Component {
 						label='Remove'
 						hoverColor={red500}
 						disabled={(this.state.reviewed ? true : false)}
-						onClick={this.removeJSONDashAction.bind(this, i)}
+						onClick={this.removeJSONEndpoint.bind(this, i)}
 						style={centerStyle}
 					/>
 				</center>
@@ -219,15 +208,15 @@ class Job extends Component {
 	addJSONDashAction(action) {
 		let actions = this.state.dashActions;
 		actions.push(action);
-		component.setState({ dashActions: actions });
+		this.setState({ dashActions: actions });
 	}
 
 	removeJSONDashAction(index) {
-		let actionsArray = this.refs.form.getModel().dashActions;
+		let actionsArray = this.state.dashActions;
 		let newActions = [];
 		delete actionsArray[index];
 		actionsArray.map((action) => newActions.push(action))
-		component.setState({ dashActions: newActions });
+		this.setState({ dashActions: newActions });
 	}
 
 	renderDashAction(action, i) {
@@ -236,28 +225,10 @@ class Job extends Component {
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Dash Action '+(i+1)}</Subheader>
 				<div style={listStyle}>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'dashActions['+i+'].title'}
-						floatingLabelText='Title'
-						value={action.title}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						multiLine={true}
-						name={'dashActions['+i+'].note'}
-						floatingLabelText='Note'
-						value={action.note}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'dashActions['+i+'].route'}
-						floatingLabelText='Route'
-						value={action.route}
-					/>
+					<h2>{action.title}</h2>
+					<h5>{action.type}</h5>
+					<h5>{action.route}</h5>
+					<h5>{action.note}</h5>
 					<FormsyText 
 						disabled={true}
 						fullWidth={true}
@@ -287,15 +258,15 @@ class Job extends Component {
 	addJSONCardAction(action) {
 		let actions = this.state.cardActions;
 		actions.push(action);
-		component.setState({ cardActions: actions });
+		this.setState({ cardActions: actions });
 	}
 
 	removeJSONCardAction(index) {
-		let actionsArray = this.refs.form.getModel().cardActions;
+		let actionsArray = this.state.cardActions;
 		let newActions = [];
 		delete actionsArray[index];
 		actionsArray.map((action) => newActions.push(action))
-		component.setState({ cardActions: newActions });
+		this.setState({ cardActions: newActions });
 	}
 
 	renderCardAction(action, i) {
@@ -304,28 +275,10 @@ class Job extends Component {
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Card Action '+(i+1)}</Subheader>
 				<div style={listStyle}>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'cardActions['+i+'].title'}
-						floatingLabelText='Title'
-						value={action.title}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						multiLine={true}
-						name={'cardActions['+i+'].note'}
-						floatingLabelText='Note'
-						value={action.note}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'cardActions['+i+'].route'}
-						floatingLabelText='Route'
-						value={action.route}
-					/>
+					<h2>{action.title}</h2>
+					<h5>{action.type}</h5>
+					<h5>{action.route}</h5>
+					<h5>{action.note}</h5>
 					<FormsyText 
 						disabled={true}
 						fullWidth={true}
@@ -352,12 +305,77 @@ class Job extends Component {
 		)
 	}
 
-	onActionSelection(action, type) {
+	renderEndpointSelection(endpoint, i, type) {
+		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
+		return (
+			<div className='row' key={i}>
+				<Divider />
+				<div className='col-sm-10'>
+					<h2>{endpoint.name}</h2>
+					<h5>{endpoint.note}</h5>
+					<h5><p>{endpoint.route}</p></h5>
+					<br />
+				</div>
+				<div className='col-sm-2'>
+					<br/>
+					<br/>
+					<FlatButton
+						label='Select'
+						onClick={this.onDialogSelection.bind(this, i, type)}
+						style={centerStyle}
+					/>
+					<br/>
+					<FlatButton
+						label='View'
+						onClick={this.props.routeToTarget.bind(this, '/job/Administrator/Edit/Administrator/Endpoint/'+endpoint._id, '_blank')}
+						style={centerStyle}
+					/>
+				</div>	
+			</div>
+		)
+	}
+
+	renderActionSelection(action, i, type) {
+		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
+		return (
+			<div className='row' key={i}>
+				<Divider />
+				<div className='col-sm-10'>
+					<h2>{action.title}</h2>
+					<h5>{action._id}</h5>
+					<h5>{action.type}</h5>
+					<h5>{action.route}</h5>
+					<h5>{action.note}</h5>
+					<br />
+				</div>
+				<div className='col-sm-2'>
+					<br/>
+					<br/>
+					<FlatButton
+						label='Select'
+						onClick={this.onDialogSelection.bind(this, i, type)}
+						style={centerStyle}
+					/>
+					<br/>
+					<FlatButton
+						label='View'
+						onClick={this.props.routeToTarget.bind(this, '/job/Administrator/Edit/Administrator/Action/'+action._id, '_blank')}
+						style={centerStyle}
+					/>
+				</div>	
+			</div>
+		)
+	}
+
+	onDialogSelection(i, type) {
 		if(type === 'dashAction') {
-			this.addJSONDashAction(action);
+			this.addJSONDashAction(this.state.actionSelections[i]);
 		}
 		else if(type === 'cardAction') {
-			this.addJSONCardAction(action);
+			this.addJSONCardAction(this.state.actionSelections[i]);
+		}
+		else if(type === 'endpoint') {
+			this.addJSONEndpoint(this.state.endpointSelections[i]);
 		}
 		this.props.closeDialog();
 	}
@@ -369,35 +387,36 @@ class Job extends Component {
 	render() {
 		let { centerStyle } = this.state.styles;
 
-		let dialogTitle = 'Select Action';
-		let endpointTitle = 'Select Endpoint';
+		const dialogTitle = 'Select Action';
+		const endpointTitle = 'Select Endpoint';
 
 		const dashActionsContent = [
-			<Menu
-				name='selection'
-				onChange={(e, value) => this.onActionSelection(value, 'dashAction')}
-			>
-				{this.state.actionSelections.map((action, i) => <MenuItem key={i} value={action} primaryText={action.title+' - '+action.type} secondaryText={action.route}/>)}
-			</Menu>
+			<center>
+				<FlatButton
+					label='Create New Action'
+					labelStyle={{fontSize: '1.5em'}}
+					onClick={this.props.routeToTarget.bind(this, '/job/Administrator/New/Administrator/Action/', '_blank')}
+					style={{margin: '1em'}}
+				/>
+			</center>
 		]
+		{this.state.actionSelections.map((action, i) => dashActionsContent.push(this.renderActionSelection(action, i, 'dashAction')) )}
 
-		const cardActionsContent = [
-			<Menu
-				name='selection'
-				onChange={(e, value) => this.onActionSelection(value, 'cardAction')}
-			>
-				{this.state.actionSelections.map((action, i) => <MenuItem key={i} value={action} primaryText={action.title+' - '+action.type} secondaryText={action.route}/>)}
-			</Menu>
-		]
+		const cardActionsContent = [];
+		cardActionsContent.push(dashActionsContent[0]);
+		{this.state.actionSelections.map((action, i) => cardActionsContent.push(this.renderActionSelection(action, i, 'cardAction')) )}
 
 		const endpointContent = [
-			<Menu
-				name='selection'
-				onChange={(e, value) => this.onActionSelection(value, 'endpoint')}
-			>
-				{this.state.endpointSelections.map((endpoint, i) => <MenuItem key={i} value={endpoint} primaryText={endpoint.name} secondaryText={endpoint.note}/>)}
-			</Menu>
+			<center>
+				<FlatButton
+					label='Create New Endpoint'
+					labelStyle={{fontSize: '1.5em'}}
+					onClick={this.props.routeToTarget.bind(this, '/job/Administrator/New/Administrator/Endpoint/', '_blank')}
+					style={{margin: '1em'}}
+				/>
+			</center>
 		]
+		{this.state.endpointSelections.map((endpoint, i) => endpointContent.push(this.renderEndpointSelection(endpoint, i, 'endpoint')) )}
 
 		const dialogActions = [
 			<FlatButton

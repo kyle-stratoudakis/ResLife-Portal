@@ -322,6 +322,9 @@ route.get('/get/selectionMenu', function(req, res, next) {
 
 	// Job selection
 	if(req.query.type === 'jobs') {
+		if(req.query.filter == 'no_custom_jobs') {
+			query = {note: {$eq: ''}};
+		}
 		jobModel.find({})
 		.lean()
 		.exec(function(err, jobs) {

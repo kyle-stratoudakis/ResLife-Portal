@@ -37,6 +37,7 @@ class Endpoint extends Component {
 		this.renderAction = this.renderAction.bind(this);
 		this.onActionSelection = this.onActionSelection.bind(this);
 		this.openActionDialog = this.openActionDialog.bind(this);
+		this.renderActionSelection = this.renderActionSelection.bind(this);
 
 		this.props.fetchMenuItems('administrator/get/selectionMenu?type=actions');
 
@@ -49,6 +50,7 @@ class Endpoint extends Component {
 			actionSelections: [],
 			canSubmit: false,
 			label: 'Submit',
+			initialized: false,
 			styles: {
 				centerStyle: {
 					marginBottom: '1em',
@@ -74,16 +76,23 @@ class Endpoint extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if(nextProps.workOrder) {
-			let endpoint = nextProps.workOrder;
+		if(nextProps.details._id) {
+			if(!this.state.initialized) {
+				let endpoint = nextProps.details;
+				this.setState({
+					name: endpoint.name || '',
+					note: endpoint.note || '',
+					route: endpoint.route || '',
+					actions: endpoint.actions || [],
+					label: (endpoint._id ? 'Edit' : 'Submit'),
+					initialized: true
+				});
+			}
+		}
+		if(nextProps.menuItems) {
 			this.setState({
-				name: endpoint.name || '',
-				note: endpoint.note || '',
-				route: endpoint.route || '',
-				actions: endpoint.actions || [],
 				actionSelections: this.props.menuItems.actions || [],
-				label: (endpoint._id ? 'Edit' : 'Submit')
-			});
+			})
 		}
 	}
 
@@ -128,17 +137,17 @@ class Endpoint extends Component {
 	}
 
 	addJSONAction(action) {
-		let actions = this.state.actions;
+		let actions = this.state.dashActions;
 		actions.push(action);
-		this.setState({ cardActions: actions });
+		this.setState({ dashActions: actions });
 	}
 
 	removeJSONAction(index) {
-		let actionsArray = this.refs.form.getModel().actions;
+		let actionsArray = this.state.dashActions;
 		let newActions = [];
 		delete actionsArray[index];
 		actionsArray.map((action) => newActions.push(action))
-		this.setState({ actions: newActions });
+		this.setState({ dashActions: newActions });
 	}
 
 	renderAction(action, i) {
@@ -147,32 +156,13 @@ class Endpoint extends Component {
 			<Paper style={listPaperStyle} key={i}>
 				<Subheader>{'Action '+(i+1)}</Subheader>
 				<div style={listStyle}>
+					<h2>{action.title}</h2>
+					<h5>{action.type}</h5>
+					<h5>{action.route}</h5>
+					<h5>{action.note}</h5>
 					<FormsyText 
 						disabled={true}
 						fullWidth={true}
-						name={'actions['+i+'].title'}
-						floatingLabelText='Title'
-						value={action.title}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						multiLine={true}
-						name={'actions['+i+'].note'}
-						floatingLabelText='Note'
-						value={action.note}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						name={'actions['+i+'].route'}
-						floatingLabelText='Route'
-						value={action.route}
-					/>
-					<FormsyText 
-						disabled={true}
-						fullWidth={true}
-						multiLine={true}
 						name={'actions['+i+']._id'}
 						floatingLabelText='ID'
 						value={action._id}
@@ -196,8 +186,40 @@ class Endpoint extends Component {
 		)
 	}
 
-	onActionSelection(action) {
-		this.addJSONAction(action);
+	renderActionSelection(action, i) {
+		let { listStyle, listPaperStyle, centerStyle } = this.state.styles;
+		return (
+			<div className='row' key={i}>
+				<Divider />
+				<div className='col-sm-10'>
+					<h2>{action.title}</h2>
+					<h5>{action._id}</h5>
+					<h5>{action.type}</h5>
+					<h5>{action.route}</h5>
+					<h5>{action.note}</h5>
+					<br />
+				</div>
+				<div className='col-sm-2'>
+					<br/>
+					<br/>
+					<FlatButton
+						label='Select'
+						onClick={this.onActionSelection.bind(this, i)}
+						style={centerStyle}
+					/>
+					<br/>
+					<FlatButton
+						label='View'
+						onClick={this.props.routeToTarget.bind(this, '/job/Administrator/Edit/Administrator/Action/'+action._id, '_blank')}
+						style={centerStyle}
+					/>
+				</div>	
+			</div>
+		)
+	}
+
+	onActionSelection(i) {
+		this.addJSONAction(this.state.actionSelections[i]);
 		this.props.closeDialog();
 	}
 
@@ -211,13 +233,16 @@ class Endpoint extends Component {
 		let dialogTitle = 'Select Action';
 
 		const actionsContent = [
-			<Menu
-				name='selection'
-				onChange={(e, value) => this.onActionSelection(value)}
-			>
-				{this.state.actionSelections.map((action, i) => <MenuItem key={i} value={action} primaryText={action.title+' - '+action.type} secondaryText={action.route}/>)}
-			</Menu>
+			<center>
+				<FlatButton
+					label='Create New Action'
+					labelStyle={{fontSize: '1.5em'}}
+					onClick={this.props.routeToTarget.bind(this, '/job/Administrator/New/Administrator/Action/', '_blank')}
+					style={{margin: '1em'}}
+				/>
+			</center>
 		]
+		{this.state.actionSelections.map((action, i) => actionsContent.push(this.renderActionSelection(action, i)) )}
 
 		const dialogActions = [
 			<FlatButton
@@ -258,6 +283,7 @@ class Endpoint extends Component {
 						/>
 						<FormsyText
 							fullWidth={true}
+							multiLine={true}
 							name={'route'}
 							hintText='Route on the backend including GET parameters'
 							floatingLabelText='Route'

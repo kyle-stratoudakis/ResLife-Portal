@@ -130,8 +130,7 @@ const Main = React.createClass({
 					<Dialog
 						title={this.props.dialog.title}
 						actions={this.props.dialog.actions}
-						modal={true}
-						// modal={this.props.dialog.modal}
+						modal={this.props.dialog.modal}
 						open={this.props.dialog.open}
 						onRequestClose={this.props.closeDialog}
 						autoScrollBodyContent={true}

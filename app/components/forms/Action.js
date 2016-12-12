@@ -70,18 +70,20 @@ class Action extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if(nextProps.workOrder) {
-			let action = nextProps.workOrder;
-			this.setState({
-				type: action.type || '',
-				title: action.title || '',
-				route: action.route || '',
-				icon: action.icon || '',
-				note: action.note || '',
-				color: action.color || '',
-				hoverColor: action.hover_color || '',
-				label: (action._id ? 'Edit' : 'Submit')
-			});
+		if(nextProps.details._id) {
+			if(!this.state.initialized) {
+				let action = nextProps.details;
+				this.setState({
+					type: action.type || '',
+					title: action.title || '',
+					route: action.route || '',
+					icon: action.icon || '',
+					note: action.note || '',
+					color: action.color || '',
+					hoverColor: action.hover_color || '',
+					label: (action._id ? 'Edit' : 'Submit')
+				});
+			}
 		}
 	}
 
